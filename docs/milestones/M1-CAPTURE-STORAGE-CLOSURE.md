@@ -1,13 +1,14 @@
 # M1 — Capture + Storage Closure
 
-**Status:** PASS (local validation complete)  
+**Status:** CLOSED  
+**Verdict:** PASS  
 **Version:** `0.1.0`  
-**Branch:** `feature/m1-capture-storage`  
-**Baseline `main`:** `5c7baf96bb25778beab0bfd04aa67a48b99107ba`  
+**Release tag:** `v0.1.0` → `0151f1d5d679bfbc89f3a7b4b0489fbef7a0222d`  
+**PR:** https://github.com/magpern/universal-social-proof/pull/2 (merged)  
+**Merge commit (`main`):** `0151f1d5d679bfbc89f3a7b4b0489fbef7a0222d`  
+**Baseline `main` (pre-M1):** `5c7baf96bb25778beab0bfd04aa67a48b99107ba`  
 **Plan freeze:** `d47f2b55d44fe253cc623580a9bd2607ddfcc70f`  
-**PR:** _(filled after open)_  
-**Final branch HEAD:** `c190a3a2a42e617b7e8b99ac75f10d6a68fab4bf`
-**Tag / release:** **none** (do not tag from feature branch; tag `v0.1.0` only after merge to `main`)  
+**Feature branch (pre-merge tip):** `045aa7b3631fbe33326cf06a5bc435d12e10ee9e`  
 **Production:** untouched  
 
 ## Commits
@@ -20,7 +21,9 @@
 | Privacy/retention | `4180fb1966a627a2b23cef14464e7ebd4d527481` | feat(privacy): add privacy erasure and retention purge |
 | Tests | `c310220fab63124ad7b2364adc3df196e80812f0` | test: add M1 capture and lifecycle coverage |
 | ADRs/changelog | `1e4272709b24fd9cc8c55dcd08a260140b122620` | docs: accept M1 ADRs and changelog for 0.1.0 |
-| Closure | `758ebed806f3d52f8fc2a037535d1b04a63a2fd4` | docs: close M1 capture and storage |
+| Closure (branch) | `758ebed806f3d52f8fc2a037535d1b04a63a2fd4` | docs: close M1 capture and storage |
+| Merge to main | `0151f1d5d679bfbc89f3a7b4b0489fbef7a0222d` | Merge pull request #2 from magpern/feature/m1-capture-storage |
+| Tag | `v0.1.0` | Annotated tag on merge commit |
 
 ## Verdict summary
 
@@ -101,7 +104,7 @@ Host has no system PHP; gates ran in Docker (`ugeo-php8.3-mysqli` + MariaDB 11.4
 
 ## CI
 
-GitHub Actions on the M1 PR: observed after push (see PR / final report). Local gates equivalent to workflow jobs are green.
+PR #2 GitHub Actions: all jobs SUCCESS (lint/PHPCS, unit 8.1/8.3/8.4, integration PHP 8.3 / WC 11.0.1). Local gates were green before merge.
 
 ## Architecture / ADR updates
 
@@ -122,13 +125,15 @@ Confirmed absent: notification REST, SelectionEngine, toaster JS/CSS, templates/
 3. Retrospective privacy after prior WC anonymization without USP erasure remains unrecoverable by design.
 4. No CLI historical backfill in M1 (`CaptureService::capture_order` is reusable later).
 
-## Next steps (outside this execution)
+## Release closure (post-merge)
 
-1. Product Owner / architecture review of PR
-2. Merge to `main`
-3. Tag `v0.1.0` on approved **main** commit only
-4. Then plan M2 — not started here
+1. PR #2 merged to `main` as `0151f1d5d679bfbc89f3a7b4b0489fbef7a0222d`
+2. Annotated tag `v0.1.0` created on that merge commit and pushed
+3. Tag verified: `git rev-parse v0.1.0^{}` = merge SHA
+4. M1 recorded **CLOSED**
+
+Next milestone: **M2** (`0.2.0`) — not started in this release step.
 
 ## Working tree
 
-Expected clean after closure commit on `feature/m1-capture-storage`.
+Clean on `main` after this release-record commit (except as noted at commit time).

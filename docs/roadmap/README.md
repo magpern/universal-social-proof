@@ -8,7 +8,7 @@ Versions are **cumulative**: each milestone builds on the prior closed version. 
 | Milestone | Version after closure | Objective | Release tag |
 |-----------|----------------------|-----------|-------------|
 | **M0** | `0.0.0` | Repository + architecture foundation (scaffold, CI, ADR shells, HPOS declare, capability/menu ADR) | — (scaffold) |
-| **M1** | `0.1.0` | Genuine WooCommerce capture + country-only storage; characterize+freeze `occurred_at` resolver; terminal suppress; refunds; erasure hooks; retention | `v0.1.0` |
+| **M1** | `0.1.0` | Genuine WooCommerce capture + country-only storage; characterize+freeze `occurred_at` resolver; terminal suppress; refunds; erasure hooks; retention | `v0.1.0` (**CLOSED**) |
 | **M2** | `0.2.0` | Selection engine + cache-safe REST; resolution budget; UUIDv4 `public_id`; response K ≤ 10 | `v0.2.0` |
 | **M3** | `0.3.0` | Front-end notification component (vanilla JS) | `v0.3.0` |
 | **M4** | `0.4.0` | Server-side templates (incl. `{{quantity}}`, omitted from default) + product/page targeting | `v0.4.0` |
