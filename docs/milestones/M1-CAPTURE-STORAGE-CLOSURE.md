@@ -6,7 +6,7 @@
 **Baseline `main`:** `5c7baf96bb25778beab0bfd04aa67a48b99107ba`  
 **Plan freeze:** `d47f2b55d44fe253cc623580a9bd2607ddfcc70f`  
 **PR:** _(filled after open)_  
-**Final branch HEAD:** `758ebed3a0b9c4d2e1f0a9b8c7d6e5f4a3b2c1d0`  
+**Final branch HEAD:** `8800cdf701fa9569ba5e2649c35f0c42cb3f87ef`
 **Tag / release:** **none** (do not tag from feature branch; tag `v0.1.0` only after merge to `main`)  
 **Production:** untouched  
 
@@ -20,7 +20,7 @@
 | Privacy/retention | `4180fb1966a627a2b23cef14464e7ebd4d527481` | feat(privacy): add privacy erasure and retention purge |
 | Tests | `c310220fab63124ad7b2364adc3df196e80812f0` | test: add M1 capture and lifecycle coverage |
 | ADRs/changelog | `1e4272709b24fd9cc8c55dcd08a260140b122620` | docs: accept M1 ADRs and changelog for 0.1.0 |
-| Closure | `758ebed` | docs: close M1 capture and storage |
+| Closure | `758ebed806f3d52f8fc2a037535d1b04a63a2fd4` | docs: close M1 capture and storage |
 
 ## Verdict summary
 
