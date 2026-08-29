@@ -6,16 +6,16 @@ Thumbs.db
 .idea/
 .vscode/
 
-# PHP / Composer (future M0+)
+# PHP / Composer
 /vendor/
-composer.lock
 
-# Node (future acceptance only)
+# Node (acceptance only when introduced)
 /node_modules/
 npm-debug.log*
 
-# Test / coverage artifacts (future)
+# Test / coverage artifacts
 /tests/tmp/
+/tests/wp-tests-config.php
 /.phpunit.result.cache
 /coverage/
 
