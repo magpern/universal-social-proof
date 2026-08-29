@@ -2,15 +2,23 @@
 
 Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-proof notifications.
 
-**Architecture status:** [FROZEN](docs/architecture/FROZEN.md) — Product Owner approved. This repository currently holds the authoritative architecture freeze for milestones **M0–M7**. Plugin implementation has not started; M0 is a separate task.
+**Architecture status:** [FROZEN](docs/architecture/FROZEN.md) — Product Owner approved.  
+**Implementation status:** M0 foundation (`0.0.0`) — structurally valid and loadable; **functionally inert** as a social-proof product.
 
 | Item | Value |
 |------|-------|
 | Plugin name | Universal Social Proof |
 | Slug / text domain | `universal-social-proof` |
 | Namespace | `UniversalSocialProof\` |
-| Composer (planned) | `magpern/universal-social-proof` |
+| Composer | `magpern/universal-social-proof` |
+| Current version | `0.0.0` (M0) |
 | First production-recommended release | **v1.0.0** (M7) |
+
+## Requirements
+
+- PHP `>= 8.1` (production target PHP 8.3)
+- WordPress `>= 6.5`
+- WooCommerce `>= 8.2` (tested against 11.0.x)
 
 ## Documentation
 
@@ -20,7 +28,26 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | [docs/roadmap/README.md](docs/roadmap/README.md) | Milestone versions and cumulative roadmap |
 | [docs/GOVERNANCE.md](docs/GOVERNANCE.md) | How to change frozen architecture |
 | [docs/adr/README.md](docs/adr/README.md) | Architectural Decision Records |
+| [docs/milestones/M0-FOUNDATION-PLAN.md](docs/milestones/M0-FOUNDATION-PLAN.md) | M0 implementation plan |
+| [docs/milestones/M0-FOUNDATION-CLOSURE.md](docs/milestones/M0-FOUNDATION-CLOSURE.md) | M0 closure record |
+
+## Local development
+
+```bash
+composer install
+composer lint
+composer phpcs
+composer test:unit
+# Integration (requires MariaDB/MySQL; see tests/bin/install-wp.sh):
+bash tests/bin/install-wp.sh
+composer test:integration
+composer ci
+```
 
 ## Product principle
 
 **Real social proof, not fabricated FOMO.** Administrators cannot create purchase-looking notifications that did not originate from eligible WooCommerce transactions.
+
+## License
+
+GPL-2.0-or-later. See [LICENSE](LICENSE).
