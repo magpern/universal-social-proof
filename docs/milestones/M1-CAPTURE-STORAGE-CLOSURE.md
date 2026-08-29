@@ -6,7 +6,7 @@
 **Baseline `main`:** `5c7baf96bb25778beab0bfd04aa67a48b99107ba`  
 **Plan freeze:** `d47f2b55d44fe253cc623580a9bd2607ddfcc70f`  
 **PR:** _(filled after open)_  
-**Final branch HEAD:** `8800cdf701fa9569ba5e2649c35f0c42cb3f87ef`
+**Final branch HEAD:** `c190a3a2a42e617b7e8b99ac75f10d6a68fab4bf`
 **Tag / release:** **none** (do not tag from feature branch; tag `v0.1.0` only after merge to `main`)  
 **Production:** untouched  
 
