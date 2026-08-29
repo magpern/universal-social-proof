@@ -13,7 +13,7 @@
 | Bootstrap | `1286dc88ab1689cdef26c429988c509cec21f50b` | feat: bootstrap Universal Social Proof foundation |
 | Tests | `2a6ad562d2f4192b2d029f55369b03f5967715b3` | test: add M0 validation foundation |
 | CI | `91babefcc42ec9a1688926272bc75cdbbeaa69af` | ci: add repository quality gates |
-| Closure | branch HEAD after `docs: close M0 foundation` | docs: close M0 foundation |
+| Closure | `e3b3299166d9b45caa3066e39940f88f2390e4ff` | docs: close M0 foundation |
 
 ## Delivered
 
