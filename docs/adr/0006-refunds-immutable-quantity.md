@@ -16,9 +16,15 @@ Partial refunds must not rewrite purchase history. Quantity may appear in templa
 - M4 token `{{quantity}}` means original quantity at `occurred_at`; default template **omits** it.
 - M1 characterizes HPOS-safe WC refund APIs to detect full line refund reliably (API detail is engineering evidence, not a product-contract change).
 
+### M1 storage type (engineering)
+
+WooCommerce 11 stores line quantity via `wc_stock_amount()` (`int|float`, filterable). USP stores original quantity as **`DECIMAL(18,6)`** and compares refunded vs ordered using scaled-integer micros (`Quantity` helper). Do not silently cast to PHP `int`.
+
+Full line refund: `abs( get_qty_refunded_for_item( $item_id ) ) >= ordered quantity`.
+
 ## Consequences
 
-Stored quantity remains purposeful for optional templates without mutable “remaining qty” semantics in v1.
+Stored quantity remains purposeful for optional templates without mutable “remaining qty” semantics in v1. Fractional WooCommerce quantities remain representable.
 
 ## Related
 
