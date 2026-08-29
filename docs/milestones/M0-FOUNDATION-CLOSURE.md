@@ -69,6 +69,8 @@ GitHub did **not** start runners: *“The job was not started because recent acc
 
 Locally equivalent gates are green (see Validation results). Re-run Actions after billing is restored.
 
+## DEV verification
+
 **Not performed on DEV WordPress.** `apps/wordpress/compose.yml` does not bind-mount `/opt/biopentra/dev/universal-social-proof`. Adding that mount would be a VPS compose change outside this repository milestone; left for operators. Integration suite covers plugin load + HPOS under WP/WC 11.0.1.
 
 ## Deviations from M0 plan
