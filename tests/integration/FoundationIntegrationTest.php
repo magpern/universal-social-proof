@@ -19,7 +19,7 @@ final class FoundationIntegrationTest extends WP_UnitTestCase {
 		$this->assertTrue( class_exists( 'WooCommerce' ) );
 		$this->assertTrue( Plugin::is_initialized() );
 		$this->assertTrue( defined( 'USP_VERSION' ) );
-		$this->assertSame( '0.0.0', USP_VERSION );
+		$this->assertSame( '0.1.0', USP_VERSION );
 	}
 
 	public function test_hpos_compatibility_declared(): void {
@@ -37,11 +37,11 @@ final class FoundationIntegrationTest extends WP_UnitTestCase {
 		$this->assertContains( 'custom_order_tables', $compatible );
 	}
 
-	public function test_usp_events_table_does_not_exist(): void {
+	public function test_usp_events_table_exists_after_m1(): void {
 		global $wpdb;
 		$table = $wpdb->prefix . 'usp_events';
 		$found = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
-		$this->assertNull( $found );
+		$this->assertSame( $table, $found );
 	}
 
 	public function test_no_usp_rest_routes_registered(): void {

@@ -1,6 +1,6 @@
 <?php
 /**
- * M0 unit tests — identity, autoload, gate behaviour.
+ * M0/M1 unit tests — identity, autoload, gate behaviour.
  *
  * @package UniversalSocialProof
  */
@@ -25,18 +25,18 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertTrue( class_exists( WooCommerceGate::class ) );
 	}
 
-	public function test_version_constant_is_m0(): void {
-		$this->assertSame( '0.0.0', USP_VERSION );
+	public function test_version_constant_is_m1(): void {
+		$this->assertSame( '0.1.0', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.0\.0\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.1\.0\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '0.0.0' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '0.1.0' );", $contents );
 	}
 
 	public function test_composer_package_name(): void {
@@ -56,11 +56,11 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertFalse( Plugin::is_initialized() );
 	}
 
-	public function test_m0_source_has_no_feature_packages(): void {
+	public function test_m2_packages_not_precreated(): void {
 		$src       = dirname( __DIR__, 2 ) . '/src';
-		$forbidden = array( 'Capture', 'Storage', 'Selection', 'Rest', 'Template', 'Frontend', 'Geo', 'Privacy', 'Cleanup', 'Admin' );
+		$forbidden = array( 'Selection', 'Rest', 'Template', 'Frontend', 'Geo', 'Admin' );
 		foreach ( $forbidden as $dir ) {
-			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M0 must not pre-create {$dir}/" );
+			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M1 must not pre-create {$dir}/" );
 		}
 	}
 
@@ -71,10 +71,8 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertStringContainsString( 'declare_compatibility', $main );
 	}
 
-	public function test_main_file_has_no_m1_capture_hooks(): void {
+	public function test_main_file_has_no_m2_rest(): void {
 		$main = (string) file_get_contents( dirname( __DIR__, 2 ) . '/universal-social-proof.php' );
-		$this->assertStringNotContainsString( 'woocommerce_order_status_', $main );
-		$this->assertStringNotContainsString( 'usp_events', $main );
 		$this->assertStringNotContainsString( 'register_rest_route', $main );
 	}
 }
