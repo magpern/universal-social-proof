@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Universal Social Proof
  * Plugin URI: https://github.com/magpern/universal-social-proof
- * Description: Genuine, privacy-conscious WooCommerce purchase social-proof notifications. M0 foundation — functionally inert until later milestones.
- * Version: 0.0.0
+ * Description: Genuine, privacy-conscious WooCommerce purchase social-proof notifications. M1 capture and storage — no storefront notifications yet.
+ * Version: 0.1.0
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Requires Plugins: woocommerce
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'USP_VERSION', '0.0.0' );
+define( 'USP_VERSION', '0.1.0' );
 define( 'USP_PLUGIN_FILE', __FILE__ );
 define( 'USP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -59,9 +59,17 @@ if ( ! is_readable( $usp_autoload ) ) {
 
 require_once $usp_autoload;
 
+register_activation_hook(
+	__FILE__,
+	static function (): void {
+		if ( class_exists( \UniversalSocialProof\Storage\Migrator::class ) ) {
+			\UniversalSocialProof\Storage\Migrator::upgrade_now();
+		}
+	}
+);
+
 /*
- * HPOS compatibility. M0 declares honesty for custom order tables only;
- * no order-access logic is registered yet.
+ * HPOS compatibility declaration.
  */
 add_action(
 	'before_woocommerce_init',
