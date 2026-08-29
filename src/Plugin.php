@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin composition root (M0 foundation).
+ * Plugin composition root (M1 capture + storage).
  *
  * @package UniversalSocialProof
  */
@@ -9,12 +9,17 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof;
 
+use UniversalSocialProof\Capture\LifecycleHooks;
+use UniversalSocialProof\Cleanup\RetentionScheduler;
+use UniversalSocialProof\Privacy\PersonalDataEraser;
+use UniversalSocialProof\Privacy\PersonalDataExporter;
+use UniversalSocialProof\Storage\Migrator;
 use UniversalSocialProof\WooCommerce\WooCommerceGate;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Idempotent bootstrap. M0 registers no social-proof feature hooks.
+ * Idempotent bootstrap for M1 domain wiring.
  */
 final class Plugin {
 
@@ -27,8 +32,6 @@ final class Plugin {
 
 	/**
 	 * Boot the plugin when WooCommerce is available.
-	 *
-	 * M0 registers no social-proof feature hooks.
 	 */
 	public static function init(): void {
 		if ( self::$initialized || ! WooCommerceGate::is_active() ) {
@@ -36,6 +39,14 @@ final class Plugin {
 		}
 
 		self::$initialized = true;
+
+		Migrator::maybe_upgrade_controlled();
+
+		LifecycleHooks::register();
+		RetentionScheduler::register();
+
+		add_filter( 'wp_privacy_personal_data_exporters', array( PersonalDataExporter::class, 'register' ) );
+		PersonalDataEraser::bootstrap();
 	}
 
 	/**

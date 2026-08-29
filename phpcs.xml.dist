@@ -8,6 +8,7 @@
 
 	<exclude-pattern>*/vendor/*</exclude-pattern>
 	<exclude-pattern>*/tests/tmp/*</exclude-pattern>
+	<exclude-pattern>*/tests/wp-tests-config.php</exclude-pattern>
 
 	<arg value="sp"/>
 	<arg name="extensions" value="php"/>

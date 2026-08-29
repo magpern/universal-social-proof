@@ -3,7 +3,7 @@
 Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-proof notifications.
 
 **Architecture status:** [FROZEN](docs/architecture/FROZEN.md) — Product Owner approved.  
-**Implementation status:** M0 foundation (`0.0.0`) — structurally valid and loadable; **functionally inert** as a social-proof product.
+**Implementation status:** M1 capture + storage (`0.1.0`) — genuine WooCommerce purchase events; **no storefront notifications yet**.
 
 | Item | Value |
 |------|-------|
@@ -11,7 +11,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | Slug / text domain | `universal-social-proof` |
 | Namespace | `UniversalSocialProof\` |
 | Composer | `magpern/universal-social-proof` |
-| Current version | `0.0.0` (M0) |
+| Current version | `0.1.0` (M1) |
 | First production-recommended release | **v1.0.0** (M7) |
 
 ## Requirements
@@ -30,6 +30,8 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | [docs/adr/README.md](docs/adr/README.md) | Architectural Decision Records |
 | [docs/milestones/M0-FOUNDATION-PLAN.md](docs/milestones/M0-FOUNDATION-PLAN.md) | M0 implementation plan |
 | [docs/milestones/M0-FOUNDATION-CLOSURE.md](docs/milestones/M0-FOUNDATION-CLOSURE.md) | M0 closure record |
+| [docs/milestones/M1-CAPTURE-STORAGE-PLAN.md](docs/milestones/M1-CAPTURE-STORAGE-PLAN.md) | M1 capture/storage plan |
+| [docs/milestones/M1-CAPTURE-STORAGE-CLOSURE.md](docs/milestones/M1-CAPTURE-STORAGE-CLOSURE.md) | M1 closure record |
 
 ## Local development
 
