@@ -1,0 +1,134 @@
+# M1 — Capture + Storage Closure
+
+**Status:** PASS (local validation complete)  
+**Version:** `0.1.0`  
+**Branch:** `feature/m1-capture-storage`  
+**Baseline `main`:** `5c7baf96bb25778beab0bfd04aa67a48b99107ba`  
+**Plan freeze:** `d47f2b55d44fe253cc623580a9bd2607ddfcc70f`  
+**PR:** _(filled after open)_  
+**Final branch HEAD:** _(this closure commit)_  
+**Tag / release:** **none** (do not tag from feature branch; tag `v0.1.0` only after merge to `main`)  
+**Production:** untouched  
+
+## Commits
+
+| Role | SHA | Subject |
+|------|-----|---------|
+| Plan freeze | `d47f2b55d44fe253cc623580a9bd2607ddfcc70f` | docs: freeze M1 capture and storage plan |
+| Storage | `88a07d37e45f177e90844fa00bc4d80f08f721fd` | feat(storage): add M1 usp_events schema and repository |
+| Capture | `a79031de364df9ce54071338b0d547c69a17f9d3` | feat(capture): capture genuine WooCommerce purchases |
+| Privacy/retention | `4180fb1966a627a2b23cef14464e7ebd4d527481` | feat(privacy): add privacy erasure and retention purge |
+| Tests | `c310220fab63124ad7b2364adc3df196e80812f0` | test: add M1 capture and lifecycle coverage |
+| ADRs/changelog | `1e4272709b24fd9cc8c55dcd08a260140b122620` | docs: accept M1 ADRs and changelog for 0.1.0 |
+| Closure | _(this commit)_ | docs: close M1 capture and storage |
+
+## Verdict summary
+
+M1 delivers a trustworthy internal purchase-event layer: schema, genuine WooCommerce capture, terminal lifecycle, privacy dual-path, and retention. Storefront notifications and M2+ surfaces remain absent.
+
+## Schema and migration
+
+| Item | Result |
+|------|--------|
+| Table | `{prefix}usp_events` |
+| Schema id | `usp_db_version` = `20260829m1` |
+| Quantity | `DECIMAL(18,6)` |
+| Uniques | `(source_order_id, source_item_id)`, `public_id` |
+| Activation | `register_activation_hook` → `Migrator::upgrade_now()` |
+| Runtime | `Migrator::maybe_upgrade_controlled()` on Plugin init + capture path |
+| Idempotent | Yes (lease lock + version option after successful dbDelta) |
+
+## Capture
+
+| Item | Result |
+|------|--------|
+| Seam | `woocommerce_order_status_changed` only when `$to ∈ {processing, completed}` |
+| Authenticity | Genuine WC order lines only; no fake/demo/manual purchase writers |
+| Identity | `wp_generate_uuid4()` with one collision retry |
+| Country | Billing → shipping → null; `[A-Z]{2}` |
+| `occurred_at` | `date_paid` → `date_completed` → `date_created` → **null / skip** |
+| `captured_at` | Insert-time UTC; immutable after insert |
+| Race | Best-effort pre-check + insert + re-fetch order + terminal re-eval |
+
+## Suppression / refunds / deletion
+
+| Path | Reason |
+|------|--------|
+| Cancelled / failed | `cancelled` / `failed` |
+| Cumulative full qty refund | `refund_full` (original quantity unchanged) |
+| Partial refund | Remains `active` |
+| Line remove | `line_removed` via `woocommerce_before_delete_order_item` |
+| Order trash/delete | `order_deleted` |
+| Reactivation | Forbidden |
+
+## Privacy
+
+| Path | Behavior |
+|------|----------|
+| Exporter | Occurrence time, country, quantity, public UUID — no source IDs |
+| Eraser | Paginated `wc_get_orders` by email/user → hard delete (priority 5) |
+| Pre-anonymize | `woocommerce_privacy_before_remove_order_personal_data` |
+| Limitation | Prospective only; already-anonymized history is fail-closed (ADR-0007) |
+| PII in USP | None |
+
+## Retention
+
+| Item | Result |
+|------|--------|
+| Default / clamp | 60 days; 7–90 |
+| Age field | `occurred_at` only |
+| Scheduler | WooCommerce Action Scheduler daily; batched (~100) |
+| Scope | Active and suppressed equally |
+
+## HPOS
+
+Compatibility declaration retained; capture/privacy use public WC order APIs only. Integration suite asserts `custom_order_tables` compatibility.
+
+## Tests and local validation
+
+Host has no system PHP; gates ran in Docker (`ugeo-php8.3-mysqli` + MariaDB 11.4).
+
+| Gate | Result |
+|------|--------|
+| `php vendor/bin/phpcs` | PASS |
+| `scripts/ci/check.sh` | PASS |
+| Unit | PASS — 13 tests, 38 assertions |
+| Integration | PASS — 19 tests, 2433 assertions |
+
+## DEV verification
+
+**Not performed on DEV WordPress.** USP is still not bind-mounted in `apps/wordpress/compose.yml`. Automated WooCommerce 11.0.1 integration coverage is the M1 evidence substitute. Adding a VPS compose mount is out of milestone scope.
+
+## CI
+
+GitHub Actions on the M1 PR: observed after push (see PR / final report). Local gates equivalent to workflow jobs are green.
+
+## Architecture / ADR updates
+
+- ADR-0004 **Accepted** with fail-closed resolver + WC 11.0.1 evidence
+- ADR-0006 quantity `DECIMAL(18,6)` note
+- ADR-0007 **Accepted** prospective dual-path + retrospective limitation
+- FROZEN.md not rewritten for milestone detail
+- Plan: `docs/milestones/M1-CAPTURE-STORAGE-PLAN.md`
+
+## Explicit M2+ non-delivery
+
+Confirmed absent: notification REST, SelectionEngine, toaster JS/CSS, templates/tokens, UGC, visitor-country weighting, settings/diagnostics UI, fake/custom purchase events, region/city columns.
+
+## Known limitations / M2 notes
+
+1. WC default `woocommerce_stock_amount` → `intval`; fractional qty stores correctly when float stock amounts are enabled (tested with `floatval` filter).
+2. `date_created` is nearly always present on WC orders; fail-closed path is implemented; integration soft-documents when WC always supplies created.
+3. Retrospective privacy after prior WC anonymization without USP erasure remains unrecoverable by design.
+4. No CLI historical backfill in M1 (`CaptureService::capture_order` is reusable later).
+
+## Next steps (outside this execution)
+
+1. Product Owner / architecture review of PR
+2. Merge to `main`
+3. Tag `v0.1.0` on approved **main** commit only
+4. Then plan M2 — not started here
+
+## Working tree
+
+Expected clean after closure commit on `feature/m1-capture-storage`.

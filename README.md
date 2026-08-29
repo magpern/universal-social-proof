@@ -31,6 +31,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | [docs/milestones/M0-FOUNDATION-PLAN.md](docs/milestones/M0-FOUNDATION-PLAN.md) | M0 implementation plan |
 | [docs/milestones/M0-FOUNDATION-CLOSURE.md](docs/milestones/M0-FOUNDATION-CLOSURE.md) | M0 closure record |
 | [docs/milestones/M1-CAPTURE-STORAGE-PLAN.md](docs/milestones/M1-CAPTURE-STORAGE-PLAN.md) | M1 capture/storage plan |
+| [docs/milestones/M1-CAPTURE-STORAGE-CLOSURE.md](docs/milestones/M1-CAPTURE-STORAGE-CLOSURE.md) | M1 closure record |
 
 ## Local development
 
