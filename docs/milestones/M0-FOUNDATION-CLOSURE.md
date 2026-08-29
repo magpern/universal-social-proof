@@ -1,9 +1,11 @@
 # M0 — Foundation Closure
 
-**Status:** PASS (local validation complete; CI observed on PR)  
+**Status:** PASS (local validation complete; GitHub Actions blocked by account billing/spending limit — not by M0 code)  
 **Version:** `0.0.0`  
 **Branch:** `feature/m0-foundation`  
 **Baseline `main`:** `8535e2532b478acce60c3020226367a03df29e8b`
+**PR:** https://github.com/magpern/universal-social-proof/pull/1  
+**Final branch HEAD:** `ad8ac8c95899476d4048d2c8aa4fdefc9fc51560`
 
 ## Commits
 
@@ -60,7 +62,12 @@ Host has no system PHP; validation ran in Docker (`ugeo-php8.3-mysqli`, `compose
 | `composer test:unit` | PASS (9 tests) |
 | `composer test:integration` | PASS (6 tests) after `tests/bin/install-wp.sh` |
 
-## DEV verification
+## CI status
+
+Workflow `.github/workflows/ci.yml` is present and triggered on PR #1.  
+GitHub did **not** start runners: *“The job was not started because recent account payments have failed or your spending limit needs to be increased.”*  
+
+Locally equivalent gates are green (see Validation results). Re-run Actions after billing is restored.
 
 **Not performed on DEV WordPress.** `apps/wordpress/compose.yml` does not bind-mount `/opt/biopentra/dev/universal-social-proof`. Adding that mount would be a VPS compose change outside this repository milestone; left for operators. Integration suite covers plugin load + HPOS under WP/WC 11.0.1.
 
