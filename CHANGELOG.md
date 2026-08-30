@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [0.2.0] - M2 selection engine and public notifications API
+
+### Added
+
+- Bounded candidate reader (`CandidateQuery` / `CandidateReader`): indexed recent window, LIMIT 80 global / 20 PDP preferred, PHP shuffle (no `ORDER BY RAND()`).
+- `PublicProductResolver` with hard `wc_get_product()` budget of 20 and request-local memoization.
+- `SelectionEngine` with separate preferred/global pools, PDP preferred-search cap of 5, and frozen variation fallback semantics.
+- Anonymous `GET /wp-json/universal-social-proof/v1/notifications` (`Cache-Control: no-store`).
+- Public DTO allowlist: `public_id`, `product_url`, `thumbnail_url`, `occurred_at` (UTC ISO-8601 with `Z`). **No `message` in M2** (M4 adds it additively; ADR-0011 amendment).
+
+### Notes
+
+- No schema or `usp_db_version` change (`20260829m1`).
+- No storefront toaster, templates, UGC weighting, or admin UI (M3+).
+- Tag `v0.2.0` only after merge to `main` (not from the feature branch).
+
 ## [0.1.0] - M1 genuine capture and storage
 
 ### Added

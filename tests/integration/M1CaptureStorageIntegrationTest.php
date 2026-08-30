@@ -314,10 +314,19 @@ final class M1CaptureStorageIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( array(), EventRepository::find_by_order( (int) $order->get_id() ) );
 	}
 
-	public function test_no_m2_rest_routes(): void {
+	public function test_m1_does_not_register_anonymous_writes(): void {
 		$routes = rest_get_server()->get_routes();
-		foreach ( array_keys( $routes ) as $route ) {
-			$this->assertStringNotContainsString( 'universal-social-proof', (string) $route );
+		$this->assertArrayHasKey( '/universal-social-proof/v1/notifications', $routes );
+		$handlers = $routes['/universal-social-proof/v1/notifications'];
+		foreach ( $handlers as $handler ) {
+			$methods = isset( $handler['methods'] ) ? $handler['methods'] : array();
+			if ( is_string( $methods ) ) {
+				$methods = array( $methods => true );
+			}
+			$this->assertArrayNotHasKey( 'POST', $methods );
+			$this->assertArrayNotHasKey( 'PUT', $methods );
+			$this->assertArrayNotHasKey( 'PATCH', $methods );
+			$this->assertArrayNotHasKey( 'DELETE', $methods );
 		}
 	}
 

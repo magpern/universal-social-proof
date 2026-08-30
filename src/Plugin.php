@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin composition root (M1 capture + storage).
+ * Plugin composition root (M1 capture + M2 selection/REST).
  *
  * @package UniversalSocialProof
  */
@@ -13,13 +13,14 @@ use UniversalSocialProof\Capture\LifecycleHooks;
 use UniversalSocialProof\Cleanup\RetentionScheduler;
 use UniversalSocialProof\Privacy\PersonalDataEraser;
 use UniversalSocialProof\Privacy\PersonalDataExporter;
+use UniversalSocialProof\Rest\NotificationsController;
 use UniversalSocialProof\Storage\Migrator;
 use UniversalSocialProof\WooCommerce\WooCommerceGate;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Idempotent bootstrap for M1 domain wiring.
+ * Idempotent bootstrap for M1 capture and M2 selection/REST.
  */
 final class Plugin {
 
@@ -44,6 +45,7 @@ final class Plugin {
 
 		LifecycleHooks::register();
 		RetentionScheduler::register();
+		NotificationsController::register();
 
 		add_filter( 'wp_privacy_personal_data_exporters', array( PersonalDataExporter::class, 'register' ) );
 		PersonalDataEraser::bootstrap();
