@@ -19,6 +19,7 @@
 | SHA table | `2da0d15439d6e2d7e8a83d8ac373bf2201954c5a` | docs(m2): record M2 implementation commit SHAs |
 | Finding A fix | `fcabd6cefd739867417cfa307797277a8518525c` | fix(selection): enforce hard PDP resolution cap |
 | Finding B fix + tests | `944cd87f8c77db53fec1da558b42cd9ad37a8e64` | fix(rest): scope no-store to exact notifications route |
+| Remediation docs | `da4091d40e1063553724840259774afbf8469eb9` | docs(m2): record PR review remediation |
 
 Starting `origin/main`: `1587032c271825fc47e1a230896edff03f0705b5`  
 Branch: `feature/m2-selection-rest`  
