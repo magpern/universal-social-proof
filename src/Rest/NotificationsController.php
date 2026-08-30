@@ -143,7 +143,7 @@ final class NotificationsController {
 	}
 
 	/**
-	 * Scope Cache-Control: no-store to this namespace/route only (covers 400/405).
+	 * Scope Cache-Control: no-store to the exact notifications route (covers 400/405).
 	 *
 	 * @param mixed           $result  Dispatch result.
 	 * @param WP_REST_Server  $server  Server.
@@ -420,17 +420,15 @@ final class NotificationsController {
 	}
 
 	/**
-	 * Whether this request is the USP notifications route.
+	 * Whether this request is the exact USP notifications route.
+	 *
+	 * Matches `/universal-social-proof/v1/notifications` only. Prefix
+	 * lookalikes such as `notifications-other` are not this endpoint.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 */
 	private static function is_notifications_route( WP_REST_Request $request ): bool {
-		$route    = (string) $request->get_route();
-		$expected = '/' . self::NAMESPACE . self::ROUTE;
-		if ( $expected === $route ) {
-			return true;
-		}
-		return false !== strpos( $route, '/' . self::NAMESPACE . self::ROUTE );
+		return '/' . self::NAMESPACE . self::ROUTE === (string) $request->get_route();
 	}
 
 	/**

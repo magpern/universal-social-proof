@@ -441,6 +441,79 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 			}
 		}
 		$this->assertLessThanOrEqual( ProductResolutionBudget::PDP_SEARCH_CAP, $variation_loads );
+		$this->assertSame( ProductResolutionBudget::PDP_SEARCH_CAP, $variation_loads );
+	}
+
+	public function test_pdp_fifth_resolution_does_not_initiate_uncached_parent(): void {
+		$parent      = $this->create_variable_product();
+		$request_var = $this->create_variation( $parent );
+		for ( $i = 0; $i < 4; $i++ ) {
+			$variation = $this->create_variation( $parent );
+			$variation->set_status( 'private' );
+			$variation->save();
+			$this->insert_fixture_event( $parent, gmdate( 'Y-m-d H:i:s', time() - $i ), (int) $variation->get_id() );
+		}
+		$ghost_vid = 910000001;
+		$this->insert_fixture_event( $parent, gmdate( 'Y-m-d H:i:s', time() - 10 ), $ghost_vid );
+		$global = $this->create_simple_product( 'G' );
+		$this->insert_fixture_event( $global, gmdate( 'Y-m-d H:i:s' ) );
+
+		$loads  = array();
+		$loader = static function ( int $id ) use ( &$loads ) {
+			$loads[] = $id;
+			return wc_get_product( $id );
+		};
+		$engine = NotificationsController::make_engine( array( $this, 'identity_shuffle' ), $loader );
+		$got    = $engine->select(
+			new SelectionRequest( 1, (int) $request_var->get_id(), SelectionRequest::CONTEXT_PRODUCT, array() )
+		);
+
+		$parent_id = (int) $parent->get_id();
+		$global_id = (int) $global->get_id();
+		$this->assertContains( (int) $request_var->get_id(), $loads );
+		$this->assertContains( $ghost_vid, $loads );
+		$this->assertNotContains( $parent_id, $loads );
+		$this->assertSame( 1, $this->count_load_ids( $loads, $ghost_vid ) );
+		$this->assertLessThanOrEqual( ProductResolutionBudget::MAX, count( $loads ) );
+		$this->assertSame( ProductResolutionBudget::PDP_SEARCH_CAP, $this->count_preferred_uncached( $loads, array( (int) $request_var->get_id(), $parent_id, $global_id ) ) );
+		$this->assertCount( 1, $got );
+		$this->assertSame( $global_id, $got[0]->product->id );
+	}
+
+	public function test_pdp_fifth_resolution_may_use_memoized_parent(): void {
+		$parent    = $this->create_variable_product();
+		$parent_id = (int) $parent->get_id();
+		for ( $i = 0; $i < 4; $i++ ) {
+			$variation = $this->create_variation( $parent );
+			$variation->set_status( 'private' );
+			$variation->save();
+			$this->insert_fixture_event( $parent, gmdate( 'Y-m-d H:i:s', time() - $i ), (int) $variation->get_id() );
+		}
+		$ghost_vid = 910000002;
+		$ghost_row = $this->insert_fixture_event( $parent, gmdate( 'Y-m-d H:i:s', time() - 10 ), $ghost_vid );
+		$global    = $this->create_simple_product( 'G' );
+		$this->insert_fixture_event( $global, gmdate( 'Y-m-d H:i:s' ) );
+
+		$loads  = array();
+		$loader = static function ( int $id ) use ( &$loads ) {
+			$loads[] = $id;
+			return wc_get_product( $id );
+		};
+		$engine = NotificationsController::make_engine( array( $this, 'identity_shuffle' ), $loader );
+		$got    = $engine->select(
+			new SelectionRequest( 2, $parent_id, SelectionRequest::CONTEXT_PRODUCT, array() )
+		);
+
+		$global_id = (int) $global->get_id();
+		$this->assertContains( $ghost_vid, $loads );
+		$this->assertSame( 1, $this->count_load_ids( $loads, $parent_id ) );
+		$this->assertSame( 1, $this->count_load_ids( $loads, $ghost_vid ) );
+		$this->assertLessThanOrEqual( ProductResolutionBudget::MAX, count( $loads ) );
+		$this->assertSame( ProductResolutionBudget::PDP_SEARCH_CAP, $this->count_preferred_uncached( $loads, array( $parent_id, $global_id ) ) );
+		$this->assertCount( 2, $got );
+		$this->assertSame( $ghost_row['public_id'], $got[0]->public_id );
+		$this->assertSame( $parent_id, $got[0]->product->id );
+		$this->assertSame( $global_id, $got[1]->product->id );
 	}
 
 	public function test_capture_integration_then_rest_returns_public_dto(): void {
@@ -551,6 +624,36 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		$other = $this->dispatch_request( new WP_REST_Request( 'GET', '/wp/v2/types' ) );
 		$cc    = $this->cache_control( $other );
 		$this->assertNotSame( 'no-store', $cc );
+	}
+
+	public function test_no_store_is_scoped_to_exact_notifications_route(): void {
+		$server = rest_get_server();
+
+		$exact_response = new WP_REST_Response( array(), 200 );
+		$exact_response->header( 'Cache-Control', 'public, max-age=60', true );
+		$exact_request = new WP_REST_Request( 'GET', '/universal-social-proof/v1/notifications' );
+		$exact_out     = NotificationsController::filter_post_dispatch( $exact_response, $server, $exact_request );
+		$this->assertInstanceOf( WP_REST_Response::class, $exact_out );
+		$this->assertSame( 'no-store', $this->cache_control( $exact_out ) );
+
+		$lookalike_response = new WP_REST_Response( array(), 200 );
+		$lookalike_response->header( 'Cache-Control', 'public, max-age=60', true );
+		$lookalike_request = new WP_REST_Request( 'GET', '/universal-social-proof/v1/notifications-other' );
+		$lookalike_out     = NotificationsController::filter_post_dispatch( $lookalike_response, $server, $lookalike_request );
+		$this->assertInstanceOf( WP_REST_Response::class, $lookalike_out );
+		$this->assertSame( 'public, max-age=60', $this->cache_control( $lookalike_out ) );
+
+		$unrelated_response = new WP_REST_Response( array(), 200 );
+		$unrelated_response->header( 'Cache-Control', 'public, max-age=60', true );
+		$unrelated_request = new WP_REST_Request( 'GET', '/some-other/v1/notifications' );
+		$unrelated_out     = NotificationsController::filter_post_dispatch( $unrelated_response, $server, $unrelated_request );
+		$this->assertInstanceOf( WP_REST_Response::class, $unrelated_out );
+		$this->assertSame( 'public, max-age=60', $this->cache_control( $unrelated_out ) );
+
+		$lookalike_http = $this->dispatch_request( new WP_REST_Request( 'GET', '/universal-social-proof/v1/notifications-other' ) );
+		$this->assertNotSame( 'no-store', $this->cache_control( $lookalike_http ) );
+		$unrelated_http = $this->dispatch_request( new WP_REST_Request( 'GET', '/some-other/v1/notifications' ) );
+		$this->assertNotSame( 'no-store', $this->cache_control( $unrelated_http ) );
 	}
 
 	public function test_missing_table_degrades_to_empty_array(): void {
@@ -697,6 +800,29 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		$variation->set_attributes( array( 'size' => 'opt' . $this->variation_seq ) );
 		$variation->save();
 		return $variation;
+	}
+
+	/**
+	 * @param array $loads Loaded IDs in call order.
+	 */
+	private function count_load_ids( array $loads, int $id ): int {
+		return count( array_filter( $loads, static fn( $loaded ) => $id === $loaded ) );
+	}
+
+	/**
+	 * Uncached preferred-search loads: everything except request/parent/global fills.
+	 *
+	 * @param array $loads       Loaded IDs in call order.
+	 * @param array $exclude_ids Request, parent, and leftover-fill IDs.
+	 */
+	private function count_preferred_uncached( array $loads, array $exclude_ids ): int {
+		$count = 0;
+		foreach ( $loads as $id ) {
+			if ( ! in_array( $id, $exclude_ids, true ) ) {
+				++$count;
+			}
+		}
+		return $count;
 	}
 
 	private function truncate_events(): void {
