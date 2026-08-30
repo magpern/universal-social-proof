@@ -13,8 +13,8 @@ House format (Nygard): Status / Context / Decision / Consequences / Related.
 | 0007 | HPOS-safe personal-data erasure | **Accepted** (M1 dual-path + retrospective limitation) | [0007-personal-data-erasure.md](0007-personal-data-erasure.md) |
 | 0008 | Cache-safe REST and input boundaries | Accepted (freeze) | [0008-cache-safe-rest-input-boundaries.md](0008-cache-safe-rest-input-boundaries.md) |
 | 0009 | UUIDv4 public identifiers | Accepted (freeze) | [0009-uuidv4-public-identifiers.md](0009-uuidv4-public-identifiers.md) |
-| 0010 | Selection pipeline and product-resolution budget | Accepted (freeze) | [0010-selection-product-resolution-budget.md](0010-selection-product-resolution-budget.md) |
-| 0011 | Server-side template model | Accepted (freeze) | [0011-server-side-templates.md](0011-server-side-templates.md) |
+| 0010 | Selection pipeline and product-resolution budget | Accepted (freeze) + **M2 amendment 2026-08-30** | [0010-selection-product-resolution-budget.md](0010-selection-product-resolution-budget.md) |
+| 0011 | Server-side template model | Accepted (freeze) + **M2 `message` clarification 2026-08-30** | [0011-server-side-templates.md](0011-server-side-templates.md) |
 | 0012 | Admin capability and menu placement | Accepted (freeze) | [0012-admin-capability-menu.md](0012-admin-capability-menu.md) |
 | 0013 | Version and release policy | Accepted (freeze) | [0013-version-release-policy.md](0013-version-release-policy.md) |
 | 0014 | Extensibility boundary | Accepted (freeze) | [0014-extensibility-boundary.md](0014-extensibility-boundary.md) |

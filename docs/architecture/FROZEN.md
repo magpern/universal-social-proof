@@ -316,6 +316,8 @@ Vanilla JS for presentation and rotation. DTO: `public_id` (UUIDv4), server-rend
 
 Templates render **server-side**; the front end must not re-implement template token semantics.
 
+**M2 note (2026-08-30 PO-approved clarification):** the eventual DTO includes `message`, but **M2 does not**. M2 ships the base allowlist (`public_id`, `product_url`, `thumbnail_url`, `occurred_at`) only. M4 additively introduces server-rendered `message`. See ADR-0011 amendment. Do not treat this historical §11 paragraph as requiring `message` in M2.
+
 ---
 
 ## 12. Admin
@@ -365,7 +367,7 @@ Freeze tags: `mN-…-freeze`. Release tags: `v0.N.0` for M1–M6; **`v1.0.0`** f
 
 **M1 out:** region/city columns, REST selection UI, FE, UGC weighting, reactivation.  
 **M1 gate:** `occurred_at` resolver ADR frozen from WC API characterization + payment-path tests before capture code is considered done.  
-**M2:** product-resolution budget is an acceptance criterion.  
+**M2:** product-resolution budget is an acceptance criterion. **M2 DTO omits `message`** (PO-approved 2026-08-30; M4 adds it additively). See ADR-0011 amendment.  
 **M4:** token grammar includes `{{product}}`, `{{location}}`/`{{country}}`, `{{time_ago}}`, **`{{quantity}}`** (original qty); default template omits quantity. Checkout **excluded** by default; **PDP prefer current product** (PO accepted).  
 **M5 out:** region/city; client-supplied geo.  
 **M7:** ships **`1.0.0`** (not `0.7.0`).
