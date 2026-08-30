@@ -106,23 +106,26 @@ final class SelectionEngine {
 		$selected_ids = array();
 		$attempted    = array();
 
-		$pdp_uncached = 0;
 		if ( null !== $preferred_parent ) {
-			foreach ( $preferred as $candidate ) {
-				if ( count( $selected ) >= 1 ) {
-					break;
+			$this->resolver->budget()->begin_additional_cap( ProductResolutionBudget::PDP_SEARCH_CAP );
+			try {
+				foreach ( $preferred as $candidate ) {
+					if ( count( $selected ) >= 1 ) {
+						break;
+					}
+					$first = $this->candidate_first_id( $candidate );
+					if ( ! $this->resolver->budget()->can_consume() && ! $this->resolver->is_cached( $first ) ) {
+						break;
+					}
+					$event                              = $this->resolve_candidate( $candidate );
+					$attempted[ $candidate->public_id ] = true;
+					if ( $event instanceof SelectedEvent ) {
+						$selected[]                            = $event;
+						$selected_ids[ $candidate->public_id ] = true;
+					}
 				}
-				if ( $this->pdp_search_blocked( $candidate, $pdp_uncached ) ) {
-					break;
-				}
-				$used_before                        = $this->resolver->budget()->used();
-				$event                              = $this->resolve_candidate( $candidate );
-				$pdp_uncached                      += $this->resolver->budget()->used() - $used_before;
-				$attempted[ $candidate->public_id ] = true;
-				if ( $event instanceof SelectedEvent ) {
-					$selected[]                            = $event;
-					$selected_ids[ $candidate->public_id ] = true;
-				}
+			} finally {
+				$this->resolver->budget()->end_additional_cap();
 			}
 		}
 
@@ -158,29 +161,14 @@ final class SelectionEngine {
 	}
 
 	/**
-	 * Stop preferred search before an uncached load that would exceed the PDP search cap.
+	 * First product ID this candidate would resolve (variation, else parent).
 	 *
-	 * @param Candidate $candidate    Candidate.
-	 * @param int       $pdp_uncached Uncached preferred loads so far.
+	 * @param Candidate $candidate Candidate.
 	 */
-	private function pdp_search_blocked( Candidate $candidate, int $pdp_uncached ): bool {
-		if ( $pdp_uncached < ProductResolutionBudget::PDP_SEARCH_CAP ) {
-			return false;
-		}
-		$first = ( null !== $candidate->variation_id && $candidate->variation_id > 0 )
+	private function candidate_first_id( Candidate $candidate ): int {
+		return ( null !== $candidate->variation_id && $candidate->variation_id > 0 )
 			? $candidate->variation_id
 			: $candidate->product_id;
-		if ( ! $this->resolver->is_cached( $first ) ) {
-			return true;
-		}
-		$loaded = $this->resolver->get_product( $first );
-		if ( null !== $candidate->variation_id && $candidate->variation_id > 0 ) {
-			if ( $loaded instanceof WC_Product && $loaded->is_type( 'variation' ) ) {
-				return false;
-			}
-			return ! $this->resolver->is_cached( $candidate->product_id );
-		}
-		return false;
 	}
 
 	/**

@@ -102,6 +102,81 @@ final class M2SelectionUnitTest extends TestCase {
 		$this->assertSame( ProductResolutionBudget::MAX, $calls );
 	}
 
+	public function test_pdp_additional_cap_blocks_sixth_uncached_resolution(): void {
+		$budget = new ProductResolutionBudget();
+		$budget->begin_additional_cap( ProductResolutionBudget::PDP_SEARCH_CAP );
+		for ( $i = 0; $i < ProductResolutionBudget::PDP_SEARCH_CAP; $i++ ) {
+			$this->assertTrue( $budget->try_consume() );
+		}
+		$this->assertFalse( $budget->try_consume() );
+		$this->assertSame( ProductResolutionBudget::PDP_SEARCH_CAP, $budget->used() );
+		$this->assertSame( 0, $budget->remaining() );
+		$budget->end_additional_cap();
+		$this->assertTrue( $budget->can_consume() );
+		$this->assertTrue( $budget->try_consume() );
+		$this->assertSame( 6, $budget->used() );
+	}
+
+	public function test_pdp_additional_cap_does_not_raise_global_max(): void {
+		$budget = new ProductResolutionBudget();
+		for ( $i = 0; $i < 18; $i++ ) {
+			$this->assertTrue( $budget->try_consume() );
+		}
+		$budget->begin_additional_cap( ProductResolutionBudget::PDP_SEARCH_CAP );
+		$this->assertSame( 2, $budget->remaining() );
+		$this->assertTrue( $budget->try_consume() );
+		$this->assertTrue( $budget->try_consume() );
+		$this->assertFalse( $budget->try_consume() );
+		$this->assertSame( ProductResolutionBudget::MAX, $budget->used() );
+		$budget->end_additional_cap();
+		$this->assertFalse( $budget->can_consume() );
+	}
+
+	public function test_pdp_cap_blocks_uncached_parent_after_fifth_resolution(): void {
+		$budget   = new ProductResolutionBudget();
+		$calls    = array();
+		$resolver = new PublicProductResolver(
+			$budget,
+			static function ( int $id ) use ( &$calls ) {
+				$calls[] = $id;
+				return false;
+			}
+		);
+		$budget->begin_additional_cap( ProductResolutionBudget::PDP_SEARCH_CAP );
+		for ( $i = 1; $i <= 4; $i++ ) {
+			$resolver->get_product( $i );
+		}
+		$this->assertSame( 4, $budget->used() );
+		$this->assertNull( $resolver->resolve_for_event( 100, 999 ) );
+		$this->assertSame( 5, $budget->used() );
+		$this->assertSame( array( 1, 2, 3, 4, 999 ), $calls );
+		$this->assertNotContains( 100, $calls );
+		$budget->end_additional_cap();
+	}
+
+	public function test_pdp_cap_allows_memoized_parent_after_fifth_resolution(): void {
+		$budget   = new ProductResolutionBudget();
+		$calls    = array();
+		$resolver = new PublicProductResolver(
+			$budget,
+			static function ( int $id ) use ( &$calls ) {
+				$calls[] = $id;
+				return false;
+			}
+		);
+		$resolver->get_product( 100 );
+		$budget->begin_additional_cap( ProductResolutionBudget::PDP_SEARCH_CAP );
+		for ( $i = 1; $i <= 4; $i++ ) {
+			$resolver->get_product( $i );
+		}
+		$this->assertSame( 5, $budget->used() );
+		$this->assertNull( $resolver->resolve_for_event( 100, 999 ) );
+		$this->assertSame( 6, $budget->used() );
+		$this->assertSame( array( 100, 1, 2, 3, 4, 999 ), $calls );
+		$this->assertSame( 1, count( array_filter( $calls, static fn( $id ) => 100 === $id ) ) );
+		$budget->end_additional_cap();
+	}
+
 	public function test_memoized_repeat_id_does_not_consume_budget(): void {
 		$budget   = new ProductResolutionBudget();
 		$calls    = 0;
