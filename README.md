@@ -11,7 +11,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | Slug / text domain | `universal-social-proof` |
 | Namespace | `UniversalSocialProof\` |
 | Composer | `magpern/universal-social-proof` |
-| Current version | `0.2.0` (M2; tag `v0.2.0` after merge) |
+| Current version | `0.2.0` (M2; tag `v0.2.0`) |
 | First production-recommended release | **v1.0.0** (M7) |
 
 ## Requirements
@@ -33,7 +33,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | [docs/milestones/M1-CAPTURE-STORAGE-PLAN.md](docs/milestones/M1-CAPTURE-STORAGE-PLAN.md) | M1 capture/storage plan |
 | [docs/milestones/M1-CAPTURE-STORAGE-CLOSURE.md](docs/milestones/M1-CAPTURE-STORAGE-CLOSURE.md) | M1 closure record |
 | [docs/milestones/M2-SELECTION-REST-PLAN.md](docs/milestones/M2-SELECTION-REST-PLAN.md) | M2 selection + REST plan (frozen) |
-| [docs/milestones/M2-SELECTION-REST-CLOSURE.md](docs/milestones/M2-SELECTION-REST-CLOSURE.md) | M2 implementation complete; PR open, not yet released |
+| [docs/milestones/M2-SELECTION-REST-CLOSURE.md](docs/milestones/M2-SELECTION-REST-CLOSURE.md) | M2 closure record (`v0.2.0`) |
 
 ## Local development
 

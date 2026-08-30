@@ -1,8 +1,14 @@
 # M2 — Selection + REST Closure
 
-**Status:** Implementation complete; **PR open for PO review** (not merged, not tagged)  
-**Verdict:** PASS (local validation)  
-**Version:** `0.2.0` (header / `USP_VERSION` / CHANGELOG; **tag `v0.2.0` not created**)  
+**Status:** CLOSED  
+**Verdict:** PASS  
+**Version:** `0.2.0`  
+**Release tag:** `v0.2.0` → `fe5fea7cc49e86eee62c3e0b3e144f84f6c59306`  
+**PR:** https://github.com/magpern/universal-social-proof/pull/3 (merged)  
+**Merge commit (`main`):** `fe5fea7cc49e86eee62c3e0b3e144f84f6c59306`  
+**Baseline `main` (pre-M2):** `1587032c271825fc47e1a230896edff03f0705b5`  
+**Plan freeze:** `2bcb180ed8016c9f412831df2b1724ed45921d15`  
+**Feature branch (pre-merge tip):** `f1a01d4d5f1f8eefa996adf8f383566d458f2428`  
 **Production:** untouched  
 
 ## Commits
@@ -20,9 +26,12 @@
 | Finding A fix | `fcabd6cefd739867417cfa307797277a8518525c` | fix(selection): enforce hard PDP resolution cap |
 | Finding B fix + tests | `944cd87f8c77db53fec1da558b42cd9ad37a8e64` | fix(rest): scope no-store to exact notifications route |
 | Remediation docs | `da4091d40e1063553724840259774afbf8469eb9` | docs(m2): record PR review remediation |
+| Remediation SHA table | `f1a01d4d5f1f8eefa996adf8f383566d458f2428` | docs(m2): record remediation documentation SHA |
+| Merge to main | `fe5fea7cc49e86eee62c3e0b3e144f84f6c59306` | Merge pull request #3 from magpern/feature/m2-selection-rest |
+| Tag | `v0.2.0` | Annotated tag on merge commit (`1c6dab2079ad13f749eeb6b2dfb4bb289706124d`) |
 
-Starting `origin/main`: `1587032c271825fc47e1a230896edff03f0705b5`  
-Branch: `feature/m2-selection-rest`  
+Starting `origin/main` (pre-M2): `1587032c271825fc47e1a230896edff03f0705b5`  
+Branch: `feature/m2-selection-rest` (deleted after merge)  
 Pre-remediation PR head: `2da0d15439d6e2d7e8a83d8ac373bf2201954c5a`
 
 ## PR #3 review remediation (2026-08-31)
@@ -102,12 +111,26 @@ Host has no system PHP; gates ran in Docker (`ugeo-php8.3-mysqli` + MariaDB 11.4
 | Unit | PASS — 27 tests, 129 assertions |
 | Integration | PASS — 45 tests, 1678 assertions (PHP 8.3 / WC 11.0.1) |
 
-## Release status
+## CI
 
-- **PR:** open, unmerged  
-- **Tag:** none (`v0.2.0` is created only after approved merge to `main`)  
-- **GitHub release:** none  
-- **M3:** not started  
-- **Production:** untouched  
+| Run | SHA | Result |
+|------|-----|--------|
+| PR #3 remediation | `f1a01d4d5f1f8eefa996adf8f383566d458f2428` | SUCCESS — [33339029507](https://github.com/magpern/universal-social-proof/actions/runs/33339029507) |
+| Post-merge `main` | `fe5fea7cc49e86eee62c3e0b3e144f84f6c59306` | SUCCESS — [33340464462](https://github.com/magpern/universal-social-proof/actions/runs/33340464462) |
 
-Final release closure happens after approved merge/tag.
+Jobs: Lint/PHPCS, unit PHP 8.1/8.3/8.4, integration PHP 8.3 / WC 11.0.1.
+
+## Release closure (post-merge)
+
+1. PR #3 merged to `main` as `fe5fea7cc49e86eee62c3e0b3e144f84f6c59306`
+2. Post-merge CI on that commit: SUCCESS
+3. Annotated tag `v0.2.0` created on that merge commit and pushed
+4. Tag verified: `git rev-parse v0.2.0^{}` = merge SHA; tag object `1c6dab2079ad13f749eeb6b2dfb4bb289706124d`
+5. Header / `USP_VERSION` / CHANGELOG on the tagged commit all say `0.2.0`
+6. M2 recorded **CLOSED**
+
+Next milestone: **M3** (`0.3.0`) — not started in this release step.
+
+## Working tree
+
+Clean on `main` after this release-record commit (except as noted at commit time).
