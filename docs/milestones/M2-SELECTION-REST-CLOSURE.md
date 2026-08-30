@@ -10,12 +10,12 @@
 | Role | SHA | Subject |
 |------|-----|---------|
 | Plan freeze | `2bcb180ed8016c9f412831df2b1724ed45921d15` | docs(m2): freeze M2 selection and REST plan |
-| Candidate reader | `017ccc2` | feat(selection): add bounded candidate reader |
-| Product resolver | `72d86ce` | feat(product): add public product resolver and budget |
-| Selection engine | `7214120` | feat(selection): add selection engine and PDP preference |
-| REST | `792f19d` | feat(rest): add anonymous notifications read API |
-| Tests / CI | `d24cb2d` | test(m2): add selection and REST coverage |
-| Docs / version | *(this commit)* | docs(m2): record M2 ADRs, version 0.2.0, and closure |
+| Candidate reader | `017ccc2b0cb6169b8489a7ca09e623593508f03a` | feat(selection): add bounded candidate reader |
+| Product resolver | `72d86cec0d132f10eea90bdd6edf77bd0caf63fa` | feat(product): add public product resolver and budget |
+| Selection engine | `72141206ba7b7d128d05c3fa3840039c99e7cbce` | feat(selection): add selection engine and PDP preference |
+| REST | `792f19d1bd435a62e5c59c1d1a5827a30b2bc87c` | feat(rest): add anonymous notifications read API |
+| Tests / CI | `d24cb2d5546a0dd94fc1105e2ba64df79f00a67b` | test(m2): add selection and REST coverage |
+| Docs / version | `84cb7dbdcd37bd4e65698c5bf066fe25aad53e9d` | docs(m2): record M2 ADRs, version 0.2.0, and closure |
 
 Starting `origin/main`: `1587032c271825fc47e1a230896edff03f0705b5`  
 Branch: `feature/m2-selection-rest`
