@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# M1 CI checks — lint, structure, and M2+ exclusion guards.
+# M2 CI checks — lint, structure, and M3+ exclusion guards.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -39,29 +39,35 @@ test -f universal-social-proof.php || fail "missing plugin bootstrap"
 test -f src/Plugin.php || fail "missing src/Plugin.php"
 test -f src/Storage/Schema.php || fail "missing Schema"
 test -f src/Capture/CaptureService.php || fail "missing CaptureService"
+test -d src/Selection || fail "missing src/Selection"
+test -d src/Product || fail "missing src/Product"
+test -d src/Rest || fail "missing src/Rest"
+test -f src/Selection/SelectionEngine.php || fail "missing SelectionEngine"
+test -f src/Rest/NotificationsController.php || fail "missing NotificationsController"
 test -f docs/milestones/M1-CAPTURE-STORAGE-PLAN.md || fail "missing M1 plan"
+test -f docs/milestones/M2-SELECTION-REST-PLAN.md || fail "missing M2 plan"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 0.1.0' universal-social-proof.php || fail "expected version 0.1.0"
-grep -q "define( 'USP_VERSION', '0.1.0' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Version: 0.2.0' universal-social-proof.php || fail "expected version 0.2.0"
+grep -q "define( 'USP_VERSION', '0.2.0' )" universal-social-proof.php || fail "USP_VERSION constant"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 
-echo "==> M2+ packages must not exist"
-for dir in Selection Rest Template Frontend Geo Admin; do
+echo "==> M3+ packages must not exist"
+for dir in Template Frontend Geo Admin; do
   if [ -d "src/$dir" ]; then
-    fail "forbidden M2+ package directory: src/$dir"
+    fail "forbidden M3+ package directory: src/$dir"
   fi
 done
 
-echo "==> M2+ exclusion scan (src + main file)"
+echo "==> M3+ exclusion scan (src + main file)"
 SCAN_FILES=()
 while IFS= read -r -d '' f; do
   SCAN_FILES+=( "$f" )
 done < <(find src universal-social-proof.php -name '*.php' -print0 2>/dev/null)
 
-forbid_re='register_rest_route|SelectionEngine|\{\{product\}\}|\{\{country\}\}|\{\{time_ago\}\}|\{\{quantity\}\}|GeoContextAdapter|fake.?purchase|Fabricat|wp_enqueue_script|wp_enqueue_style'
+forbid_re='\{\{product\}\}|\{\{country\}\}|\{\{time_ago\}\}|\{\{quantity\}\}|GeoContextAdapter|fake.?purchase|Fabricat|wp_enqueue_script|wp_enqueue_style|sessionStorage'
 if printf '%s\0' "${SCAN_FILES[@]}" | xargs -0 grep -nE "$forbid_re" 2>/dev/null | grep -q .; then
   printf '%s\0' "${SCAN_FILES[@]}" | xargs -0 grep -nE "$forbid_re" 2>/dev/null || true
-  fail "forbidden M2+ symbols detected"
+  fail "forbidden M3+ symbols detected"
 fi
 
 echo "==> No frontend asset directories"
@@ -72,6 +78,10 @@ for d in assets dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[0\.2\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.2.0 section"
 grep -q '## \[0\.1\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.1.0 section"
 
-echo "==> All M1 CI checks passed"
+echo "==> No schema version bump in M2"
+grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M2 must not bump usp_db_version"
+
+echo "==> All M2 CI checks passed"

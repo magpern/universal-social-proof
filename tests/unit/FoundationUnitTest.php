@@ -25,18 +25,18 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertTrue( class_exists( WooCommerceGate::class ) );
 	}
 
-	public function test_version_constant_is_m1(): void {
-		$this->assertSame( '0.1.0', USP_VERSION );
+	public function test_version_constant_is_m2(): void {
+		$this->assertSame( '0.2.0', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.1\.0\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.2\.0\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '0.1.0' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '0.2.0' );", $contents );
 	}
 
 	public function test_composer_package_name(): void {
@@ -56,12 +56,15 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertFalse( Plugin::is_initialized() );
 	}
 
-	public function test_m2_packages_not_precreated(): void {
+	public function test_m3_plus_packages_not_precreated(): void {
 		$src       = dirname( __DIR__, 2 ) . '/src';
-		$forbidden = array( 'Selection', 'Rest', 'Template', 'Frontend', 'Geo', 'Admin' );
+		$forbidden = array( 'Template', 'Frontend', 'Geo', 'Admin' );
 		foreach ( $forbidden as $dir ) {
-			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M1 must not pre-create {$dir}/" );
+			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M2 must not pre-create {$dir}/" );
 		}
+		$this->assertDirectoryExists( $src . '/Selection' );
+		$this->assertDirectoryExists( $src . '/Product' );
+		$this->assertDirectoryExists( $src . '/Rest' );
 	}
 
 	public function test_main_file_declares_hpos_hook(): void {

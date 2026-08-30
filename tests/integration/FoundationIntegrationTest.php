@@ -19,7 +19,7 @@ final class FoundationIntegrationTest extends WP_UnitTestCase {
 		$this->assertTrue( class_exists( 'WooCommerce' ) );
 		$this->assertTrue( Plugin::is_initialized() );
 		$this->assertTrue( defined( 'USP_VERSION' ) );
-		$this->assertSame( '0.1.0', USP_VERSION );
+		$this->assertSame( '0.2.0', USP_VERSION );
 	}
 
 	public function test_hpos_compatibility_declared(): void {
@@ -44,18 +44,14 @@ final class FoundationIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( $table, $found );
 	}
 
-	public function test_no_usp_rest_routes_registered(): void {
+	public function test_usp_notifications_route_is_get_only(): void {
 		$routes = rest_get_server()->get_routes();
+		$this->assertArrayHasKey( '/universal-social-proof/v1/notifications', $routes );
 		foreach ( array_keys( $routes ) as $route ) {
-			$this->assertStringNotContainsString(
-				'universal-social-proof',
-				(string) $route,
-				'M0 must not register USP REST routes'
-			);
 			$this->assertDoesNotMatchRegularExpression(
 				'#^/usp(/|$)#',
 				(string) $route,
-				'M0 must not register /usp REST routes'
+				'M2 must not register abbreviated /usp REST routes'
 			);
 		}
 	}
