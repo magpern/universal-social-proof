@@ -61,7 +61,10 @@ final class TemplateSettings {
 	}
 
 	/**
-	 * Validate grammar without rendering. Returns trimmed template or null.
+	 * Validate grammar without rendering. Returns template or null.
+	 *
+	 * Every `{` / `}` must belong to a syntactically valid approved `{{token}}`.
+	 * No literal-brace escape syntax in M4.
 	 *
 	 * @param string $template Raw template.
 	 */
@@ -72,22 +75,32 @@ final class TemplateSettings {
 		$len = strlen( $template );
 		$i   = 0;
 		while ( $i < $len ) {
-			if ( '{' !== $template[ $i ] ) {
+			$ch = $template[ $i ];
+			if ( '}' === $ch ) {
+				// Stray closing brace (not consumed as part of {{token}}).
+				return null;
+			}
+			if ( '{' !== $ch ) {
 				++$i;
 				continue;
 			}
 			if ( $i + 1 >= $len || '{' !== $template[ $i + 1 ] ) {
 				return null;
 			}
+			// Require exact }} terminator; reject single } or {{{...}}} forms via name rules.
 			$close = strpos( $template, '}}', $i + 2 );
 			if ( false === $close ) {
 				return null;
 			}
-			$name = substr( $template, $i + 2, $close - ( $i + 2 ) );
-			if ( 1 !== preg_match( '/^[a-z][a-z0-9_]*$/', $name ) ) {
+			// A lone } must not appear inside the token name span.
+			$inner = substr( $template, $i + 2, $close - ( $i + 2 ) );
+			if ( false !== strpos( $inner, '{' ) || false !== strpos( $inner, '}' ) ) {
 				return null;
 			}
-			if ( ! in_array( $name, self::ALLOWED_TOKENS, true ) ) {
+			if ( 1 !== preg_match( '/^[a-z][a-z0-9_]*$/', $inner ) ) {
+				return null;
+			}
+			if ( ! in_array( $inner, self::ALLOWED_TOKENS, true ) ) {
 				return null;
 			}
 			$i = $close + 2;

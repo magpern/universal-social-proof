@@ -110,9 +110,80 @@ final class M4TemplateUnitTest extends TestCase {
 	}
 
 	public function test_malformed_braces_fail(): void {
-		$this->assertNull( TemplateSettings::validate_template( 'Hi {product}' ) );
-		$this->assertNull( TemplateSettings::validate_template( 'Hi {{product}' ) );
-		$this->assertNull( TemplateSettings::validate_template( 'Hi {{}}' ) );
+		$invalid = array(
+			'{',
+			'}',
+			'{{',
+			'}}',
+			'{{product}',
+			'{product}}',
+			'Someone purchased {{product}} }',
+			'Someone purchased {{product}} }}',
+			'{ {{product}}',
+			'{{product}} {',
+			'{{product}} }} text',
+			'text } {{product}}',
+			'{{{product}}}',
+			'{{product}}}',
+			'Someone purchased Product }}',
+			'Hi {product}',
+			'Hi {{product}',
+			'Hi {{}}',
+			'{{product} }}',
+			'{{pro}duct}}',
+		);
+		foreach ( $invalid as $template ) {
+			$this->assertNull(
+				TemplateSettings::validate_template( $template ),
+				'expected invalid: ' . $template
+			);
+			$this->assertNull(
+				$this->renderer->render( $template, $this->context( 'P' ) ),
+				'renderer must fail closed: ' . $template
+			);
+		}
+	}
+
+	public function test_valid_adjacent_and_repeated_tokens_still_work(): void {
+		$valid = array(
+			'Someone purchased {{product}}',
+			'{{product}}',
+			'{{product}} {{quantity}}',
+			'{{product}} — {{country}}',
+			'{{product}} {{time_ago}}',
+			'{{product}} and {{product}}',
+			'{{location}} {{product}} {{quantity}}',
+		);
+		foreach ( $valid as $template ) {
+			$this->assertNotNull(
+				TemplateSettings::validate_template( $template ),
+				'expected valid: ' . $template
+			);
+			$result = $this->renderer->render( $template, $this->context( 'P', 'Sweden', '2.000000' ) );
+			$this->assertNotNull( $result, 'expected renderable: ' . $template );
+			$this->assertStringNotContainsString( '{', $result->message );
+			$this->assertStringNotContainsString( '}', $result->message );
+		}
+	}
+
+	public function test_invalid_filter_output_falls_back_to_default(): void {
+		add_filter(
+			TemplateSettings::FILTER,
+			static function () {
+				return 'Someone purchased {{product}} }}';
+			}
+		);
+		try {
+			$resolved = TemplateSettings::get();
+			$this->assertSame( TemplateSettings::default_template(), $resolved );
+			$this->assertNotNull( TemplateSettings::validate_template( $resolved ) );
+			$result = $this->renderer->render( $resolved, $this->context( 'Demo' ) );
+			$this->assertNotNull( $result );
+			$this->assertSame( 'Someone purchased Demo', $result->message );
+			$this->assertStringNotContainsString( '}', $result->message );
+		} finally {
+			remove_all_filters( TemplateSettings::FILTER );
+		}
 	}
 
 	public function test_empty_product_fails(): void {

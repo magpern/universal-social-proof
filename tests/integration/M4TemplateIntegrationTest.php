@@ -90,6 +90,26 @@ final class M4TemplateIntegrationTest extends WP_UnitTestCase {
 		$this->assertDoesNotMatchRegularExpression( '/\{\{/', $data[0]['message'] );
 	}
 
+	public function test_malformed_filter_template_falls_back_without_brace_leak(): void {
+		$product = $this->create_simple_product( 'Brace Safe Product' );
+		$this->capture_order( $product );
+
+		add_filter(
+			TemplateSettings::FILTER,
+			static function () {
+				return 'Someone purchased {{product}} }}';
+			}
+		);
+
+		$response = $this->dispatch( array( 'limit' => '1' ) );
+		$data     = $response->get_data();
+		$this->assertNotEmpty( $data );
+		$this->assertSame( 'Someone purchased Brace Safe Product', $data[0]['message'] );
+		$this->assertTrue( $data[0]['show_relative_time'] );
+		$this->assertStringNotContainsString( '}', $data[0]['message'] );
+		$this->assertStringNotContainsString( '{', $data[0]['message'] );
+	}
+
 	public function test_excluded_product_does_not_consume_k_slot(): void {
 		$excluded = $this->create_simple_product( 'Excluded' );
 		$allowed  = $this->create_simple_product( 'Allowed' );
