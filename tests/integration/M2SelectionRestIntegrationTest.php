@@ -539,7 +539,9 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		$this->assertContains( $row['public_id'], $ids );
 		foreach ( $data as $item_dto ) {
 			$this->assertSame( NotificationsController::ALLOWLIST, array_keys( $item_dto ) );
-			$this->assertArrayNotHasKey( 'message', $item_dto );
+			$this->assertNotSame( '', trim( (string) $item_dto['message'] ) );
+			$this->assertIsBool( $item_dto['show_relative_time'] );
+			$this->assertTrue( $item_dto['show_relative_time'] );
 			$this->assertMatchesRegularExpression( '/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/', $item_dto['occurred_at'] );
 			$this->assertArrayNotHasKey( 'source_order_id', $item_dto );
 			$this->assertArrayNotHasKey( 'product_id', $item_dto );

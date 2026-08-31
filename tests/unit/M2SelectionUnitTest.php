@@ -195,7 +195,7 @@ final class M2SelectionUnitTest extends TestCase {
 		$this->assertSame( 1, $calls );
 	}
 
-	public function test_selected_event_dto_is_utc_z_allowlist_without_message(): void {
+	public function test_selected_event_dto_includes_message_and_show_relative_time(): void {
 		$product = new PublicProduct( 3, 'simple', 'https://example.test/p', null, 'Name', true, 3 );
 		$event   = new SelectedEvent(
 			'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
@@ -209,10 +209,11 @@ final class M2SelectionUnitTest extends TestCase {
 		$dto     = $event->to_public_array();
 		$this->assertIsArray( $dto );
 		$this->assertSame(
-			array( 'public_id', 'product_url', 'thumbnail_url', 'occurred_at' ),
+			array( 'public_id', 'product_url', 'thumbnail_url', 'occurred_at', 'message', 'show_relative_time' ),
 			array_keys( $dto )
 		);
-		$this->assertArrayNotHasKey( 'message', $dto );
+		$this->assertSame( 'Someone purchased Name', $dto['message'] );
+		$this->assertTrue( $dto['show_relative_time'] );
 		$this->assertSame( '2026-08-30T18:42:11Z', $dto['occurred_at'] );
 		$this->assertNull( $dto['thumbnail_url'] );
 	}
@@ -223,21 +224,19 @@ final class M2SelectionUnitTest extends TestCase {
 		$this->assertNull( $event->to_public_array() );
 	}
 
-	public function test_m4_plus_packages_are_absent(): void {
+	public function test_m4_template_present_geo_admin_absent(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
-		foreach ( array( 'Template', 'Geo', 'Admin' ) as $dir ) {
+		$this->assertDirectoryExists( $src . '/Template' );
+		$this->assertDirectoryExists( $src . '/Targeting' );
+		$this->assertDirectoryExists( $src . '/Frontend' );
+		foreach ( array( 'Geo', 'Admin' ) as $dir ) {
 			$this->assertDirectoryDoesNotExist( $src . '/' . $dir );
 		}
-		$this->assertDirectoryExists( $src . '/Frontend' );
 		$scan = '';
 		foreach ( $this->php_files( $src ) as $file ) {
 			$scan .= (string) file_get_contents( $file );
 		}
 		$scan .= (string) file_get_contents( dirname( __DIR__, 2 ) . '/universal-social-proof.php' );
-		$this->assertStringNotContainsString( '{{product}}', $scan );
-		$this->assertStringNotContainsString( '{{country}}', $scan );
-		$this->assertStringNotContainsString( '{{time_ago}}', $scan );
-		$this->assertStringNotContainsString( '{{quantity}}', $scan );
 		$this->assertStringNotContainsString( 'GeoContextAdapter', $scan );
 	}
 

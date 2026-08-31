@@ -25,18 +25,18 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertTrue( class_exists( WooCommerceGate::class ) );
 	}
 
-	public function test_version_constant_is_m3(): void {
-		$this->assertSame( '0.3.0', USP_VERSION );
+	public function test_version_constant_is_m4(): void {
+		$this->assertSame( '0.4.0', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.3\.0\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.4\.0\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '0.3.0' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '0.4.0' );", $contents );
 	}
 
 	public function test_composer_package_name(): void {
@@ -56,16 +56,17 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertFalse( Plugin::is_initialized() );
 	}
 
-	public function test_m4_plus_packages_not_precreated(): void {
-		$src       = dirname( __DIR__, 2 ) . '/src';
-		$forbidden = array( 'Template', 'Geo', 'Admin' );
-		foreach ( $forbidden as $dir ) {
-			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M3 must not pre-create {$dir}/" );
-		}
+	public function test_m4_packages_present_m5_m6_absent(): void {
+		$src = dirname( __DIR__, 2 ) . '/src';
+		$this->assertDirectoryExists( $src . '/Template' );
+		$this->assertDirectoryExists( $src . '/Targeting' );
 		$this->assertDirectoryExists( $src . '/Frontend' );
 		$this->assertDirectoryExists( $src . '/Selection' );
 		$this->assertDirectoryExists( $src . '/Product' );
 		$this->assertDirectoryExists( $src . '/Rest' );
+		foreach ( array( 'Geo', 'Admin' ) as $dir ) {
+			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M4 must not create {$dir}/" );
+		}
 	}
 
 	public function test_main_file_declares_hpos_hook(): void {

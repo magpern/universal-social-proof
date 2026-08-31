@@ -54,6 +54,21 @@ describe('validateDto', () => {
 		assert.equal(api.validateDto(m2Event({ thumbnail_url: 'ftp://x' })), null);
 	});
 
+	it('defaults show_relative_time to true when absent', () => {
+		const dto = api.validateDto(fixtureEvent());
+		assert.equal(dto.show_relative_time, true);
+	});
+
+	it('accepts boolean show_relative_time', () => {
+		assert.equal(api.validateDto(fixtureEvent({ show_relative_time: false })).show_relative_time, false);
+		assert.equal(api.validateDto(fixtureEvent({ show_relative_time: true })).show_relative_time, true);
+	});
+
+	it('rejects wrong-type show_relative_time', () => {
+		assert.equal(api.validateDto(fixtureEvent({ show_relative_time: 'yes' })), null);
+		assert.equal(api.validateDto(fixtureEvent({ show_relative_time: 1 })), null);
+	});
+
 	it('keeps optional message string', () => {
 		const dto = api.validateDto(fixtureEvent());
 		assert.equal(dto.message, 'Someone purchased a product.');
@@ -217,6 +232,51 @@ describe('runtime inert M2 path', async () => {
 });
 
 describe('runtime presentable fixture path', async () => {
+	it('hides time chrome when show_relative_time is false and restores on true', async () => {
+		const nowIso = new Date().toISOString().replace(/\.\d{3}Z$/, 'Z');
+		const events = [
+			fixtureEvent({
+				public_id: UUID_A,
+				occurred_at: nowIso,
+				message: 'Someone purchased A 2 minutes ago',
+				show_relative_time: false,
+			}),
+			fixtureEvent({
+				public_id: UUID_B,
+				occurred_at: nowIso,
+				message: 'Someone purchased B',
+				show_relative_time: true,
+			}),
+		];
+		const doc = makeDom();
+		const timeEl = doc.getElementById('usp-toaster-root')._nodes['.usp-toaster__time'];
+		const runtime = api.createRuntime({
+			config: {
+				restUrl: 'https://example.test/wp-json/universal-social-proof/v1/notifications',
+				limit: 5,
+				pageContext: 'unknown',
+				maxBatches: 3,
+				timing: { initialDelayMs: 0, visibleMs: 30, gapMs: 0, motionMs: 0 },
+				storageKey: 'usp.v1',
+				i18n: { justNow: 'just now', dismiss: 'Dismiss' },
+			},
+			document: doc,
+			storage: null,
+			fetch: async () => ({
+				ok: true,
+				json: async () => events,
+			}),
+		});
+		runtime.start();
+		await waitFor(() => runtime.getState() === 'showing');
+		assert.equal(timeEl.hidden, true);
+		assert.equal(timeEl.textContent, '');
+		runtime.dismissCurrent();
+		await waitFor(() => runtime.getState() === 'showing');
+		assert.equal(timeEl.hidden, false);
+		assert.ok(timeEl.textContent.length > 0);
+	});
+
 	it('shows fixture message and records shown', async () => {
 		const fetchImpl = async () => ({
 			ok: true,
@@ -318,7 +378,7 @@ function makeDom() {
 		},
 	};
 	const messageEl = { textContent: '', hidden: true };
-	const timeEl = { dateTime: '', textContent: '' };
+	const timeEl = { dateTime: '', textContent: '', hidden: false };
 	const dismissBtn = {
 		hidden: true,
 		attrs: {},
