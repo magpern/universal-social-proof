@@ -312,11 +312,19 @@ Empty shell in HTML; events only via REST; `Cache-Control: no-store`. Visitor-sp
 
 ## 11. Front-end
 
-Vanilla JS for presentation and rotation. DTO: `public_id` (UUIDv4), server-rendered `message`, `product_url`, optional `thumbnail_url`, `occurred_at` (ISO). Client updates relative-time from `occurred_at` only. SessionStorage for shown ids / dismiss; pass `exclude`. No anonymous server writes. No bounce; respect `prefers-reduced-motion`; avoid assertive live-region spam.
+Vanilla JS for presentation and rotation. SessionStorage for shown ids / dismiss; pass `exclude`. No anonymous server writes. No bounce; respect `prefers-reduced-motion`; avoid assertive live-region spam.
 
 Templates render **server-side**; the front end must not re-implement template token semantics.
 
-**M2 note (2026-08-30 PO-approved clarification):** the eventual DTO includes `message`, but **M2 does not**. M2 ships the base allowlist (`public_id`, `product_url`, `thumbnail_url`, `occurred_at`) only. M4 additively introduces server-rendered `message`. See ADR-0011 amendment. Do not treat this historical §11 paragraph as requiring `message` in M2.
+**Public DTO (M4):** `public_id` (UUIDv4), `product_url`, optional `thumbnail_url`, `occurred_at` (ISO), server-rendered plain-text `message`, boolean `show_relative_time`.
+
+- When `show_relative_time` is **true**, the client shows its existing relative-time chrome and may refresh it from `occurred_at` only.
+- When `show_relative_time` is **false**, the server message already consumed `{{time_ago}}`; the client suppresses separate relative-time chrome for that notification (no duplicated time).
+- `show_relative_time = ! used_time_ago` from the template renderer; do not infer from message text.
+
+**M2 note (2026-08-30 PO-approved clarification):** M2 ships the base allowlist (`public_id`, `product_url`, `thumbnail_url`, `occurred_at`) only — no `message`. See ADR-0011 amendment 2026-08-30.
+
+**M4 note (2026-08-31 PO-approved clarification):** M4 additively introduces `message` and `show_relative_time`. `{{location}}` is an alias of purchase-country display for `{{country}}` under country-only v1. See ADR-0011 amendment 2026-08-31.
 
 ---
 
@@ -368,7 +376,7 @@ Freeze tags: `mN-…-freeze`. Release tags: `v0.N.0` for M1–M6; **`v1.0.0`** f
 **M1 out:** region/city columns, REST selection UI, FE, UGC weighting, reactivation.  
 **M1 gate:** `occurred_at` resolver ADR frozen from WC API characterization + payment-path tests before capture code is considered done.  
 **M2:** product-resolution budget is an acceptance criterion. **M2 DTO omits `message`** (PO-approved 2026-08-30; M4 adds it additively). See ADR-0011 amendment.  
-**M4:** token grammar includes `{{product}}`, `{{location}}`/`{{country}}`, `{{time_ago}}`, **`{{quantity}}`** (original qty); default template omits quantity. Checkout **excluded** by default; **PDP prefer current product** (PO accepted).  
+**M4:** token grammar includes `{{product}}`, `{{location}}`/`{{country}}`, `{{time_ago}}`, **`{{quantity}}`** (original qty); default template omits quantity. `{{location}}` = purchase-country alias (country-only v1). Public DTO adds `message` + `show_relative_time` (chrome coordination). Checkout **excluded** by default; **PDP prefer current product** (PO accepted).  
 **M5 out:** region/city; client-supplied geo.  
 **M7:** ships **`1.0.0`** (not `0.7.0`).
 

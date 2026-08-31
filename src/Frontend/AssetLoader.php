@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Frontend;
 
+use UniversalSocialProof\Targeting\TargetingPolicy;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -35,7 +37,7 @@ final class AssetLoader {
 		}
 
 		$base = trailingslashit( plugins_url( '', USP_PLUGIN_FILE ) );
-		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.3.0';
+		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.4.0';
 
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
@@ -65,33 +67,7 @@ final class AssetLoader {
 	 * Whether the toaster should load on this request.
 	 */
 	public static function should_load(): bool {
-		if ( is_admin() ) {
-			return false;
-		}
-		if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
-			return false;
-		}
-		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			return false;
-		}
-		if ( is_feed() ) {
-			return false;
-		}
-		if ( ! function_exists( 'is_checkout' ) ) {
-			return false;
-		}
-		// Checkout exclusion is architecture-aligned (FROZEN).
-		if ( is_checkout() ) {
-			return false;
-		}
-		// Cart/account are M3 presentation defaults, not immutable architecture.
-		if ( function_exists( 'is_cart' ) && is_cart() ) {
-			return false;
-		}
-		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-			return false;
-		}
-		return true;
+		return TargetingPolicy::should_load();
 	}
 
 	/**

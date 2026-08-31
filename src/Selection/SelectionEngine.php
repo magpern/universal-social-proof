@@ -12,6 +12,7 @@ namespace UniversalSocialProof\Selection;
 use UniversalSocialProof\Cleanup\RetentionSettings;
 use UniversalSocialProof\Product\PublicProduct;
 use UniversalSocialProof\Product\PublicProductResolver;
+use UniversalSocialProof\Targeting\ProductTargetingPolicy;
 use WC_Product;
 
 defined( 'ABSPATH' ) || exit;
@@ -209,8 +210,15 @@ final class SelectionEngine {
 		if ( ! $product instanceof PublicProduct ) {
 			return null;
 		}
+		if ( ProductTargetingPolicy::is_excluded( $product ) ) {
+			return null;
+		}
 		$event = SelectedEvent::from_candidate( $candidate, $product );
-		$dto   = $event->to_public_array();
-		return null === $dto ? null : $event;
+		// Selection accepts on merchandising + targeting + parseable occurred_at.
+		// Template rendering happens after select(); failures omit without refill.
+		if ( null === $event->occurred_at_utc() ) {
+			return null;
+		}
+		return $event;
 	}
 }

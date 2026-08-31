@@ -12,13 +12,23 @@ namespace UniversalSocialProof\Selection;
 use DateTimeImmutable;
 use DateTimeZone;
 use UniversalSocialProof\Product\PublicProduct;
+use UniversalSocialProof\Template\TemplateContext;
+use UniversalSocialProof\Template\TemplateRenderer;
+use UniversalSocialProof\Template\TemplateSettings;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Structured selection result for REST mapping and later M4 templates.
+ * Structured selection result for REST mapping and M4 templates.
  */
 final class SelectedEvent {
+
+	/**
+	 * Shared renderer instance for request-scoped projection.
+	 *
+	 * @var TemplateRenderer|null
+	 */
+	private static ?TemplateRenderer $renderer = null;
 
 	/**
 	 * Constructor.
@@ -51,20 +61,32 @@ final class SelectedEvent {
 	}
 
 	/**
-	 * Public REST allowlist. No message, provenance, or raw product IDs.
+	 * Public REST allowlist including M4 message fields.
 	 *
-	 * @return array{public_id: string, product_url: string, thumbnail_url: string|null, occurred_at: string}
+	 * @return array{public_id: string, product_url: string, thumbnail_url: string|null, occurred_at: string, message: string, show_relative_time: bool}|null
 	 */
 	public function to_public_array(): ?array {
 		$dt = $this->occurred_at_utc();
 		if ( ! $dt instanceof DateTimeImmutable ) {
 			return null;
 		}
+
+		$renderer = self::$renderer ?? new TemplateRenderer();
+		$result   = $renderer->render(
+			TemplateSettings::get(),
+			TemplateContext::from_selected_event( $this )
+		);
+		if ( null === $result ) {
+			return null;
+		}
+
 		return array(
-			'public_id'     => $this->public_id,
-			'product_url'   => $this->product->permalink,
-			'thumbnail_url' => $this->product->thumbnail_url,
-			'occurred_at'   => $dt->format( 'Y-m-d\TH:i:s\Z' ),
+			'public_id'          => $this->public_id,
+			'product_url'        => $this->product->permalink,
+			'thumbnail_url'      => $this->product->thumbnail_url,
+			'occurred_at'        => $dt->format( 'Y-m-d\TH:i:s\Z' ),
+			'message'            => $result->message,
+			'show_relative_time' => ! $result->used_time_ago,
 		);
 	}
 
@@ -84,5 +106,14 @@ final class SelectedEvent {
 			$candidate->variation_id,
 			$product
 		);
+	}
+
+	/**
+	 * Test seam: inject renderer.
+	 *
+	 * @param TemplateRenderer|null $renderer Renderer or null to reset.
+	 */
+	public static function set_renderer_for_tests( ?TemplateRenderer $renderer ): void {
+		self::$renderer = $renderer;
 	}
 }

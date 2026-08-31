@@ -43,14 +43,16 @@ final class M3FrontendUnitTest extends TestCase {
 		);
 	}
 
-	public function test_frontend_package_exists_and_m4_absent(): void {
+	public function test_frontend_and_template_packages_geo_admin_absent(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Frontend' );
+		$this->assertDirectoryExists( $src . '/Template' );
+		$this->assertDirectoryExists( $src . '/Targeting' );
 		$this->assertFileExists( $src . '/Frontend/FrontendController.php' );
 		$this->assertFileExists( $src . '/Frontend/AssetLoader.php' );
 		$this->assertFileExists( $src . '/Frontend/BootstrapConfig.php' );
 		$this->assertFileExists( $src . '/Frontend/ShellRenderer.php' );
-		foreach ( array( 'Template', 'Geo', 'Admin' ) as $dir ) {
+		foreach ( array( 'Geo', 'Admin' ) as $dir ) {
 			$this->assertDirectoryDoesNotExist( $src . '/' . $dir );
 		}
 	}
@@ -80,7 +82,7 @@ final class M3FrontendUnitTest extends TestCase {
 		$this->assertStringNotContainsString( '{{product}}', $scan );
 	}
 
-	public function test_m3_plus_tokens_absent_from_src(): void {
+	public function test_geo_adapter_absent_from_src(): void {
 		$src   = dirname( __DIR__, 2 ) . '/src';
 		$scan  = '';
 		$files = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $src ) );
@@ -89,10 +91,8 @@ final class M3FrontendUnitTest extends TestCase {
 				$scan .= (string) file_get_contents( $file->getPathname() );
 			}
 		}
-		$this->assertStringNotContainsString( '{{product}}', $scan );
-		$this->assertStringNotContainsString( '{{country}}', $scan );
-		$this->assertStringNotContainsString( '{{time_ago}}', $scan );
-		$this->assertStringNotContainsString( '{{quantity}}', $scan );
 		$this->assertStringNotContainsString( 'GeoContextAdapter', $scan );
+		$this->assertDirectoryDoesNotExist( $src . '/Geo' );
+		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
 	}
 }
