@@ -28,6 +28,21 @@ final class Quantity {
 	}
 
 	/**
+	 * Display-normalize a stored DECIMAL(18,6) quantity (trim trailing zeros).
+	 *
+	 * Does not cast to int. Examples: 1.000000→1, 1.500000→1.5, 0.250000→0.25.
+	 *
+	 * @param float|int|string $quantity Stored or raw quantity.
+	 */
+	public static function format_display( $quantity ): string {
+		$scaled = self::format( $quantity );
+		if ( str_contains( $scaled, '.' ) ) {
+			$scaled = rtrim( rtrim( $scaled, '0' ), '.' );
+		}
+		return '' === $scaled ? '0' : $scaled;
+	}
+
+	/**
 	 * True when quantity is strictly positive.
 	 *
 	 * @param float|int|string $quantity Raw quantity.
