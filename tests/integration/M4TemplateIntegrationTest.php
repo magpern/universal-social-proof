@@ -52,7 +52,15 @@ final class M4TemplateIntegrationTest extends WP_UnitTestCase {
 
 		$response = $this->dispatch( array( 'limit' => '5' ) );
 		$this->assertSame( 200, $response->get_status() );
-		$this->assertSame( 'no-store', $response->get_headers()['Cache-Control'] ?? $response->get_headers()['cache-control'] ?? '' );
+		$headers = $response->get_headers();
+		$cc      = '';
+		foreach ( $headers as $name => $value ) {
+			if ( 0 === strcasecmp( (string) $name, 'Cache-Control' ) ) {
+				$cc = is_array( $value ) ? (string) $value[0] : (string) $value;
+				break;
+			}
+		}
+		$this->assertSame( 'no-store', $cc );
 		$data = $response->get_data();
 		$this->assertNotEmpty( $data );
 		$item = $data[0];
