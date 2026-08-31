@@ -39,11 +39,17 @@
 			thumb = null;
 		}
 		if (typeof raw.occurred_at !== 'string' || !OCCURRED_RE.test(raw.occurred_at)) return null;
+		var showRelativeTime = true;
+		if (Object.prototype.hasOwnProperty.call(raw, 'show_relative_time')) {
+			if (typeof raw.show_relative_time !== 'boolean') return null;
+			showRelativeTime = raw.show_relative_time;
+		}
 		var out = {
 			public_id: raw.public_id,
 			product_url: raw.product_url,
 			thumbnail_url: thumb,
 			occurred_at: raw.occurred_at,
+			show_relative_time: showRelativeTime,
 		};
 		if (typeof raw.message === 'string') out.message = raw.message;
 		return out;
@@ -271,14 +277,28 @@
 
 		function renderEvent(event) {
 			if (!link || !messageEl || !timeEl || !media) return false;
-			var rel = formatRelativeTime(event.occurred_at, config.i18n);
-			if (!rel) return false;
+			var showTime = event.show_relative_time !== false;
+			var rel = null;
+			if (showTime) {
+				rel = formatRelativeTime(event.occurred_at, config.i18n);
+				if (!rel) return false;
+			} else {
+				// Still require a parseable occurred_at for data integrity.
+				if (isNaN(Date.parse(event.occurred_at))) return false;
+			}
 			link.href = event.product_url;
 			link.hidden = false;
 			messageEl.textContent = event.message.trim();
 			messageEl.hidden = false;
-			timeEl.dateTime = event.occurred_at;
-			timeEl.textContent = rel;
+			if (showTime) {
+				timeEl.dateTime = event.occurred_at;
+				timeEl.textContent = rel;
+				timeEl.hidden = false;
+			} else {
+				timeEl.dateTime = '';
+				timeEl.textContent = '';
+				timeEl.hidden = true;
+			}
 			media.textContent = '';
 			if (event.thumbnail_url) {
 				var img = doc.createElement('img');
