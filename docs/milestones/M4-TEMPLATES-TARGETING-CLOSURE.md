@@ -8,7 +8,10 @@
 | Target version | `0.4.0` (on branch; tag deferred) |
 | Feature branch | `feature/m4-templates-targeting` |
 | Baseline `main` | `f6075b2ed632cce28effe0ec679cfea64e4bed96` |
-| Freeze commit | recorded in PR / git log (`docs(m4): freeze…`) |
+| Freeze commit | `be7612a53afe6cc2b675c6044e5b907896862e16` |
+| Feature HEAD | `31f8a51c130c9a83da8cea7f977015d888e46b16` |
+| PR | https://github.com/magpern/universal-social-proof/pull/5 (open / unmerged) |
+| CI (final head) | https://github.com/magpern/universal-social-proof/actions/runs/33380382906 (green) |
 | Schema | `usp_db_version = 20260829m1` (**unchanged**) |
 | M5 / M6 | **not started** |
 | Production | **untouched** |
