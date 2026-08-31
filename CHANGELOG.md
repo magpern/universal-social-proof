@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [0.4.0] - M4 server-rendered messages and targeting
+
+### Added
+
+- `src/Template` package: constrained whitelist grammar, plain-text `message`, `show_relative_time` coordination.
+- Tokens: `{{product}}`, `{{country}}`, `{{location}}` (purchase-country alias), `{{time_ago}}`, `{{quantity}}`.
+- Default template: `Someone purchased {{product}}` (translated whole string; filter `usp_notification_template`; no option).
+- `src/Targeting`: page `TargetingPolicy`; selection-level `ProductTargetingPolicy` (`usp_excluded_product_ids` filter; no option).
+- Public DTO adds `message` + `show_relative_time` (ADR-0011 2026-08-31).
+- Narrow M3 chrome gate: suppress `<time>` when `show_relative_time === false`.
+
+### Notes
+
+- Schema unchanged (`20260829m1`). No Geo/Admin. No M4 persisted settings.
+- Tag `v0.4.0` only after merge to `main`.
+
 ## [0.3.0] - M3 storefront toaster presentation infrastructure
 
 ### Added

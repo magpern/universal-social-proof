@@ -3,7 +3,8 @@
 Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-proof notifications.
 
 **Architecture status:** [FROZEN](docs/architecture/FROZEN.md) — Product Owner approved.  
-**Implementation status:** M3 storefront toaster infrastructure (`0.3.0`, tag `v0.3.0`) — presentation runtime is display-gated on `message`; live M2 responses remain visually inert until M4.
+**Implementation status:** M4 templates + targeting on `feature/m4-templates-targeting` (`0.4.0` branch version; PR open / not merged / not tagged). M3 toaster activates when REST supplies non-empty `message`.
+
 
 | Item | Value |
 |------|-------|
@@ -11,7 +12,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | Slug / text domain | `universal-social-proof` |
 | Namespace | `UniversalSocialProof\` |
 | Composer | `magpern/universal-social-proof` |
-| Current version | `0.3.0` (M3 **CLOSED**; tag `v0.3.0`) |
+| Current version | `0.4.0` on feature branch (M3 **CLOSED** on `main` as `v0.3.0`; M4 not closed until merge/tag) |
 | First production-recommended release | **v1.0.0** (M7) |
 
 ## Requirements
@@ -35,6 +36,8 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | [docs/milestones/M2-SELECTION-REST-PLAN.md](docs/milestones/M2-SELECTION-REST-PLAN.md) | M2 selection + REST plan (frozen) |
 | [docs/milestones/M3-STOREFRONT-TOASTER-PLAN.md](docs/milestones/M3-STOREFRONT-TOASTER-PLAN.md) | M3 toaster plan (frozen) |
 | [docs/milestones/M3-STOREFRONT-TOASTER-CLOSURE.md](docs/milestones/M3-STOREFRONT-TOASTER-CLOSURE.md) | M3 closure record (`v0.3.0` **CLOSED**) |
+| [docs/milestones/M4-TEMPLATES-TARGETING-PLAN.md](docs/milestones/M4-TEMPLATES-TARGETING-PLAN.md) | M4 templates/targeting plan (frozen) |
+| [docs/milestones/M4-TEMPLATES-TARGETING-CLOSURE.md](docs/milestones/M4-TEMPLATES-TARGETING-CLOSURE.md) | M4 implementation status (PR open; not closed) |
 
 ## Local development
 
