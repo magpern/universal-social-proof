@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# M2 CI checks — lint, structure, and M3+ exclusion guards.
+# M3 CI checks — lint, structure, size budgets, and M4+ exclusion guards.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
@@ -42,46 +42,70 @@ test -f src/Capture/CaptureService.php || fail "missing CaptureService"
 test -d src/Selection || fail "missing src/Selection"
 test -d src/Product || fail "missing src/Product"
 test -d src/Rest || fail "missing src/Rest"
-test -f src/Selection/SelectionEngine.php || fail "missing SelectionEngine"
+test -d src/Frontend || fail "missing src/Frontend"
+test -f src/Frontend/FrontendController.php || fail "missing FrontendController"
 test -f src/Rest/NotificationsController.php || fail "missing NotificationsController"
-test -f docs/milestones/M1-CAPTURE-STORAGE-PLAN.md || fail "missing M1 plan"
+test -f assets/js/usp-toaster.js || fail "missing toaster JS"
+test -f assets/css/usp-toaster.css || fail "missing toaster CSS"
 test -f docs/milestones/M2-SELECTION-REST-PLAN.md || fail "missing M2 plan"
+test -f docs/milestones/M3-STOREFRONT-TOASTER-PLAN.md || fail "missing M3 plan"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 0.2.0' universal-social-proof.php || fail "expected version 0.2.0"
-grep -q "define( 'USP_VERSION', '0.2.0' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Version: 0.3.0' universal-social-proof.php || fail "expected version 0.3.0"
+grep -q "define( 'USP_VERSION', '0.3.0' )" universal-social-proof.php || fail "USP_VERSION constant"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 
-echo "==> M3+ packages must not exist"
-for dir in Template Frontend Geo Admin; do
+echo "==> Asset size budgets"
+js_size=$(wc -c < assets/js/usp-toaster.js)
+css_size=$(wc -c < assets/css/usp-toaster.css)
+test "$js_size" -le 16384 || fail "usp-toaster.js exceeds 16 KiB ($js_size bytes)"
+test "$css_size" -le 6144 || fail "usp-toaster.css exceeds 6 KiB ($css_size bytes)"
+echo "JS=${js_size}B CSS=${css_size}B"
+
+echo "==> M4+ packages must not exist"
+for dir in Template Geo Admin; do
   if [ -d "src/$dir" ]; then
-    fail "forbidden M3+ package directory: src/$dir"
+    fail "forbidden M4+ package directory: src/$dir"
   fi
 done
 
-echo "==> M3+ exclusion scan (src + main file)"
+echo "==> M4+ exclusion scan (src + main file)"
 SCAN_FILES=()
 while IFS= read -r -d '' f; do
   SCAN_FILES+=( "$f" )
 done < <(find src universal-social-proof.php -name '*.php' -print0 2>/dev/null)
 
-forbid_re='\{\{product\}\}|\{\{country\}\}|\{\{time_ago\}\}|\{\{quantity\}\}|GeoContextAdapter|fake.?purchase|Fabricat|wp_enqueue_script|wp_enqueue_style|sessionStorage'
+forbid_re='\{\{product\}\}|\{\{country\}\}|\{\{location\}\}|\{\{time_ago\}\}|\{\{quantity\}\}|GeoContextAdapter|fake.?purchase|Fabricat'
 if printf '%s\0' "${SCAN_FILES[@]}" | xargs -0 grep -nE "$forbid_re" 2>/dev/null | grep -q .; then
   printf '%s\0' "${SCAN_FILES[@]}" | xargs -0 grep -nE "$forbid_re" 2>/dev/null || true
-  fail "forbidden M3+ symbols detected"
+  fail "forbidden M4+ symbols detected"
 fi
 
-echo "==> No frontend asset directories"
-for d in assets dist build public/js public/css; do
+echo "==> No PHP fixture injection in Frontend"
+if grep -nEi 'fixture|WP_DEBUG|fake.?notification|synthetic' src/Frontend/*.php 2>/dev/null | grep -q .; then
+  grep -nEi 'fixture|WP_DEBUG|fake.?notification|synthetic' src/Frontend/*.php || true
+  fail "Frontend PHP must not inject fixtures"
+fi
+
+echo "==> No unexpected frontend build dirs"
+for d in dist build public/js public/css; do
   if [ -d "$d" ]; then
-    fail "unexpected frontend asset directory: $d"
+    fail "unexpected frontend build directory: $d"
   fi
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[0\.3\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.3.0 section"
 grep -q '## \[0\.2\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.2.0 section"
 grep -q '## \[0\.1\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.1.0 section"
 
-echo "==> No schema version bump in M2"
-grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M2 must not bump usp_db_version"
+echo "==> No schema version bump in M3"
+grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M3 must not bump usp_db_version"
 
-echo "==> All M2 CI checks passed"
+echo "==> JS tests (when node available)"
+if command -v node >/dev/null 2>&1; then
+  node --test tests/js/usp-toaster.test.cjs
+else
+  echo "node absent in this environment; JS tests run in CI / Docker"
+fi
+
+echo "==> All M3 CI checks passed"
