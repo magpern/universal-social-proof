@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   quality:
-    name: Lint, PHPCS, and M3 policy
+    name: Lint, PHPCS, and M4 policy
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
