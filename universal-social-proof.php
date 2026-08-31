@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Universal Social Proof
  * Plugin URI: https://github.com/magpern/universal-social-proof
- * Description: Genuine, privacy-conscious WooCommerce purchase social-proof notifications. M2 selection and public notifications API — no storefront toaster yet.
- * Version: 0.2.0
+ * Description: Genuine, privacy-conscious WooCommerce purchase social-proof notifications. M3 storefront toaster infrastructure (visually inert until M4 message).
+ * Version: 0.3.0
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Requires Plugins: woocommerce
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'USP_VERSION', '0.2.0' );
+define( 'USP_VERSION', '0.3.0' );
 define( 'USP_PLUGIN_FILE', __FILE__ );
 define( 'USP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 

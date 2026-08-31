@@ -5,6 +5,23 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [0.3.0] - M3 storefront toaster presentation infrastructure
+
+### Added
+
+- `src/Frontend` package: bootstrap config, asset loader, empty shell renderer.
+- Vanilla `assets/js/usp-toaster.js` + `assets/css/usp-toaster.css` (single JS source; no bundler; JS ≤16 KiB / CSS ≤6 KiB).
+- Display gate `canPresent`: visible toast requires non-empty `message` (M4 will supply it).
+- In-memory shown-ID source of truth with sessionStorage persistence; client full-set no-repeat filter; wire `exclude` ≤20.
+- Bounded rotation (max 3 batches); inert live M2 path stops after one successful non-presentable batch.
+
+### Notes
+
+- Normal operation against the M2 DTO is **intentionally visually inert** (no `message` yet). Not a defect.
+- Test/visual fixtures are test-only under `tests/`; no PHP/REST/DB fixture injection.
+- No schema or `usp_db_version` change (`20260829m1`).
+- Tag `v0.3.0` only after merge to `main`.
+
 ## [0.2.0] - M2 selection engine and public notifications API
 
 ### Added

@@ -167,7 +167,7 @@ No `wp_options`. Max one visible toast. No stack. No unbounded polling.
 
 ### Performance
 
-JS ≤12 KiB raw; CSS ≤6 KiB raw; 0 runtime deps; ≤3 REST batches; inert M2 → stop after 1 successful request.
+JS ≤16 KiB raw; CSS ≤6 KiB raw; 0 runtime deps; ≤3 REST batches; inert M2 → stop after 1 successful request.
 
 ---
 
