@@ -1,0 +1,8 @@
+{
+  "name": "universal-social-proof-dev",
+  "private": true,
+  "description": "Dev-only scripts for USP (no runtime dependencies).",
+  "scripts": {
+    "test:js": "node --test tests/js/usp-toaster.test.cjs"
+  }
+}

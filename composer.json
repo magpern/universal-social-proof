@@ -30,6 +30,7 @@
     "phpcbf": "phpcbf",
     "test:unit": "phpunit -c phpunit.xml.dist",
     "test:integration": "phpunit -c phpunit-integration.xml.dist",
+    "test:js": "node --test tests/js/usp-toaster.test.cjs",
     "ci": "bash scripts/ci/check.sh"
   },
   "config": {

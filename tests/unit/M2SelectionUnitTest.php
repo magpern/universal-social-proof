@@ -223,11 +223,12 @@ final class M2SelectionUnitTest extends TestCase {
 		$this->assertNull( $event->to_public_array() );
 	}
 
-	public function test_m3_plus_packages_are_absent(): void {
+	public function test_m4_plus_packages_are_absent(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
-		foreach ( array( 'Frontend', 'Template', 'Geo', 'Admin' ) as $dir ) {
+		foreach ( array( 'Template', 'Geo', 'Admin' ) as $dir ) {
 			$this->assertDirectoryDoesNotExist( $src . '/' . $dir );
 		}
+		$this->assertDirectoryExists( $src . '/Frontend' );
 		$scan = '';
 		foreach ( $this->php_files( $src ) as $file ) {
 			$scan .= (string) file_get_contents( $file );
@@ -237,9 +238,7 @@ final class M2SelectionUnitTest extends TestCase {
 		$this->assertStringNotContainsString( '{{country}}', $scan );
 		$this->assertStringNotContainsString( '{{time_ago}}', $scan );
 		$this->assertStringNotContainsString( '{{quantity}}', $scan );
-		$this->assertStringNotContainsString( 'sessionStorage', $scan );
 		$this->assertStringNotContainsString( 'GeoContextAdapter', $scan );
-		$this->assertStringNotContainsString( 'wp_enqueue_script', $scan );
 	}
 
 	/**
