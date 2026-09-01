@@ -25,3 +25,8 @@ npm-debug.log*
 !.env.example
 *.pem
 *.key
+
+# Release build output (CI-generated; never commit)
+/dist/
+*.zip
+*.zip.sha256

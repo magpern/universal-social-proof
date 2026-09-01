@@ -24,6 +24,14 @@ Milestones need clear version communication. Declaring `0.7.0` as the “finishe
 
 `0.x` communicates development milestones; `1.0.0` communicates completed v1 contract after hardening.
 
+## Automation
+
+The header/`USP_VERSION`/`CHANGELOG.md` agreement is enforced in CI by
+`scripts/ci/check.sh` (`composer ci`). Tag-triggered publishing
+(`.github/workflows/release.yml`) additionally verifies all three equal the
+pushed `vX.Y.Z` tag before creating the GitHub Release, and never rewrites
+version files. See [../RELEASE.md](../RELEASE.md).
+
 ## Related
 
-[roadmap/README.md](../roadmap/README.md) · [architecture/FROZEN.md](../architecture/FROZEN.md) §15
+[roadmap/README.md](../roadmap/README.md) · [architecture/FROZEN.md](../architecture/FROZEN.md) §15 · [../RELEASE.md](../RELEASE.md)

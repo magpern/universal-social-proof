@@ -50,7 +50,18 @@ composer test:unit
 bash tests/bin/install-wp.sh
 composer test:integration
 composer ci
+bash scripts/build-release-package.sh   # build the deployable plugin ZIP + checksum
 ```
+
+## Release process
+
+Pushing an annotated `vX.Y.Z` tag on `main` runs
+`.github/workflows/release.yml`: it re-runs the mandatory quality gates, builds
+`universal-social-proof-<version>.zip` + `.zip.sha256` via
+`scripts/build-release-package.sh`, verifies every version declaration matches
+the tag (per [ADR-0013](docs/adr/0013-version-release-policy.md)), and publishes
+a GitHub Release with both assets. Nothing generated is committed. Full details:
+[docs/RELEASE.md](docs/RELEASE.md).
 
 ## Product principle
 
