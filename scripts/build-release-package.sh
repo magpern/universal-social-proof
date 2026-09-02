@@ -22,10 +22,10 @@ set -Eeuo pipefail
 SLUG="universal-social-proof"
 MAIN_FILE="universal-social-proof.php"
 VERSION_CONST="USP_VERSION"
-INCLUDE=("$MAIN_FILE" src assets composer.json README.md LICENSE CHANGELOG.md)
-HAS_README_TXT="0"        # validate readme.txt Stable tag + changelog
+INCLUDE=("$MAIN_FILE" src assets composer.json readme.txt README.md LICENSE CHANGELOG.md)
+HAS_README_TXT="1"        # validate readme.txt Stable tag + changelog
 HAS_CHANGELOG_MD="1"    # validate CHANGELOG.md "## [<version>]" section
-REQUIRE_VENDOR_FILE=""  # path under vendor/ that must exist post-install
+REQUIRE_VENDOR_FILE="yahnis-elsts/plugin-update-checker/plugin-update-checker.php"
 # ==========================================================================
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

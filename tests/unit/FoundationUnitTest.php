@@ -26,17 +26,17 @@ final class FoundationUnitTest extends TestCase {
 	}
 
 	public function test_version_constant_is_m4(): void {
-		$this->assertSame( '0.4.0', USP_VERSION );
+		$this->assertSame( '0.4.1', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.4\.0\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.4\.1\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '0.4.0' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '0.4.1' );", $contents );
 	}
 
 	public function test_composer_package_name(): void {

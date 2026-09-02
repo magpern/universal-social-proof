@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [0.4.1] - 2026-09-02
+
+### Added
+
+- Self-updates from a private update server via the bundled Plugin Update Checker v5 Composer dependency; active only when  is defined in .
+
 ## [0.4.0] - M4 server-rendered messages and targeting
 
 ### Added

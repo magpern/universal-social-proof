@@ -19,7 +19,7 @@ final class FoundationIntegrationTest extends WP_UnitTestCase {
 		$this->assertTrue( class_exists( 'WooCommerce' ) );
 		$this->assertTrue( Plugin::is_initialized() );
 		$this->assertTrue( defined( 'USP_VERSION' ) );
-		$this->assertSame( '0.4.0', USP_VERSION );
+		$this->assertSame( '0.4.1', USP_VERSION );
 	}
 
 	public function test_hpos_compatibility_declared(): void {

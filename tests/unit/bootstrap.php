@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'USP_VERSION' ) ) {
-	define( 'USP_VERSION', '0.4.0' );
+	define( 'USP_VERSION', '0.4.1' );
 }
 
 if ( ! defined( 'USP_PLUGIN_FILE' ) ) {

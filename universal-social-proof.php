@@ -3,7 +3,7 @@
  * Plugin Name: Universal Social Proof
  * Plugin URI: https://github.com/magpern/universal-social-proof
  * Description: Genuine, privacy-conscious WooCommerce purchase social-proof notifications.
- * Version: 0.4.0
+ * Version: 0.4.1
  * Requires at least: 6.5
  * Requires PHP: 8.1
  * Requires Plugins: woocommerce
@@ -19,7 +19,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'USP_VERSION', '0.4.0' );
+define( 'USP_VERSION', '0.4.1' );
 define( 'USP_PLUGIN_FILE', __FILE__ );
 define( 'USP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 
@@ -58,6 +58,19 @@ if ( ! is_readable( $usp_autoload ) ) {
 }
 
 require_once $usp_autoload;
+
+/**
+ * Automatic updates via the private update server. Define PRIVATE_UPDATE_SERVER
+ * (scheme + host, no trailing slash) in wp-config.php to enable; when it is not
+ * defined the plugin does not check for updates.
+ */
+if ( defined( 'PRIVATE_UPDATE_SERVER' ) && PRIVATE_UPDATE_SERVER && class_exists( \YahnisElsts\PluginUpdateChecker\v5\PucFactory::class ) ) {
+	\YahnisElsts\PluginUpdateChecker\v5\PucFactory::buildUpdateChecker(
+		rtrim( (string) PRIVATE_UPDATE_SERVER, '/' ) . '/?action=get_metadata&slug=universal-social-proof',
+		USP_PLUGIN_FILE,
+		'universal-social-proof'
+	);
+}
 
 register_activation_hook(
 	__FILE__,

@@ -37,7 +37,7 @@ final class AssetLoader {
 		}
 
 		$base = trailingslashit( plugins_url( '', USP_PLUGIN_FILE ) );
-		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.4.0';
+		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.4.1';
 
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
