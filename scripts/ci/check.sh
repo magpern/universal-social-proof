@@ -64,6 +64,7 @@ for d in dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[0\.4\.1\]' CHANGELOG.md || fail "CHANGELOG missing 0.4.1 section"
 grep -q '## \[0\.4\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.4.0 section"
 grep -q '## \[0\.3\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.3.0 section"
 
