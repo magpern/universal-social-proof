@@ -2,7 +2,7 @@
 Contributors: magpern
 Requires at least: 6.5
 Requires PHP: 8.1
-Stable tag: 0.4.1
+Stable tag: 0.5.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,9 @@ for WooCommerce stores. No fabricated activity.
 2. Activate the plugin.
 
 == Changelog ==
+
+= 0.5.0 =
+* M5: visitor-country weighting via soft Universal Geo Context dependency (tiered selection; shared PDP search cap; schema and public DTO unchanged).
 
 = 0.4.1 =
 * Automatic updates from a private update server (bundled Plugin Update Checker v5); base URL read from the PRIVATE_UPDATE_SERVER constant, inert when it is not defined.

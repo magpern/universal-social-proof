@@ -26,17 +26,17 @@ final class FoundationUnitTest extends TestCase {
 	}
 
 	public function test_version_constant_is_m4(): void {
-		$this->assertSame( '0.4.1', USP_VERSION );
+		$this->assertSame( '0.5.0', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.4\.1\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.5\.0\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '0.4.1' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '0.5.0' );", $contents );
 	}
 
 	public function test_composer_package_name(): void {
@@ -56,7 +56,7 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertFalse( Plugin::is_initialized() );
 	}
 
-	public function test_m4_packages_present_m5_m6_absent(): void {
+	public function test_m5_packages_present_m6_admin_absent(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Template' );
 		$this->assertDirectoryExists( $src . '/Targeting' );
@@ -64,9 +64,8 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertDirectoryExists( $src . '/Selection' );
 		$this->assertDirectoryExists( $src . '/Product' );
 		$this->assertDirectoryExists( $src . '/Rest' );
-		foreach ( array( 'Geo', 'Admin' ) as $dir ) {
-			$this->assertDirectoryDoesNotExist( $src . '/' . $dir, "M4 must not create {$dir}/" );
-		}
+		$this->assertDirectoryExists( $src . '/Geo' );
+		$this->assertDirectoryDoesNotExist( $src . '/Admin', 'M5 must not create Admin/' );
 	}
 
 	public function test_main_file_declares_hpos_hook(): void {

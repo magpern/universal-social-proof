@@ -3,7 +3,7 @@
 Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-proof notifications.
 
 **Architecture status:** [FROZEN](docs/architecture/FROZEN.md) — Product Owner approved.  
-**Implementation status:** M4 templates + targeting **CLOSED** at `v0.4.0`; current maintenance release **`v0.4.1`** — server-rendered `message` activates the M3 toaster; `show_relative_time` coordinates `{{time_ago}}` with relative-time chrome. M5 not started.
+**Implementation status:** M5 geography / UGC weighting implemented at **`0.5.0`** (soft UGC; schema + public DTO unchanged). Latest published release remains **`v0.4.1`** until M5 is tagged.
 
 
 | Item | Value |
@@ -12,7 +12,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | Slug / text domain | `universal-social-proof` |
 | Namespace | `UniversalSocialProof\` |
 | Composer | `magpern/universal-social-proof` |
-| Current version | `0.4.1` (tag `v0.4.1`; M4 feature release was `v0.4.0`) |
+| Current version | `0.5.0` (implementation; latest published tag `v0.4.1`) |
 | First production-recommended release | **v1.0.0** (M7) |
 
 ## Requirements

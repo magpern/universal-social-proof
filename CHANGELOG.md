@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [0.5.0] - 2026-09-07
+
+### Added
+
+- Soft Universal Geo Context integration (`src/Geo/`): `GeoContextAdapter`, `UgcGeoContextAdapter`, `NullGeoContextAdapter`, `GeographyPolicy` + `usp_geo_weighting_enabled`.
+- Tiered visitor-country preference in selection (non-PDP country→global; PDP Tier1–4 with shared `PDP_SEARCH_CAP=5`).
+- Country candidate queries on existing indexes; request-local visitor country only (never persisted).
+- Privacy policy suggestion covering ephemeral UGC visitor-country use.
+
+### Notes
+
+- Schema unchanged (`20260829m1`). Public DTO unchanged. `{{country}}` / `{{location}}` remain purchase-country tokens.
+- No Admin UI / persisted geo options (M6). No client `?country=` authority.
+
 ## [0.4.1] - 2026-09-02
 
 ### Added
