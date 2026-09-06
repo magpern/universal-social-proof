@@ -14,6 +14,7 @@
 | JS (`node --test`) | PASS — 22 tests |
 | PHPCS | PASS |
 | CI scope (`scripts/ci/check.sh` subset) | PASS (Geo present, Admin absent, schema pinned) |
+| GitHub Actions (PR #8) | PASS — https://github.com/magpern/universal-social-proof/actions/runs/34066077423 |
 
 ## DEV scenarios (fixture / adapter-driven)
 
