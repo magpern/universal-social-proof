@@ -224,20 +224,14 @@ final class M2SelectionUnitTest extends TestCase {
 		$this->assertNull( $event->to_public_array() );
 	}
 
-	public function test_m4_template_present_geo_admin_absent(): void {
+	public function test_m5_geo_present_admin_absent(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Template' );
 		$this->assertDirectoryExists( $src . '/Targeting' );
 		$this->assertDirectoryExists( $src . '/Frontend' );
-		foreach ( array( 'Geo', 'Admin' ) as $dir ) {
-			$this->assertDirectoryDoesNotExist( $src . '/' . $dir );
-		}
-		$scan = '';
-		foreach ( $this->php_files( $src ) as $file ) {
-			$scan .= (string) file_get_contents( $file );
-		}
-		$scan .= (string) file_get_contents( dirname( __DIR__, 2 ) . '/universal-social-proof.php' );
-		$this->assertStringNotContainsString( 'GeoContextAdapter', $scan );
+		$this->assertDirectoryExists( $src . '/Geo' );
+		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
+		$this->assertStringContainsString( 'GeoContextAdapter', (string) file_get_contents( $src . '/Geo/GeoContextAdapter.php' ) );
 	}
 
 	/**

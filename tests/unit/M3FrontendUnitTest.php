@@ -52,9 +52,8 @@ final class M3FrontendUnitTest extends TestCase {
 		$this->assertFileExists( $src . '/Frontend/AssetLoader.php' );
 		$this->assertFileExists( $src . '/Frontend/BootstrapConfig.php' );
 		$this->assertFileExists( $src . '/Frontend/ShellRenderer.php' );
-		foreach ( array( 'Geo', 'Admin' ) as $dir ) {
-			$this->assertDirectoryDoesNotExist( $src . '/' . $dir );
-		}
+		$this->assertDirectoryExists( $src . '/Geo' );
+		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
 	}
 
 	public function test_assets_exist_within_size_budgets(): void {
@@ -82,17 +81,10 @@ final class M3FrontendUnitTest extends TestCase {
 		$this->assertStringNotContainsString( '{{product}}', $scan );
 	}
 
-	public function test_geo_adapter_absent_from_src(): void {
-		$src   = dirname( __DIR__, 2 ) . '/src';
-		$scan  = '';
-		$files = new \RecursiveIteratorIterator( new \RecursiveDirectoryIterator( $src ) );
-		foreach ( $files as $file ) {
-			if ( $file->isFile() && 'php' === $file->getExtension() ) {
-				$scan .= (string) file_get_contents( $file->getPathname() );
-			}
-		}
-		$this->assertStringNotContainsString( 'GeoContextAdapter', $scan );
-		$this->assertDirectoryDoesNotExist( $src . '/Geo' );
+	public function test_geo_present_admin_absent(): void {
+		$src = dirname( __DIR__, 2 ) . '/src';
+		$this->assertDirectoryExists( $src . '/Geo' );
+		$this->assertFileExists( $src . '/Geo/GeoContextAdapter.php' );
 		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
 	}
 }
