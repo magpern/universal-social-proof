@@ -38,6 +38,7 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | [docs/milestones/M3-STOREFRONT-TOASTER-CLOSURE.md](docs/milestones/M3-STOREFRONT-TOASTER-CLOSURE.md) | M3 closure record (`v0.3.0` **CLOSED**) |
 | [docs/milestones/M4-TEMPLATES-TARGETING-PLAN.md](docs/milestones/M4-TEMPLATES-TARGETING-PLAN.md) | M4 templates/targeting plan (frozen) |
 | [docs/milestones/M4-TEMPLATES-TARGETING-CLOSURE.md](docs/milestones/M4-TEMPLATES-TARGETING-CLOSURE.md) | M4 closure record (`v0.4.0` **CLOSED**) |
+| [docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md](docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md) | M5 geography/UGC plan (frozen; implementation not started) |
 
 ## Local development
 

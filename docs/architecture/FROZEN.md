@@ -273,6 +273,7 @@ Freshness weights use `occurred_at`. Never rewrite timestamps to look newer.
 
 **Relative time copy (always genuine `occurred_at`):** just now / X minutes ago / X hours ago / X days ago (within retention).
 
+**M5 clarification (plan freeze):** visitor-country influence is **tiered preference with global fallback**, not a hard `WHERE country_code = visitor` filter. PDP preferred search uses a **single shared** `PDP_SEARCH_CAP` across product×visitor-country and product×any-country phases. Exact pools, shared caps, dedup, and budgets: [M5-GEOGRAPHY-UGC-PLAN.md](../milestones/M5-GEOGRAPHY-UGC-PLAN.md).
 ---
 
 ## 9. UGC integration
