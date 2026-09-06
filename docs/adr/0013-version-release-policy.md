@@ -17,20 +17,24 @@ Milestones need clear version communication. Declaring `0.7.0` as the “finishe
 | M7 | **`1.0.0`** — first production-recommended complete v1 |
 
 - Versions are cumulative; no M8 in this freeze.
-- Release tags: `v0.N.0` for M1–M6; **`v1.0.0`** for M7.
+- Milestone release tags: `v0.N.0` for M1–M6; **`v1.0.0`** for M7.
+- Maintenance/patch releases between milestones (for example `v0.4.1`) are allowed when needed; they do **not** relabel the closed milestone version.
 - Plugin header, `USP_VERSION`, and changelog must agree on the tagged commit.
+- **Official release tags must be annotated Git tags** (`git tag -a vX.Y.Z -m "…"`). Lightweight tags are not accepted for new releases.
+- **Historical exception:** `v0.4.1` was published as a lightweight tag and remains immutable; do not rewrite or convert it in place.
 
 ## Consequences
 
-`0.x` communicates development milestones; `1.0.0` communicates completed v1 contract after hardening.
+`0.x` communicates development milestones; `1.0.0` communicates completed v1 contract after hardening. Annotated tags carry a stable message and peel to the release commit (`tag^{}`) even when the tag object SHA differs from the commit SHA.
 
 ## Automation
 
 The header/`USP_VERSION`/`CHANGELOG.md` agreement is enforced in CI by
 `scripts/ci/check.sh` (`composer ci`). Tag-triggered publishing
 (`.github/workflows/release.yml`) additionally verifies all three equal the
-pushed `vX.Y.Z` tag before creating the GitHub Release, and never rewrites
-version files. See [../RELEASE.md](../RELEASE.md).
+pushed `vX.Y.Z` tag before creating the GitHub Release, never rewrites
+version files, and refuses non-annotated release tags for future publishes.
+See [../RELEASE.md](../RELEASE.md).
 
 ## Related
 

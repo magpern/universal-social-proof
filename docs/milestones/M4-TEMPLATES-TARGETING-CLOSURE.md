@@ -26,7 +26,7 @@
 | Docs / version | `e3803de` / `e58016a` | docs(m4): record implementation and version state |
 | Brace remediation | `5df15f2d6228d4ce04285e66a9a5ddb1d3e3b2c3` | fix(template): reject stray braces in grammar validation |
 | Merge to main | `7c34445e1f9d3507b589fe66952ac947f9892163` | Merge pull request #5 from magpern/feature/m4-templates-targeting |
-| Tag | `v0.4.0` | Annotated tag on merge commit (`af5cd9eda842229e40a581320085e1ecd97d1cc2`) |
+| Original tag (at closure) | `v0.4.0` | Annotated on merge commit (`af5cd9eda842229e40a581320085e1ecd97d1cc2`); see release-maintenance note below for later retarget |
 
 ## Delivered
 
@@ -62,9 +62,22 @@ No Geo/UGC visitor weighting; no Admin UI; no persisted template/exclusion optio
 
 1. PR #5 merged to `main` as `7c34445e1f9d3507b589fe66952ac947f9892163`
 2. Post-merge CI on that commit: SUCCESS
-3. Annotated tag `v0.4.0` created on that merge commit and pushed
-4. Tag verified: `git rev-parse v0.4.0^{}` = merge SHA; tag object `af5cd9eda842229e40a581320085e1ecd97d1cc2`
-5. Header / `USP_VERSION` / CHANGELOG on the tagged commit all say `0.4.0`
-6. M4 recorded **CLOSED**
+3. Annotated tag `v0.4.0` **originally** created on that merge commit and pushed (tag object `af5cd9eda842229e40a581320085e1ecd97d1cc2`, peeled `7c34445…`)
+4. At M4 closure time: `git rev-parse v0.4.0^{}` = merge SHA; header / `USP_VERSION` / CHANGELOG on that commit all said `0.4.0`
+5. M4 recorded **CLOSED**
 
 Next milestone: **M5** (`0.5.0`) — not started in this release step.
+
+## Release-maintenance note (2026-09-07)
+
+Published tags are **immutable** for this maintenance pass — do not force-move or recreate them. Recorded history:
+
+| Event | Detail |
+|-------|--------|
+| Original M4 merge | `7c34445e1f9d3507b589fe66952ac947f9892163` |
+| Original `v0.4.0` (at M4 closure) | Annotated tag object `af5cd9e…` → peeled `7c34445…` |
+| Later packaging standardization | Release packaging/docs/scripts landed on `main` (through merge `c05fe078335fc991e8ef74f330d9c4ff3dd87735`); **no M4 runtime feature-contract change** |
+| Current authoritative origin `v0.4.0` | Annotated tag object `6eb8e9baf46724f617e3d24d69208aeffe21cbd3` → peeled `c05fe078335fc991e8ef74f330d9c4ff3dd87735` |
+| Current published release | `v0.4.1` (lightweight tag; historical exception) → `e709fb2d5bae283b07f2c50064386bcd04717a20` |
+
+M4 remains **CLOSED** at feature version `0.4.0`. `v0.4.1` is maintenance (self-update), not a relabel of M4. M5 / M6 still not started.

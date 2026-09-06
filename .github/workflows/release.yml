@@ -3,7 +3,8 @@ name: Release
 # Publishes a GitHub Release when an exact version tag is pushed. Per
 # docs/adr/0013-version-release-policy.md the plugin header, USP_VERSION and
 # CHANGELOG.md must agree on the tagged commit; this workflow enforces that
-# before publishing. Tags are cut from `main` after CI is green.
+# before publishing. Tags are cut from `main` after CI is green and must be
+# annotated (git tag -a). Checkout peels annotated tags to the release commit.
 on:
   push:
     tags:
@@ -25,7 +26,25 @@ jobs:
       - name: Check out the exact tagged commit
         uses: actions/checkout@v7
         with:
+          # Annotated tags: checkout peels to <tag>^{} (commit/tree). Do not treat
+          # the tag-object SHA as the release commit.
           ref: ${{ github.ref }}
+          fetch-tags: true
+
+      - name: Require annotated release tag
+        run: |
+          set -euo pipefail
+          tag_ref="refs/tags/${GITHUB_REF_NAME}"
+          if ! git rev-parse "$tag_ref" >/dev/null 2>&1; then
+            git fetch --no-tags origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+          fi
+          tag_type="$(git cat-file -t "$tag_ref")"
+          if [ "$tag_type" != "tag" ]; then
+            echo "::error::Release tag ${GITHUB_REF_NAME} must be annotated (ADR-0013 / docs/RELEASE.md). Lightweight tags are rejected for new releases. Historical exception: published v0.4.1 remains immutable and is not republished."
+            exit 1
+          fi
+          peeled="$(git rev-parse "${GITHUB_REF_NAME}^{}")"
+          echo "Annotated tag ${GITHUB_REF_NAME} (object $(git rev-parse "$tag_ref")) peels to commit ${peeled}"
 
       - uses: shivammathur/setup-php@v2
         with:

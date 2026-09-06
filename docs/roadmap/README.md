@@ -5,6 +5,10 @@
 
 Versions are **cumulative**: each milestone builds on the prior closed version. M7 intentionally jumps from `0.6.0` to **`1.0.0`** as the first production-recommended complete v1 release.
 
+**Latest published release:** `v0.4.1` (maintenance — optional private update-server self-update).  
+**M4 feature release:** `v0.4.0` (**CLOSED**). Do not relabel M4 as `v0.4.1`.  
+**Next milestone:** **M5** (`0.5.0`) — PLANNED / NOT STARTED.
+
 | Milestone | Version after closure | Objective | Release tag |
 |-----------|----------------------|-----------|-------------|
 | **M0** | `0.0.0` | Repository + architecture foundation (scaffold, CI, ADR shells, HPOS declare, capability/menu ADR) | — (scaffold) |
@@ -16,7 +20,7 @@ Versions are **cumulative**: each milestone builds on the prior closed version. 
 | **M6** | `0.6.0` | Admin UX under WooCommerce + diagnostics | `v0.6.0` |
 | **M7** | **`1.0.0`** | Hardening, acceptance, **first production-recommended release** | **`v1.0.0`** |
 
-Annotated freeze tags may use `mN-…-freeze`. Plugin header / `USP_VERSION` / changelog must agree on any release-tagged commit.
+Annotated freeze tags may use `mN-…-freeze`. Official release tags must be **annotated** (`git tag -a`). Plugin header / `USP_VERSION` / changelog must agree on any release-tagged commit.
 
 ## Out of this roadmap
 

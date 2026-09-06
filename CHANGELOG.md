@@ -9,7 +9,11 @@ and this project adheres to the milestone versioning in [docs/adr/0013-version-r
 
 ### Added
 
-- Self-updates from a private update server via the bundled Plugin Update Checker v5 Composer dependency; active only when  is defined in .
+- Optional self-updates from a private update server via the bundled Plugin Update Checker v5 Composer dependency. Active only when `PRIVATE_UPDATE_SERVER` is defined in `wp-config.php`; when it is not defined the plugin does not check for updates.
+
+### Notes
+
+- Version bump and release/maintenance integration only. No change to M4 template or targeting semantics, public REST DTO, or schema (`20260829m1`).
 
 ## [0.4.0] - M4 server-rendered messages and targeting
 
