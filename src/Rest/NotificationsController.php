@@ -10,6 +10,9 @@ declare( strict_types=1 );
 namespace UniversalSocialProof\Rest;
 
 use Throwable;
+use UniversalSocialProof\Geo\GeoContextAdapter;
+use UniversalSocialProof\Geo\GeographyPolicy;
+use UniversalSocialProof\Geo\UgcGeoContextAdapter;
 use UniversalSocialProof\Logger;
 use UniversalSocialProof\Product\PublicProductResolver;
 use UniversalSocialProof\Selection\CandidateQuery;
@@ -142,6 +145,29 @@ final class NotificationsController {
 			);
 			return self::ok( array() );
 		}
+	}
+
+	/**
+	 * Resolve visitor country for the notifications route only (request-local).
+	 *
+	 * @param GeoContextAdapter|null $adapter Optional adapter override for tests.
+	 */
+	public static function resolve_visitor_country( ?GeoContextAdapter $adapter = null ): ?string {
+		if ( null === $adapter ) {
+			$adapter = new UgcGeoContextAdapter();
+			/**
+			 * Filter the geo context adapter used for notifications selection.
+			 *
+			 * @since 0.5.0
+			 *
+			 * @param GeoContextAdapter $adapter Default UGC-backed adapter.
+			 */
+			$filtered = apply_filters( 'usp_geo_context_adapter', $adapter );
+			if ( $filtered instanceof GeoContextAdapter ) {
+				$adapter = $filtered;
+			}
+		}
+		return GeographyPolicy::visitor_country_for_selection( $adapter );
 	}
 
 	/**
@@ -374,9 +400,12 @@ final class NotificationsController {
 	/**
 	 * Map a validated REST request to a selection request.
 	 *
-	 * @param WP_REST_Request $request Request.
+	 * Visitor country comes only from the UGC adapter (never from client params).
+	 *
+	 * @param WP_REST_Request        $request Request.
+	 * @param GeoContextAdapter|null $adapter Optional adapter override for tests.
 	 */
-	public static function selection_request_from_rest( WP_REST_Request $request ): SelectionRequest {
+	public static function selection_request_from_rest( WP_REST_Request $request, ?GeoContextAdapter $adapter = null ): SelectionRequest {
 		$limit = $request->get_param( 'limit' );
 		if ( is_string( $limit ) && 1 === preg_match( '/^-?\d+$/', $limit ) ) {
 			$limit = (int) $limit;
@@ -392,7 +421,8 @@ final class NotificationsController {
 		$context = SelectionRequest::normalize_page_context( $request->get_param( 'page_context' ) );
 		$exclude = $request->get_param( 'exclude' );
 		$exclude = is_array( $exclude ) ? $exclude : array();
-		return new SelectionRequest( $limit, $product, $context, $exclude );
+		$visitor = self::resolve_visitor_country( $adapter );
+		return new SelectionRequest( $limit, $product, $context, $exclude, $visitor );
 	}
 
 	/**
