@@ -12,7 +12,9 @@ namespace UniversalSocialProof\Selection;
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Validated limit, optional PDP product, page context, exclusions.
+ * Validated limit, optional PDP product, page context, exclusions, visitor country.
+ *
+ * Visitor country is internal request context only — never a REST query parameter.
  */
 final class SelectionRequest {
 
@@ -30,12 +32,14 @@ final class SelectionRequest {
 	 * @param int|null           $product_id          Positive ID or null.
 	 * @param string             $page_context       product|unknown.
 	 * @param array<int, string> $exclude_public_ids Valid UUIDv4.
+	 * @param string|null        $visitor_country    Normalized visitor ISO-2 or null (M5).
 	 */
 	public function __construct(
 		public readonly int $limit,
 		public readonly ?int $product_id,
 		public readonly string $page_context,
-		public readonly array $exclude_public_ids
+		public readonly array $exclude_public_ids,
+		public readonly ?string $visitor_country = null
 	) {}
 
 	/**
@@ -43,6 +47,13 @@ final class SelectionRequest {
 	 */
 	public function is_pdp(): bool {
 		return self::CONTEXT_PRODUCT === $this->page_context && null !== $this->product_id && $this->product_id > 0;
+	}
+
+	/**
+	 * Whether geographic tiering should run.
+	 */
+	public function has_geo(): bool {
+		return null !== $this->visitor_country && '' !== $this->visitor_country;
 	}
 
 	/**
