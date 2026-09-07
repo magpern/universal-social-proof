@@ -7,11 +7,11 @@ Implements the version/tag policy in
 
 | Item | Value |
 |---|---|
-| Latest published release | **`v1.0.1`** |
-| Prior feature release | **`v1.0.0`** (immutable; ZIP omitted `uninstall.php` — do not rewrite) |
-| Release commit (`v1.0.1` peeled) | `dcdfc3d6856a503459a34b8b3eab24067f03c1e4` |
-| GitHub Release | https://github.com/magpern/universal-social-proof/releases/tag/v1.0.1 |
-| Private update publish | https://github.com/magpern/universal-social-proof/actions/runs/34109141660 |
+| Latest published release | **`v1.0.2`** |
+| Prior patches | **`v1.0.1`** (uninstall.php packaging); **`v1.0.0`** (immutable first v1) |
+| Release commit (`v1.0.2` peeled) | `47b00fde4b7442324ece83c69b01bfad1c387481` |
+| GitHub Release | https://github.com/magpern/universal-social-proof/releases/tag/v1.0.2 |
+| Private update publish | https://github.com/magpern/universal-social-proof/actions/runs/34109794507 |
 | Implementation merge | `9481833c1042a9476bba3ad9a019d91ad963710a` (PR #12) |
 | `V1_ACCEPTANCE_GATE` | **PASS** |
 | Schema | `20260829m1` unchanged |

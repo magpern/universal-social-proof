@@ -96,12 +96,24 @@
 | Private update publish | SUCCESS — https://github.com/magpern/universal-social-proof/actions/runs/34109141660 |
 | Update metadata | offers `1.0.1` |
 
+### v1.0.2 patch (Plugins action links)
+
+| Item | Value |
+|------|-------|
+| PR | https://github.com/magpern/universal-social-proof/pull/15 |
+| Merge / tag peel | `47b00fde4b7442324ece83c69b01bfad1c387481` |
+| Tag type | annotated |
+| GitHub Release | https://github.com/magpern/universal-social-proof/releases/tag/v1.0.2 |
+| Release workflow | https://github.com/magpern/universal-social-proof/actions/runs/34109794470 |
+| Private update publish | SUCCESS — https://github.com/magpern/universal-social-proof/actions/runs/34109794507 |
+| Change | Plugins-row **Settings \| Diagnostics**; `#usp-diagnostics` anchor; compact Enabled/Disabled status |
+
 ## Post-publish update path
 
-- Private metadata advanced `1.0.0` → `1.0.1`
-- Published `v1.0.1` ZIP checksum verified; contains `uninstall.php`
+- Private metadata advanced through `1.0.0` → `1.0.1` → **`1.0.2`**
+- Recommended operator package: **`v1.0.2`**
 - DEV bind-mount remains active at current `main` runtime; production untouched
-- `v0.5.0` → `v1.0.1` is the recommended operator update path (skip defective package-only concern on `v1.0.0` uninstall file)
+- `v0.5.0` → `v1.0.2` is the recommended operator update path
 
 ## Explicit non-releases
 
@@ -110,11 +122,11 @@
 
 ## Final runtime state (after closure docs commit may advance HEAD)
 
-| Item | On `v1.0.1` tag |
+| Item | On `v1.0.2` tag |
 |------|-----------------|
-| Runtime | `1.0.1` |
-| Stable tag | `1.0.1` |
-| Latest published | `v1.0.1` |
+| Runtime | `1.0.2` |
+| Stable tag | `1.0.2` |
+| Latest published | `v1.0.2` |
 | M6 | INTERNAL CLOSED |
 | M7 | CLOSED |
 | v1 program | COMPLETE |

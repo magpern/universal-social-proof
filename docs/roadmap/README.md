@@ -5,7 +5,7 @@
 
 Versions are **cumulative**: each milestone builds on the prior closed version. M7 intentionally jumps from `0.6.0` to **`1.0.0`** as the first production-recommended complete v1 release.
 
-**Latest published release:** **`v1.0.1`** (patch after `v1.0.0`; [M7 closure](../milestones/M7-V1-HARDENING-RELEASE-CLOSURE.md)).  
+**Latest published release:** **`v1.0.2`** (Plugins-row Settings/Diagnostics; [M7 closure](../milestones/M7-V1-HARDENING-RELEASE-CLOSURE.md)).  
 **M6:** **INTERNAL CLOSED** (no public `v0.6.0`) — [M6-ADMIN-DIAGNOSTICS-CLOSURE.md](../milestones/M6-ADMIN-DIAGNOSTICS-CLOSURE.md).  
 **M7:** **CLOSED** — [M7-V1-HARDENING-RELEASE-CLOSURE.md](../milestones/M7-V1-HARDENING-RELEASE-CLOSURE.md).  
 **v1 program:** **COMPLETE**.
@@ -19,7 +19,7 @@ Versions are **cumulative**: each milestone builds on the prior closed version. 
 | **M4** | `0.4.0` | Server-side templates (incl. `{{quantity}}`, omitted from default) + product/page targeting. Plan: [M4-TEMPLATES-TARGETING-PLAN.md](../milestones/M4-TEMPLATES-TARGETING-PLAN.md) (**frozen**) | `v0.4.0` (**CLOSED**) |
 | **M5** | `0.5.0` | UGC visitor-country weighting + purchase-country privacy + erasure hardening + REST geo acceptance gate. Plan: [M5-GEOGRAPHY-UGC-PLAN.md](../milestones/M5-GEOGRAPHY-UGC-PLAN.md); closure: [M5-GEOGRAPHY-UGC-CLOSURE.md](../milestones/M5-GEOGRAPHY-UGC-CLOSURE.md) | `v0.5.0` (**CLOSED**) |
 | **M6** | `0.6.0` (runtime) | Admin UX under WooCommerce + diagnostics. Plan: [M6-ADMIN-DIAGNOSTICS-PLAN.md](../milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md); closure: [M6-ADMIN-DIAGNOSTICS-CLOSURE.md](../milestones/M6-ADMIN-DIAGNOSTICS-CLOSURE.md) | **no public tag** (**INTERNAL CLOSED**) |
-| **M7** | **`1.0.0`** (+ patch `1.0.1`) | Hardening, acceptance, **first production-recommended release**. Plan: [M7-V1-HARDENING-RELEASE-PLAN.md](../milestones/M7-V1-HARDENING-RELEASE-PLAN.md); closure: [M7-V1-HARDENING-RELEASE-CLOSURE.md](../milestones/M7-V1-HARDENING-RELEASE-CLOSURE.md) | **`v1.0.0`** / **`v1.0.1`** (**CLOSED**) |
+| **M7** | **`1.0.0`** (+ patches `1.0.1`, `1.0.2`) | Hardening, acceptance, **first production-recommended release**. Plan: [M7-V1-HARDENING-RELEASE-PLAN.md](../milestones/M7-V1-HARDENING-RELEASE-PLAN.md); closure: [M7-V1-HARDENING-RELEASE-CLOSURE.md](../milestones/M7-V1-HARDENING-RELEASE-CLOSURE.md) | **`v1.0.0`** / **`v1.0.1`** / **`v1.0.2`** (**CLOSED**) |
 
 Program: [M6-M7-V1-PROGRAM.md](../milestones/M6-M7-V1-PROGRAM.md).
 
