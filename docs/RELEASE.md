@@ -20,7 +20,8 @@ Implements the version/tag policy in
 | Schema | `20260829m1` unchanged |
 | Real proxy UGC gate | **PASS** ([acceptance](milestones/M5-GEOGRAPHY-UGC-ACCEPTANCE.md)) |
 | M5 closure | [M5-GEOGRAPHY-UGC-CLOSURE.md](milestones/M5-GEOGRAPHY-UGC-CLOSURE.md) (**CLOSED**) |
-| M6 / M7 | Combined program frozen — [M6-M7-V1-PROGRAM.md](milestones/M6-M7-V1-PROGRAM.md); **next published release `v1.0.0`** (no required public `v0.6.0`) |
+| M6 | **INTERNAL CLOSED** — runtime `0.6.0`; Stable `0.5.0`; no public `v0.6.0` ([closure](milestones/M6-ADMIN-DIAGNOSTICS-CLOSURE.md)) |
+| Next published | **`v1.0.0`** (M7) |
 | Production WordPress deploy | Not implied by GitHub/update-server publication |
 
 ## Prior note (post-v0.4.1 maintenance)
