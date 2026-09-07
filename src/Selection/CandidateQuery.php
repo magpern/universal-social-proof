@@ -27,12 +27,14 @@ final class CandidateQuery {
 	 * @param array<int, string> $exclude_public_ids Validated UUIDv4 list.
 	 * @param int|null           $product_id          Preferred parent product ID.
 	 * @param int                $limit               Row cap.
+	 * @param string|null        $country_code        Purchase-country filter (ISO-2).
 	 */
 	private function __construct(
 		private string $cutoff_utc,
 		private array $exclude_public_ids,
 		private ?int $product_id,
-		private int $limit
+		private int $limit,
+		private ?string $country_code = null
 	) {}
 
 	/**
@@ -42,7 +44,7 @@ final class CandidateQuery {
 	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
 	 */
 	public static function global( string $cutoff_utc, array $exclude_public_ids ): self {
-		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), null, self::GLOBAL_LIMIT );
+		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), null, self::GLOBAL_LIMIT, null );
 	}
 
 	/**
@@ -54,7 +56,43 @@ final class CandidateQuery {
 	 */
 	public static function preferred( string $cutoff_utc, array $exclude_public_ids, int $product_id ): self {
 		$product_id = max( 1, $product_id );
-		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), $product_id, self::PREFERRED_LIMIT );
+		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), $product_id, self::PREFERRED_LIMIT, null );
+	}
+
+	/**
+	 * Country-only recency window (max 80).
+	 *
+	 * @param string             $cutoff_utc         UTC MySQL datetime.
+	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
+	 * @param string             $country_code       ISO-2 purchase country.
+	 */
+	public static function country( string $cutoff_utc, array $exclude_public_ids, string $country_code ): self {
+		return new self(
+			$cutoff_utc,
+			self::normalize_exclude( $exclude_public_ids ),
+			null,
+			self::GLOBAL_LIMIT,
+			self::normalize_country( $country_code )
+		);
+	}
+
+	/**
+	 * Preferred product restricted to a purchase country (max 20).
+	 *
+	 * @param string             $cutoff_utc         UTC MySQL datetime.
+	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
+	 * @param int                $product_id          Preferred parent product ID.
+	 * @param string             $country_code       ISO-2 purchase country.
+	 */
+	public static function preferred_country( string $cutoff_utc, array $exclude_public_ids, int $product_id, string $country_code ): self {
+		$product_id = max( 1, $product_id );
+		return new self(
+			$cutoff_utc,
+			self::normalize_exclude( $exclude_public_ids ),
+			$product_id,
+			self::PREFERRED_LIMIT,
+			self::normalize_country( $country_code )
+		);
 	}
 
 	/**
@@ -78,6 +116,16 @@ final class CandidateQuery {
 	}
 
 	/**
+	 * Defensive ISO-2 normalize; invalid → null (query without country).
+	 *
+	 * @param string $country_code Raw.
+	 */
+	private static function normalize_country( string $country_code ): ?string {
+		$code = strtoupper( trim( $country_code ) );
+		return ( 1 === preg_match( '/^[A-Z]{2}$/', $code ) ) ? $code : null;
+	}
+
+	/**
 	 * UTC MySQL cutoff datetime.
 	 */
 	public function cutoff_utc(): string {
@@ -98,6 +146,20 @@ final class CandidateQuery {
 	 */
 	public function product_id(): ?int {
 		return $this->product_id;
+	}
+
+	/**
+	 * Purchase-country filter, or null.
+	 */
+	public function country_code(): ?string {
+		return $this->country_code;
+	}
+
+	/**
+	 * Whether this query filters by purchase country.
+	 */
+	public function has_country(): bool {
+		return null !== $this->country_code;
 	}
 
 	/**

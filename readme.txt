@@ -21,6 +21,9 @@ for WooCommerce stores. No fabricated activity.
 
 == Changelog ==
 
+= 0.5.0 =
+* M5: visitor-country weighting via soft Universal Geo Context dependency (tiered selection; shared PDP search cap; schema and public DTO unchanged).
+
 = 0.4.1 =
 * Automatic updates from a private update server (bundled Plugin Update Checker v5); base URL read from the PRIVATE_UPDATE_SERVER constant, inert when it is not defined.
 

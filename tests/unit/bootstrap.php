@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'USP_VERSION' ) ) {
-	define( 'USP_VERSION', '0.4.1' );
+	define( 'USP_VERSION', '0.5.0' );
 }
 
 if ( ! defined( 'USP_PLUGIN_FILE' ) ) {
@@ -79,16 +79,17 @@ if ( ! function_exists( 'apply_filters' ) ) {
 	 *
 	 * @param string $hook  Filter name.
 	 * @param mixed  $value Value.
+	 * @param mixed  ...$args Extra args.
 	 * @return mixed
 	 */
-	function apply_filters( $hook, $value ) { // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- WP API stub.
+	function apply_filters( $hook, $value, ...$args ) { // phpcs:ignore WooCommerce.Commenting.CommentHooks.MissingHookComment -- WP API stub.
 		if ( empty( $GLOBALS['usp_unit_filters'][ $hook ] ) ) {
 			return $value;
 		}
 		ksort( $GLOBALS['usp_unit_filters'][ $hook ] );
 		foreach ( $GLOBALS['usp_unit_filters'][ $hook ] as $callbacks ) {
 			foreach ( $callbacks as $callback ) {
-				$value = $callback( $value );
+				$value = $callback( $value, ...$args );
 			}
 		}
 		return $value;
