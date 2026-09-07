@@ -3,7 +3,7 @@
 Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-proof notifications.
 
 **Architecture status:** [FROZEN](docs/architecture/FROZEN.md) — Product Owner approved.  
-**Implementation status:** M7 **CLOSED**; v1 program **COMPLETE** at **`v1.0.1`**.
+**Implementation status:** M7 **CLOSED**; v1 program **COMPLETE** at **`v1.0.2`**.
 
 
 | Item | Value |
@@ -13,9 +13,9 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | Namespace | `UniversalSocialProof\` |
 | Composer | `magpern/universal-social-proof` |
 | Runtime version | `1.0.2` |
-| Latest published release | `v1.0.1` (next patch: `v1.0.2`) |
+| Latest published release | `v1.0.2` |
 | WordPress Stable tag | `1.0.2` |
-| First production-recommended release | **v1.0.0** (M7; use **v1.0.1** package) |
+| First production-recommended release | **v1.0.0** (M7; use latest **v1.0.2** package) |
 
 ## Requirements
 
