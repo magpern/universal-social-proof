@@ -3,7 +3,20 @@
 Implements the version/tag policy in
 [`adr/0013-version-release-policy.md`](adr/0013-version-release-policy.md).
 
-## Current release state (M5 / v0.5.0)
+## Current release state (M7 / v1.0.0 release-state)
+
+| Item | Value |
+|---|---|
+| Latest published release | **`v0.5.0`** (until annotated `v1.0.0` publishes) |
+| Runtime / Stable on `main` (after release-state) | **`1.0.0` / `1.0.0`** |
+| Implementation merge | `9481833c1042a9476bba3ad9a019d91ad963710a` (PR #12) |
+| `V1_ACCEPTANCE_GATE` | **PASS** ([gate](milestones/M7-V1-ACCEPTANCE-GATE.md)) |
+| Schema | `20260829m1` unchanged |
+| M6 | **INTERNAL CLOSED** — no public `v0.6.0` ([closure](milestones/M6-ADMIN-DIAGNOSTICS-CLOSURE.md)) |
+| Next action | Annotated `v1.0.0` + GitHub Release + private update publish |
+| Production WordPress deploy | Not implied by GitHub/update-server publication |
+
+## Prior release state (M5 / v0.5.0)
 
 | Item | Value |
 |---|---|

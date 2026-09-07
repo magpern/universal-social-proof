@@ -19,7 +19,7 @@ test -f uninstall.php || fail "missing uninstall.php"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
 grep -q 'Version: 1.0.0' universal-social-proof.php || fail "expected version 1.0.0"
 grep -q "define( 'USP_VERSION', '1.0.0' )" universal-social-proof.php || fail "USP_VERSION constant"
-grep -q 'Stable tag: 0.5.0' readme.txt || fail "Stable tag must remain 0.5.0 until v1 release-state"
+grep -q 'Stable tag: 1.0.0' readme.txt || fail "Stable tag must be 1.0.0 for v1 release-state"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 
 echo "==> Asset size budgets"

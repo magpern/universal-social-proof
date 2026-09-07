@@ -17,9 +17,8 @@ and this project adheres to the milestone versioning in [docs/adr/0013-version-r
 
 ### Notes
 
-- Candidate / pre-release-state: Stable tag remains `0.5.0` until the v1 release-state PR.
-- Event schema unchanged (`20260829m1`). No public `v0.6.0`.
-- First production-recommended complete v1 release after release-state + annotated tag.
+- Stable tag advanced to `1.0.0`. Event schema unchanged (`20260829m1`). No public `v0.6.0`.
+- First production-recommended complete v1 release.
 
 ## [0.6.0] - 2026-09-07
 
