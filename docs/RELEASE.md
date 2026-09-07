@@ -7,13 +7,19 @@ Implements the version/tag policy in
 
 | Item | Value |
 |---|---|
-| Latest published release | **`v0.5.0`** (annotated tag after this release-state lands on `main`) |
+| Latest published release | **`v0.5.0`** |
+| Release commit (peeled tag) | `495b12da46b2af3f292114b50c0ca58358e27abd` |
+| Annotated tag object | `64162689aa447955c48675b361cddf869c2b5646` |
+| GitHub Release | https://github.com/magpern/universal-social-proof/releases/tag/v0.5.0 |
+| Release workflow | https://github.com/magpern/universal-social-proof/actions/runs/34098173577 |
+| Private update publish | https://github.com/magpern/universal-social-proof/actions/runs/34098173644 |
 | Implementation merge | `76572f3bbe02724d911a78a9751c2ac6798a62a1` (PR #8) |
 | Freeze merge | `1d3c959372b97168b38d077e319a427308110d96` (PR #7) |
 | Prior published release | `v0.4.1` |
 | M4 feature release | `v0.4.0` (**CLOSED**) |
 | Schema | `20260829m1` unchanged |
 | Real proxy UGC gate | **PASS** ([acceptance](milestones/M5-GEOGRAPHY-UGC-ACCEPTANCE.md)) |
+| M5 closure | [M5-GEOGRAPHY-UGC-CLOSURE.md](milestones/M5-GEOGRAPHY-UGC-CLOSURE.md) (**CLOSED**) |
 | M6 / M7 | Not started |
 | Production WordPress deploy | Not implied by GitHub/update-server publication |
 

@@ -1,11 +1,12 @@
 # M5 — Geography / UGC acceptance evidence
 
-**Branch / release:** `release/v0.5.0` (from merge `76572f3bbe02724d911a78a9751c2ac6798a62a1`)  
+**Branch / release:** published `v0.5.0` (peeled `495b12da46b2af3f292114b50c0ca58358e27abd`)  
 **Freeze baseline:** `1d3c959372b97168b38d077e319a427308110d96` (PR #7)  
 **Implementation PR:** #8 → merge `76572f3bbe02724d911a78a9751c2ac6798a62a1`  
 **Runtime version:** `0.5.0`  
-**WordPress Stable tag (at release):** `0.5.0`  
-**DB_VERSION:** `20260829m1` (unchanged)
+**WordPress Stable tag:** `0.5.0`  
+**DB_VERSION:** `20260829m1` (unchanged)  
+**Closure:** [M5-GEOGRAPHY-UGC-CLOSURE.md](M5-GEOGRAPHY-UGC-CLOSURE.md)
 
 ## Automated
 
