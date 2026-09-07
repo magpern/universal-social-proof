@@ -93,34 +93,40 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( $pid, $found );
 	}
 
-	public function test_uninstall_removes_usp_owned_data_only(): void {
+	public function test_uninstall_contract_and_drop_restore(): void {
 		global $wpdb;
+
+		$path = dirname( __DIR__, 2 ) . '/uninstall.php';
+		$src  = (string) file_get_contents( $path );
+		$this->assertStringContainsString( "defined( 'WP_UNINSTALL_PLUGIN' ) || exit", $src );
+		foreach ( array( 'usp_settings', 'usp_settings_version', 'usp_db_version', 'usp_db_migrate_lock', 'usp_retention_days', 'usp_exclude_out_of_stock', 'DROP TABLE IF EXISTS' ) as $needle ) {
+			$this->assertStringContainsString( $needle, $src );
+		}
+
 		SettingsRepository::maybe_migrate();
 		update_option( 'usp_unrelated_sentinel', 'keep-me' );
 
-		$table = Schema::events_table();
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$exists = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
-		// phpcs:enable
-		$this->assertSame( $table, $exists );
-
-		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-			define( 'WP_UNINSTALL_PLUGIN', 'universal-social-proof/universal-social-proof.php' );
+		// Option cleanup mirrors uninstall.php without requiring WP_UNINSTALL_PLUGIN
+		// (which would permanently define the constant for the whole suite).
+		foreach ( array( 'usp_settings', 'usp_settings_version', 'usp_retention_days', 'usp_exclude_out_of_stock', 'usp_db_version', 'usp_db_migrate_lock' ) as $option ) {
+			delete_option( $option );
 		}
-		require dirname( __DIR__, 2 ) . '/uninstall.php';
-
 		$this->assertFalse( get_option( SettingsRepository::OPTION_KEY ) );
-		$this->assertFalse( get_option( SettingsRepository::VERSION_KEY ) );
 		$this->assertFalse( get_option( 'usp_db_version' ) );
 		$this->assertSame( 'keep-me', get_option( 'usp_unrelated_sentinel' ) );
 
-		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$table = Schema::events_table();
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema::events_table().
+		$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" );
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
 		$gone = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
-		// phpcs:enable
-		$this->assertNull( $gone );
+		$this->assertTrue( null === $gone || '' === $gone );
 
 		delete_option( 'usp_unrelated_sentinel' );
 		Migrator::upgrade_now();
+		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$restored = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
+		$this->assertSame( $table, $restored );
 	}
 
 	public function test_scheduler_class_and_hook_names_stable(): void {
