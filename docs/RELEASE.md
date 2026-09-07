@@ -20,7 +20,7 @@ Implements the version/tag policy in
 | Schema | `20260829m1` unchanged |
 | Real proxy UGC gate | **PASS** ([acceptance](milestones/M5-GEOGRAPHY-UGC-ACCEPTANCE.md)) |
 | M5 closure | [M5-GEOGRAPHY-UGC-CLOSURE.md](milestones/M5-GEOGRAPHY-UGC-CLOSURE.md) (**CLOSED**) |
-| M6 / M7 | Not started |
+| M6 / M7 | Combined program frozen — [M6-M7-V1-PROGRAM.md](milestones/M6-M7-V1-PROGRAM.md); **next published release `v1.0.0`** (no required public `v0.6.0`) |
 | Production WordPress deploy | Not implied by GitHub/update-server publication |
 
 ## Prior note (post-v0.4.1 maintenance)
@@ -54,8 +54,10 @@ enforces header/constant/changelog agreement for the current milestone version.
 additionally refuses to publish unless all of them equal the pushed Git tag
 (leading `v` removed). CI never rewrites version files.
 
-Tag convention: `v0.N.0` for milestones M1–M6, `v1.0.0` for M7 (ADR-0013);
-maintenance patches between milestones use `v0.N.P` when needed. The workflow
+Tag convention: historical `v0.N.0` for M1–M5; **`v1.0.0`** for M7 (ADR-0013).
+A public **`v0.6.0` is not required** under the combined M6/M7 program — M6 may
+use runtime `0.6.0` while Stable lags at `0.5.0` until the v1 release-state PR.
+Maintenance patches between milestones use `v0.N.P` when needed. The workflow
 trigger is the generic `v[0-9]+.[0-9]+.[0-9]+` (plus a `-<pre>` suffix → GitHub
 prerelease); ADR-0013 governs *which* such tags are cut.
 

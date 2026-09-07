@@ -333,7 +333,9 @@ Templates render **server-side**; the front end must not re-implement template t
 
 Under **WooCommerce** submenu. Capability: `manage_woocommerce`. Sections: General, Display, Content/Templates, Products, Targeting, Geography (country on/off), Privacy, Diagnostics.
 
-Diagnostics: counts, oldest/newest `occurred_at`, capture lag samples (`captured_at - occurred_at`), schema, UGC state, cleanup — **no** order ids in UI.
+**M6 settings:** single option `usp_settings` + marker `usp_settings_version` (ADR-0015). Precedence: default → settings → filters → clamp. Master `display_enabled` is display-only; when false, REST remains `GET …/notifications` → **HTTP 200 `[]`** with `Cache-Control: no-store` (no 204). Checkout hard-denied; cart/account default denied but configurable. Product exclusion IDs always server-validated (max 200).
+
+**Diagnostics (v1 / ADR-0016):** evaluated only on the USP Social Proof admin surface. Event metrics limited to active/suppressed counts and newest/oldest active `occurred_at` (aggregates; zero `wc_get_product` / `wc_get_order`). Schema, UGC state, cleanup health, effective settings allowed. **No** order ids / provenance; **no** required capture-lag AVG in v1; **no** event browser.
 
 ---
 
@@ -370,7 +372,7 @@ Diagnostics: counts, oldest/newest `occurred_at`, capture lag samples (`captured
 
 Versions are **cumulative**. M7 intentionally jumps from `0.6.0` to **`1.0.0`**. There is **no M8** in this freeze.
 
-Freeze tags: `mN-…-freeze`. Release tags: `v0.N.0` for M1–M6; **`v1.0.0`** for M7. Header / `USP_VERSION` / changelog must agree on the tagged commit.
+Freeze tags: `mN-…-freeze`. **Published** release tags: `v0.N.0` for M1–M5 historically; **`v1.0.0`** for M7. A public **`v0.6.0` is not required** (combined M6/M7 program; ADR-0013 amendment 2026-09-07). On published tags, header / `USP_VERSION` / Stable tag / changelog must agree. During M6, runtime may be `0.6.0` while Stable lags at `0.5.0`.
 
 ### Milestone notes
 
@@ -379,7 +381,8 @@ Freeze tags: `mN-…-freeze`. Release tags: `v0.N.0` for M1–M6; **`v1.0.0`** f
 **M2:** product-resolution budget is an acceptance criterion. **M2 DTO omits `message`** (PO-approved 2026-08-30; M4 adds it additively). See ADR-0011 amendment.  
 **M4:** token grammar includes `{{product}}`, `{{location}}`/`{{country}}`, `{{time_ago}}`, **`{{quantity}}`** (original qty); default template omits quantity. `{{location}}` = purchase-country alias (country-only v1). Public DTO adds `message` + `show_relative_time` (chrome coordination). Checkout **excluded** by default; **PDP prefer current product** (PO accepted).  
 **M5 out:** region/city; client-supplied geo.  
-**M7:** ships **`1.0.0`** (not `0.7.0`).
+**M6:** admin + diagnostics + uninstall; settings options only — **no** `usp_events` schema change (`20260829m1`). Plan: [M6-ADMIN-DIAGNOSTICS-PLAN.md](../milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md).  
+**M7:** ships **`1.0.0`** (not `0.7.0`); hardening/acceptance/release only. Program: [M6-M7-V1-PROGRAM.md](../milestones/M6-M7-V1-PROGRAM.md).
 
 Detailed roadmap: [roadmap/README.md](../roadmap/README.md).
 
@@ -401,8 +404,11 @@ Required topics (see [adr/README.md](../adr/README.md)):
 10. Selection pipeline + product-resolution budget; OOS default off  
 11. Server-side templates (M4 token grammar incl. `{{quantity}}`)  
 12. Admin capability + WooCommerce submenu  
-13. Versioning: `0.N.0` → `1.0.0` at M7  
+13. Versioning: `0.N.0` → `1.0.0` at M7 (public `v0.6.0` optional/skipped)  
 14. Extensibility without generic event platform  
+15. Settings storage / precedence / display-only master-enable (ADR-0015)  
+16. Diagnostics privacy + query budget (ADR-0016)  
+17. Uninstall removes all USP-owned data (ADR-0017)  
 
 Do not fabricate WooCommerce implementation evidence to close M1-gated decisions during M0.
 
@@ -417,7 +423,7 @@ Do not fabricate WooCommerce implementation evidence to close M1-gated decisions
 | Quantity | Stored immutable; **`{{quantity}}` in M4 grammar**; **omitted from default template** |
 | Plugin name | **Universal Social Proof** |
 | Admin placement | **Under WooCommerce** |
-| Release | M0 `0.0.0`; M1–M6 `0.1.0`–`0.6.0`; M7 **`1.0.0`** |
+| Release | M0 `0.0.0`; M1–M6 runtime `0.1.0`–`0.6.0`; M7 **`1.0.0`**; next **published** after `v0.5.0` is **`v1.0.0`** (no required public `v0.6.0`) |
 
 These decisions are **closed**. Do not reopen them as open questions. Future region/city are new product milestones beyond M0–M7, not silent scope creep.
 

@@ -16,7 +16,11 @@ House format (Nygard): Status / Context / Decision / Consequences / Related.
 | 0010 | Selection pipeline and product-resolution budget | Accepted (freeze) + **M2 amendment 2026-08-30** | [0010-selection-product-resolution-budget.md](0010-selection-product-resolution-budget.md) |
 | 0011 | Server-side template model | Accepted (freeze) + **M2 `message` clarification 2026-08-30** + **M4 `show_relative_time` / location alias 2026-08-31** | [0011-server-side-templates.md](0011-server-side-templates.md) |
 | 0012 | Admin capability and menu placement | Accepted (freeze) | [0012-admin-capability-menu.md](0012-admin-capability-menu.md) |
-| 0013 | Version and release policy | Accepted (freeze) | [0013-version-release-policy.md](0013-version-release-policy.md) |
+| 0013 | Version and release policy | Accepted (freeze) + **M6/M7 amendment 2026-09-07** (no required public `v0.6.0`) | [0013-version-release-policy.md](0013-version-release-policy.md) |
 | 0014 | Extensibility boundary | Accepted (freeze) | [0014-extensibility-boundary.md](0014-extensibility-boundary.md) |
+| 0015 | Settings storage, precedence, master-enable | Accepted (M6/M7 freeze) | [0015-settings-storage-precedence.md](0015-settings-storage-precedence.md) |
+| 0016 | Diagnostics privacy and query budget | Accepted (M6/M7 freeze) | [0016-diagnostics-privacy-budget.md](0016-diagnostics-privacy-budget.md) |
+| 0017 | Uninstall and USP data ownership | Accepted (M6/M7 freeze) | [0017-uninstall-data-ownership.md](0017-uninstall-data-ownership.md) |
 
-Authoritative specification: [../architecture/FROZEN.md](../architecture/FROZEN.md).
+Authoritative specification: [../architecture/FROZEN.md](../architecture/FROZEN.md).  
+Combined program: [../milestones/M6-M7-V1-PROGRAM.md](../milestones/M6-M7-V1-PROGRAM.md).
