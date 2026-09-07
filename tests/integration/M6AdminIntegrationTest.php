@@ -106,13 +106,12 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_admin_menu_requires_manage_woocommerce(): void {
-		/**
-		 * Fires before the administration menu loads in wp-admin.
-		 *
-		 * @since 1.5.0
-		 */
-		do_action( 'admin_menu' );
-		global $submenu;
+		global $menu, $submenu;
+		$menu    = array();
+		$submenu = array();
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		AdminController::add_menu();
 		$found = false;
 		if ( isset( $submenu['woocommerce'] ) ) {
 			foreach ( $submenu['woocommerce'] as $item ) {

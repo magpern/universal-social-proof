@@ -354,7 +354,12 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		$oos->set_stock_status( 'outofstock' );
 		$oos->save();
 		$this->assertNotNull( $resolver->resolve_for_event( (int) $oos->get_id(), null ) );
-		update_option( StockExclusionSettings::OPTION_KEY, 'yes' );
+		\UniversalSocialProof\Settings\SettingsRepository::save(
+			array_merge(
+				\UniversalSocialProof\Settings\SettingsRepository::defaults(),
+				array( 'exclude_out_of_stock' => true )
+			)
+		);
 		$resolver2 = new PublicProductResolver( new ProductResolutionBudget() );
 		$this->assertNull( $resolver2->resolve_for_event( (int) $oos->get_id(), null ) );
 		delete_option( StockExclusionSettings::OPTION_KEY );
