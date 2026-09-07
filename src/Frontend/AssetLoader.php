@@ -38,7 +38,7 @@ final class AssetLoader {
 		}
 
 		$base = trailingslashit( plugins_url( '', USP_PLUGIN_FILE ) );
-		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '1.0.2';
+		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '1.1.0';
 
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
@@ -46,6 +46,11 @@ final class AssetLoader {
 			array(),
 			$ver
 		);
+
+		$custom_css = (string) SettingsRepository::appearance()['custom_css'];
+		if ( '' !== trim( $custom_css ) ) {
+			wp_add_inline_style( self::STYLE_HANDLE, $custom_css );
+		}
 
 		wp_enqueue_script(
 			self::SCRIPT_HANDLE,

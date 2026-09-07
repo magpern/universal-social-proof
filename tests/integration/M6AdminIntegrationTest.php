@@ -42,7 +42,7 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 		update_option( SettingsRepository::LEGACY_RETENTION, 21 );
 		update_option( SettingsRepository::LEGACY_OOS, 'yes' );
 		SettingsRepository::maybe_migrate();
-		$this->assertSame( 1, (int) get_option( SettingsRepository::VERSION_KEY ) );
+		$this->assertSame( 2, (int) get_option( SettingsRepository::VERSION_KEY ) );
 		$s = SettingsRepository::get_persisted();
 		$this->assertSame( 21, $s['retention_days'] );
 		$this->assertTrue( $s['exclude_out_of_stock'] );
@@ -131,7 +131,7 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 		wp_set_current_user( $admin_id );
 
 		$diag = DiagnosticsService::collect();
-		$this->assertSame( '1.0.2', $diag['runtime_version'] );
+		$this->assertSame( '1.1.0', $diag['runtime_version'] );
 		$this->assertSame( Schema::DB_VERSION, $diag['db_version'] );
 		$this->assertArrayHasKey( 'events', $diag );
 		$json = wp_json_encode( $diag );
@@ -149,7 +149,7 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_schema_unchanged(): void {
-		$this->assertSame( '20260829m1', Schema::DB_VERSION );
+		$this->assertSame( '20260907v11a', Schema::DB_VERSION );
 	}
 
 	public function test_uninstall_script_exists_and_is_guarded(): void {

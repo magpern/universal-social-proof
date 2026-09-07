@@ -21,6 +21,12 @@ for WooCommerce stores. No fabricated activity.
 
 == Changelog ==
 
+= 1.1.0 =
+* Optional genuine add-to-cart social proof with short freshness window.
+* Appearance controls and polished toaster design (CSS variables + custom CSS).
+* Sources toggles; purchase retention days preserved; settings version 2.
+* Runtime 1.1.0; Stable tag remains 1.0.2 until release.
+
 = 1.0.2 =
 * Plugins row: Settings and Diagnostics links to WooCommerce → Social Proof.
 

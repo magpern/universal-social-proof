@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace UniversalSocialProof\Frontend;
 
 use UniversalSocialProof\Rest\NotificationsController;
+use UniversalSocialProof\Settings\SettingsRepository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -43,7 +44,8 @@ final class BootstrapConfig {
 			}
 		}
 
-		$rest_url = rest_url( NotificationsController::NAMESPACE . NotificationsController::ROUTE );
+		$rest_url   = rest_url( NotificationsController::NAMESPACE . NotificationsController::ROUTE );
+		$appearance = SettingsRepository::appearance();
 
 		return array(
 			'restUrl'     => esc_url_raw( $rest_url ),
@@ -57,6 +59,16 @@ final class BootstrapConfig {
 				'visibleMs'      => self::VISIBLE_MS,
 				'gapMs'          => self::GAP_MS,
 				'motionMs'       => self::MOTION_MS,
+			),
+			'appearance'  => array(
+				'position'         => (string) $appearance['position'],
+				'background'       => (string) $appearance['background'],
+				'text'             => (string) $appearance['text'],
+				'accent'           => (string) $appearance['accent'],
+				'radius'           => (int) $appearance['radius'],
+				'shadow'           => (string) $appearance['shadow'],
+				'showProductImage' => (bool) $appearance['show_product_image'],
+				'showClose'        => (bool) $appearance['show_close'],
 			),
 			'i18n'        => array(
 				'dismiss'    => __( 'Dismiss notification', 'universal-social-proof' ),

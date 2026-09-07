@@ -58,8 +58,8 @@ final class M5GeographyIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_schema_db_version_unchanged(): void {
-		$this->assertSame( '20260829m1', Schema::DB_VERSION );
-		$this->assertSame( '20260829m1', get_option( Migrator::OPTION_VERSION ) );
+		$this->assertSame( '20260907v11a', Schema::DB_VERSION );
+		$this->assertSame( '20260907v11a', get_option( Migrator::OPTION_VERSION ) );
 	}
 
 	public function test_ugc_absent_uses_m2_path_no_country_sql(): void {

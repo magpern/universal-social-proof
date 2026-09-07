@@ -26,7 +26,7 @@ defined( 'ABSPATH' ) || exit;
 final class LifecycleHooks {
 
 	/**
-	 * Register all M1 WooCommerce hooks.
+	 * Register all M1 WooCommerce hooks plus cart capture.
 	 */
 	public static function register(): void {
 		add_action( 'woocommerce_order_status_changed', array( self::class, 'on_status_changed' ), 20, 4 );
@@ -38,6 +38,7 @@ final class LifecycleHooks {
 		add_action( 'woocommerce_before_delete_order_item', array( self::class, 'on_before_delete_item' ), 20, 1 );
 		add_action( 'woocommerce_before_trash_order', array( self::class, 'on_before_order_gone' ), 20, 2 );
 		add_action( 'woocommerce_before_delete_order', array( self::class, 'on_before_order_gone' ), 20, 2 );
+		CartCaptureService::register();
 	}
 
 	/**

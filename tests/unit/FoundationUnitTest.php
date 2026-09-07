@@ -26,17 +26,17 @@ final class FoundationUnitTest extends TestCase {
 	}
 
 	public function test_version_constant_is_m7_candidate(): void {
-		$this->assertSame( '1.0.2', USP_VERSION );
+		$this->assertSame( '1.1.0', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*1\.0\.2\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*1\.1\.0\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '1.0.2' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '1.1.0' );", $contents );
 		$readme = (string) file_get_contents( dirname( __DIR__, 2 ) . '/readme.txt' );
 		$this->assertMatchesRegularExpression( '/^Stable tag:\s*1\.0\.2\s*$/m', $readme );
 	}

@@ -35,7 +35,7 @@ final class M6SettingsUnitTest extends TestCase {
 
 	public function test_defaults_and_migration_without_legacy(): void {
 		SettingsRepository::maybe_migrate();
-		$this->assertSame( 1, SettingsRepository::settings_version() );
+		$this->assertSame( 2, SettingsRepository::settings_version() );
 		$s = SettingsRepository::get_persisted();
 		$this->assertTrue( $s['display_enabled'] );
 		$this->assertFalse( $s['exclude_out_of_stock'] );
@@ -71,7 +71,7 @@ final class M6SettingsUnitTest extends TestCase {
 		$s = SettingsRepository::get_persisted();
 		$this->assertFalse( $s['display_enabled'] );
 		$this->assertSame( 30, $s['retention_days'] );
-		$this->assertSame( 1, SettingsRepository::settings_version() );
+		$this->assertSame( 2, SettingsRepository::settings_version() );
 	}
 
 	public function test_migration_idempotent(): void {
@@ -201,7 +201,7 @@ final class M6SettingsUnitTest extends TestCase {
 		$s = SettingsRepository::get_persisted();
 		$this->assertTrue( $s['display_enabled'] );
 		$this->assertSame( 60, $s['retention_days'] );
-		$this->assertSame( 1, SettingsRepository::settings_version() );
+		$this->assertSame( 2, SettingsRepository::settings_version() );
 	}
 
 	public function test_display_enabled_default_true(): void {

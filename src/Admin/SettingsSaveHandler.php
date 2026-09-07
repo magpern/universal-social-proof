@@ -41,14 +41,27 @@ final class SettingsSaveHandler {
 		check_admin_referer( self::NONCE_SAVE );
 
 		$raw = array(
-			'display_enabled'       => isset( $_POST['usp_display_enabled'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
-			'template'              => isset( $_POST['usp_template'] ) ? wp_unslash( (string) $_POST['usp_template'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput,WordPress.Security.NonceVerification.Missing
-			'excluded_product_ids'  => isset( $_POST['usp_excluded_product_ids'] ) ? wp_unslash( $_POST['usp_excluded_product_ids'] ) : array(), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput,WordPress.Security.NonceVerification.Missing
-			'exclude_out_of_stock'  => isset( $_POST['usp_exclude_out_of_stock'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			'load_on_cart'          => isset( $_POST['usp_load_on_cart'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			'load_on_account'       => isset( $_POST['usp_load_on_account'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			'geo_weighting_enabled' => isset( $_POST['usp_geo_weighting_enabled'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			'retention_days'        => isset( $_POST['usp_retention_days'] ) ? (int) $_POST['usp_retention_days'] : 60, // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'display_enabled'               => isset( $_POST['usp_display_enabled'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing -- verified above.
+			'purchase_enabled'              => isset( $_POST['usp_purchase_enabled'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'cart_enabled'                  => isset( $_POST['usp_cart_enabled'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'template'                      => isset( $_POST['usp_template'] ) ? wp_unslash( (string) $_POST['usp_template'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput,WordPress.Security.NonceVerification.Missing
+			'cart_template'                 => isset( $_POST['usp_cart_template'] ) ? wp_unslash( (string) $_POST['usp_cart_template'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput,WordPress.Security.NonceVerification.Missing
+			'excluded_product_ids'          => isset( $_POST['usp_excluded_product_ids'] ) ? wp_unslash( $_POST['usp_excluded_product_ids'] ) : array(), // phpcs:ignore WordPress.Security.ValidatedSanitizedInput,WordPress.Security.NonceVerification.Missing
+			'exclude_out_of_stock'          => isset( $_POST['usp_exclude_out_of_stock'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'load_on_cart'                  => isset( $_POST['usp_load_on_cart'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'load_on_account'               => isset( $_POST['usp_load_on_account'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'geo_weighting_enabled'         => isset( $_POST['usp_geo_weighting_enabled'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'retention_days'                => isset( $_POST['usp_retention_days'] ) ? (int) $_POST['usp_retention_days'] : 60, // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'cart_retention_minutes'        => isset( $_POST['usp_cart_retention_minutes'] ) ? (int) $_POST['usp_cart_retention_minutes'] : 60, // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_position'           => isset( $_POST['usp_appearance_position'] ) ? sanitize_key( wp_unslash( (string) $_POST['usp_appearance_position'] ) ) : 'bottom-left', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_background'         => isset( $_POST['usp_appearance_background'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['usp_appearance_background'] ) ) : '#ffffff', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_text'               => isset( $_POST['usp_appearance_text'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['usp_appearance_text'] ) ) : '#111111', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_accent'             => isset( $_POST['usp_appearance_accent'] ) ? sanitize_text_field( wp_unslash( (string) $_POST['usp_appearance_accent'] ) ) : '#0b5fff', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_radius'             => isset( $_POST['usp_appearance_radius'] ) ? (int) $_POST['usp_appearance_radius'] : 12, // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_shadow'             => isset( $_POST['usp_appearance_shadow'] ) ? sanitize_key( wp_unslash( (string) $_POST['usp_appearance_shadow'] ) ) : 'soft', // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_show_product_image' => isset( $_POST['usp_appearance_show_product_image'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_show_close'         => isset( $_POST['usp_appearance_show_close'] ), // phpcs:ignore WordPress.Security.NonceVerification.Missing
+			'appearance_custom_css'         => isset( $_POST['usp_appearance_custom_css'] ) ? wp_unslash( (string) $_POST['usp_appearance_custom_css'] ) : '', // phpcs:ignore WordPress.Security.ValidatedSanitizedInput,WordPress.Security.NonceVerification.Missing
 		);
 
 		$result = SettingsRepository::save( $raw );

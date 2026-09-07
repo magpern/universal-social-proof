@@ -13,6 +13,7 @@ use UniversalSocialProof\Cleanup\RetentionScheduler;
 use UniversalSocialProof\Plugin;
 use UniversalSocialProof\Settings\SettingsRepository;
 use UniversalSocialProof\Storage\EventStatus;
+use UniversalSocialProof\Storage\EventType;
 use UniversalSocialProof\Storage\Migrator;
 use UniversalSocialProof\Storage\Schema;
 use WP_UnitTestCase;
@@ -32,8 +33,8 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_runtime_is_v1_candidate_and_schema_unchanged(): void {
-		$this->assertSame( '1.0.2', USP_VERSION );
-		$this->assertSame( '20260829m1', Schema::DB_VERSION );
+		$this->assertSame( '1.1.0', USP_VERSION );
+		$this->assertSame( '20260907v11a', Schema::DB_VERSION );
 		$this->assertSame( Schema::DB_VERSION, (string) get_option( 'usp_db_version' ) );
 	}
 
@@ -46,14 +47,14 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 
 		SettingsRepository::maybe_migrate();
 		$first = SettingsRepository::get_persisted();
-		$this->assertSame( 1, (int) get_option( SettingsRepository::VERSION_KEY ) );
+		$this->assertSame( 2, (int) get_option( SettingsRepository::VERSION_KEY ) );
 		$this->assertSame( 30, $first['retention_days'] );
 		$this->assertFalse( $first['exclude_out_of_stock'] );
 
 		SettingsRepository::maybe_migrate();
 		$second = SettingsRepository::get_persisted();
 		$this->assertSame( $first, $second );
-		$this->assertSame( 1, (int) get_option( SettingsRepository::VERSION_KEY ) );
+		$this->assertSame( 2, (int) get_option( SettingsRepository::VERSION_KEY ) );
 	}
 
 	public function test_events_survive_settings_migration(): void {
@@ -65,6 +66,7 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 		$wpdb->insert(
 			$table,
 			array(
+				'event_type'      => EventType::PURCHASE,
 				'source_order_id' => 900001,
 				'source_item_id'  => 900002,
 				'public_id'       => $pid,

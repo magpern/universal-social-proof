@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Selection;
 
+use UniversalSocialProof\Storage\EventType;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -25,6 +27,7 @@ final class Candidate {
 	 * @param string      $quantity      Original quantity as stored.
 	 * @param string|null $country_code  ISO country or null.
 	 * @param string      $occurred_at  UTC MySQL datetime.
+	 * @param string      $event_type    purchase|add_to_cart.
 	 */
 	public function __construct(
 		public readonly string $public_id,
@@ -32,7 +35,8 @@ final class Candidate {
 		public readonly ?int $variation_id,
 		public readonly string $quantity,
 		public readonly ?string $country_code,
-		public readonly string $occurred_at
+		public readonly string $occurred_at,
+		public readonly string $event_type = EventType::PURCHASE
 	) {}
 
 	/**
@@ -59,6 +63,10 @@ final class Candidate {
 			return null;
 		}
 		$country = isset( $row['country_code'] ) && '' !== $row['country_code'] ? (string) $row['country_code'] : null;
+		$type    = isset( $row['event_type'] ) ? (string) $row['event_type'] : EventType::PURCHASE;
+		if ( ! EventType::is_valid( $type ) ) {
+			$type = EventType::PURCHASE;
+		}
 
 		return new self(
 			$public_id,
@@ -66,7 +74,8 @@ final class Candidate {
 			$variation,
 			isset( $row['quantity'] ) ? (string) $row['quantity'] : '0',
 			$country,
-			$occurred
+			$occurred,
+			$type
 		);
 	}
 }

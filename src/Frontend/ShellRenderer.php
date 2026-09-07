@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Frontend;
 
+use UniversalSocialProof\Settings\SettingsRepository;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -23,8 +25,31 @@ final class ShellRenderer {
 		if ( ! AssetLoader::was_enqueued() ) {
 			return;
 		}
+
+		$appearance = SettingsRepository::appearance();
+		$position   = (string) $appearance['position'];
+		$shadow     = (string) $appearance['shadow'];
+		$classes    = array(
+			'usp-toaster',
+			'usp-toaster--' . $position,
+			'usp-toaster--shadow-' . $shadow,
+		);
+		if ( empty( $appearance['show_product_image'] ) ) {
+			$classes[] = 'usp-toaster--hide-image';
+		}
+		if ( empty( $appearance['show_close'] ) ) {
+			$classes[] = 'usp-toaster--hide-close';
+		}
+
+		$style = sprintf(
+			'--usp-toast-background:%1$s;--usp-toast-text:%2$s;--usp-toast-accent:%3$s;--usp-toast-radius:%4$dpx;--usp-bg:var(--usp-toast-background);--usp-text:var(--usp-toast-text);--usp-accent:var(--usp-toast-accent);--usp-radius:var(--usp-toast-radius);',
+			esc_attr( (string) $appearance['background'] ),
+			esc_attr( (string) $appearance['text'] ),
+			esc_attr( (string) $appearance['accent'] ),
+			(int) $appearance['radius']
+		);
 		?>
-		<div id="usp-toaster-root" class="usp-toaster" hidden data-usp-toaster>
+		<div id="usp-toaster-root" class="<?php echo esc_attr( implode( ' ', $classes ) ); ?>" style="<?php echo esc_attr( $style ); ?>" hidden data-usp-toaster>
 			<div class="usp-toaster__panel" role="status" aria-live="polite" aria-atomic="true" aria-hidden="true">
 				<a class="usp-toaster__link" href="#" hidden>
 					<span class="usp-toaster__media"></span>

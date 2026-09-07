@@ -43,7 +43,7 @@ final class M4TemplateIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_schema_unchanged(): void {
-		$this->assertSame( '20260829m1', Schema::DB_VERSION );
+		$this->assertSame( '20260907v11a', Schema::DB_VERSION );
 	}
 
 	public function test_rest_default_message_and_show_relative_time_true(): void {
@@ -65,7 +65,7 @@ final class M4TemplateIntegrationTest extends WP_UnitTestCase {
 		$this->assertNotEmpty( $data );
 		$item = $data[0];
 		$this->assertSame( NotificationsController::ALLOWLIST, array_keys( $item ) );
-		$this->assertSame( 'Someone purchased M4 Demo Product', $item['message'] );
+		$this->assertSame( 'Someone in Sweden purchased M4 Demo Product', $item['message'] );
 		$this->assertTrue( $item['show_relative_time'] );
 		$this->assertArrayNotHasKey( 'quantity', $item );
 		$this->assertArrayNotHasKey( 'country_code', $item );
@@ -104,7 +104,7 @@ final class M4TemplateIntegrationTest extends WP_UnitTestCase {
 		$response = $this->dispatch( array( 'limit' => '1' ) );
 		$data     = $response->get_data();
 		$this->assertNotEmpty( $data );
-		$this->assertSame( 'Someone purchased Brace Safe Product', $data[0]['message'] );
+		$this->assertSame( 'Someone in Sweden purchased Brace Safe Product', $data[0]['message'] );
 		$this->assertTrue( $data[0]['show_relative_time'] );
 		$this->assertStringNotContainsString( '}', $data[0]['message'] );
 		$this->assertStringNotContainsString( '{', $data[0]['message'] );

@@ -45,6 +45,7 @@ final class NotificationsController {
 		'occurred_at',
 		'message',
 		'show_relative_time',
+		'event_type',
 	);
 
 	/**
@@ -434,7 +435,7 @@ final class NotificationsController {
 	 * Public DTO allowlist mapper.
 	 *
 	 * @param array<string, mixed> $dto Mapped DTO.
-	 * @return array{public_id: string, product_url: string, thumbnail_url: string|null, occurred_at: string, message: string, show_relative_time: bool}
+	 * @return array{public_id: string, product_url: string, thumbnail_url: string|null, occurred_at: string, message: string, show_relative_time: bool, event_type: string}
 	 */
 	public static function allowlist( array $dto ): array {
 		return array(
@@ -444,6 +445,7 @@ final class NotificationsController {
 			'occurred_at'        => (string) ( $dto['occurred_at'] ?? '' ),
 			'message'            => (string) ( $dto['message'] ?? '' ),
 			'show_relative_time' => array_key_exists( 'show_relative_time', $dto ) ? (bool) $dto['show_relative_time'] : true,
+			'event_type'         => (string) ( $dto['event_type'] ?? 'purchase' ),
 		);
 	}
 

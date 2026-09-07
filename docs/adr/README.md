@@ -21,6 +21,9 @@ House format (Nygard): Status / Context / Decision / Consequences / Related.
 | 0015 | Settings storage, precedence, master-enable | Accepted (M6/M7 freeze) | [0015-settings-storage-precedence.md](0015-settings-storage-precedence.md) |
 | 0016 | Diagnostics privacy and query budget | Accepted (M6/M7 freeze) | [0016-diagnostics-privacy-budget.md](0016-diagnostics-privacy-budget.md) |
 | 0017 | Uninstall and USP data ownership | Accepted (M6/M7 freeze) | [0017-uninstall-data-ownership.md](0017-uninstall-data-ownership.md) |
+| 0018 | Event types, cart truth, and source freshness | Accepted (v1.1) | [0018-event-types-cart-freshness.md](0018-event-types-cart-freshness.md) |
+| 0019 | Appearance and custom CSS | Accepted (v1.1) | [0019-appearance-custom-css.md](0019-appearance-custom-css.md) |
 
 Authoritative specification: [../architecture/FROZEN.md](../architecture/FROZEN.md).  
-Combined program: [../milestones/M6-M7-V1-PROGRAM.md](../milestones/M6-M7-V1-PROGRAM.md).
+Combined program: [../milestones/M6-M7-V1-PROGRAM.md](../milestones/M6-M7-V1-PROGRAM.md).  
+v1.1 feature plan: [../releases/V1.1-FEATURE-PLAN.md](../releases/V1.1-FEATURE-PLAN.md).

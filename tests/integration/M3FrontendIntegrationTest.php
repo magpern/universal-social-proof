@@ -110,7 +110,7 @@ final class M3FrontendIntegrationTest extends WP_UnitTestCase {
 		$request  = new \WP_REST_Request( 'POST', '/universal-social-proof/v1/notifications' );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertContains( $response->get_status(), array( 404, 405 ) );
-		$this->assertSame( '20260829m1', Schema::DB_VERSION );
+		$this->assertSame( '20260907v11a', Schema::DB_VERSION );
 	}
 
 	public function test_m6_geo_and_admin_present(): void {

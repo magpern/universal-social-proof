@@ -12,6 +12,7 @@ namespace UniversalSocialProof\Selection;
 use DateTimeImmutable;
 use DateTimeZone;
 use UniversalSocialProof\Product\PublicProduct;
+use UniversalSocialProof\Storage\EventType;
 use UniversalSocialProof\Template\TemplateContext;
 use UniversalSocialProof\Template\TemplateRenderer;
 use UniversalSocialProof\Template\TemplateSettings;
@@ -40,6 +41,7 @@ final class SelectedEvent {
 	 * @param int           $product_id    Stored parent ID.
 	 * @param int|null      $variation_id  Stored variation ID.
 	 * @param PublicProduct $product       Current public presentation.
+	 * @param string        $event_type    purchase|add_to_cart.
 	 */
 	public function __construct(
 		public readonly string $public_id,
@@ -48,7 +50,8 @@ final class SelectedEvent {
 		public readonly string $quantity,
 		public readonly int $product_id,
 		public readonly ?int $variation_id,
-		public readonly PublicProduct $product
+		public readonly PublicProduct $product,
+		public readonly string $event_type = EventType::PURCHASE
 	) {}
 
 	/**
@@ -61,9 +64,9 @@ final class SelectedEvent {
 	}
 
 	/**
-	 * Public REST allowlist including M4 message fields.
+	 * Public REST allowlist including M4 message fields and event_type.
 	 *
-	 * @return array{public_id: string, product_url: string, thumbnail_url: string|null, occurred_at: string, message: string, show_relative_time: bool}|null
+	 * @return array{public_id: string, product_url: string, thumbnail_url: string|null, occurred_at: string, message: string, show_relative_time: bool, event_type: string}|null
 	 */
 	public function to_public_array(): ?array {
 		$dt = $this->occurred_at_utc();
@@ -73,7 +76,7 @@ final class SelectedEvent {
 
 		$renderer = self::$renderer ?? new TemplateRenderer();
 		$result   = $renderer->render(
-			TemplateSettings::get(),
+			TemplateSettings::resolve_for_event( $this->event_type, $this->country_code ),
 			TemplateContext::from_selected_event( $this )
 		);
 		if ( null === $result ) {
@@ -87,6 +90,7 @@ final class SelectedEvent {
 			'occurred_at'        => $dt->format( 'Y-m-d\TH:i:s\Z' ),
 			'message'            => $result->message,
 			'show_relative_time' => ! $result->used_time_ago,
+			'event_type'         => $this->event_type,
 		);
 	}
 
@@ -104,7 +108,8 @@ final class SelectedEvent {
 			$candidate->quantity,
 			$candidate->product_id,
 			$candidate->variation_id,
-			$product
+			$product,
+			$candidate->event_type
 		);
 	}
 

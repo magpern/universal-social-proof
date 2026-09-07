@@ -40,10 +40,17 @@ final class M4TemplateUnitTest extends TestCase {
 
 	public function test_default_template_product_only(): void {
 		$ctx    = $this->context( 'Tirzepatide 10mg' );
-		$result = $this->renderer->render( TemplateSettings::default_template(), $ctx );
+		$result = $this->renderer->render( TemplateSettings::fallback_purchase_template(), $ctx );
 		$this->assertNotNull( $result );
 		$this->assertSame( 'Someone purchased Tirzepatide 10mg', $result->message );
 		$this->assertFalse( $result->used_time_ago );
+	}
+
+	public function test_default_purchase_template_includes_country_token(): void {
+		$ctx    = $this->context( 'Tirzepatide 10mg', 'Sweden' );
+		$result = $this->renderer->render( TemplateSettings::default_purchase_template(), $ctx );
+		$this->assertNotNull( $result );
+		$this->assertSame( 'Someone in Sweden purchased Tirzepatide 10mg', $result->message );
 	}
 
 	public function test_country_and_location_alias(): void {
@@ -175,9 +182,10 @@ final class M4TemplateUnitTest extends TestCase {
 		);
 		try {
 			$resolved = TemplateSettings::get();
-			$this->assertSame( TemplateSettings::default_template(), $resolved );
+			$this->assertSame( TemplateSettings::default_purchase_template(), $resolved );
 			$this->assertNotNull( TemplateSettings::validate_template( $resolved ) );
-			$result = $this->renderer->render( $resolved, $this->context( 'Demo' ) );
+			$fallback = TemplateSettings::resolve_for_event( 'purchase', null );
+			$result   = $this->renderer->render( $fallback, $this->context( 'Demo' ) );
 			$this->assertNotNull( $result );
 			$this->assertSame( 'Someone purchased Demo', $result->message );
 			$this->assertStringNotContainsString( '}', $result->message );

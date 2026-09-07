@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Selection;
 
+use UniversalSocialProof\Storage\EventType;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
@@ -28,13 +30,15 @@ final class CandidateQuery {
 	 * @param int|null           $product_id          Preferred parent product ID.
 	 * @param int                $limit               Row cap.
 	 * @param string|null        $country_code        Purchase-country filter (ISO-2).
+	 * @param string|null        $event_type          Optional event_type filter.
 	 */
 	private function __construct(
 		private string $cutoff_utc,
 		private array $exclude_public_ids,
 		private ?int $product_id,
 		private int $limit,
-		private ?string $country_code = null
+		private ?string $country_code = null,
+		private ?string $event_type = null
 	) {}
 
 	/**
@@ -42,9 +46,10 @@ final class CandidateQuery {
 	 *
 	 * @param string             $cutoff_utc         UTC MySQL datetime.
 	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
+	 * @param string|null        $event_type         Optional event type.
 	 */
-	public static function global( string $cutoff_utc, array $exclude_public_ids ): self {
-		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), null, self::GLOBAL_LIMIT, null );
+	public static function global( string $cutoff_utc, array $exclude_public_ids, ?string $event_type = null ): self {
+		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), null, self::GLOBAL_LIMIT, null, self::normalize_event_type( $event_type ) );
 	}
 
 	/**
@@ -53,10 +58,11 @@ final class CandidateQuery {
 	 * @param string             $cutoff_utc         UTC MySQL datetime.
 	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
 	 * @param int                $product_id          Preferred parent product ID.
+	 * @param string|null        $event_type         Optional event type.
 	 */
-	public static function preferred( string $cutoff_utc, array $exclude_public_ids, int $product_id ): self {
+	public static function preferred( string $cutoff_utc, array $exclude_public_ids, int $product_id, ?string $event_type = null ): self {
 		$product_id = max( 1, $product_id );
-		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), $product_id, self::PREFERRED_LIMIT, null );
+		return new self( $cutoff_utc, self::normalize_exclude( $exclude_public_ids ), $product_id, self::PREFERRED_LIMIT, null, self::normalize_event_type( $event_type ) );
 	}
 
 	/**
@@ -65,14 +71,16 @@ final class CandidateQuery {
 	 * @param string             $cutoff_utc         UTC MySQL datetime.
 	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
 	 * @param string             $country_code       ISO-2 purchase country.
+	 * @param string|null        $event_type         Optional event type.
 	 */
-	public static function country( string $cutoff_utc, array $exclude_public_ids, string $country_code ): self {
+	public static function country( string $cutoff_utc, array $exclude_public_ids, string $country_code, ?string $event_type = null ): self {
 		return new self(
 			$cutoff_utc,
 			self::normalize_exclude( $exclude_public_ids ),
 			null,
 			self::GLOBAL_LIMIT,
-			self::normalize_country( $country_code )
+			self::normalize_country( $country_code ),
+			self::normalize_event_type( $event_type )
 		);
 	}
 
@@ -83,15 +91,17 @@ final class CandidateQuery {
 	 * @param array<int, string> $exclude_public_ids Validated UUIDs.
 	 * @param int                $product_id          Preferred parent product ID.
 	 * @param string             $country_code       ISO-2 purchase country.
+	 * @param string|null        $event_type         Optional event type.
 	 */
-	public static function preferred_country( string $cutoff_utc, array $exclude_public_ids, int $product_id, string $country_code ): self {
+	public static function preferred_country( string $cutoff_utc, array $exclude_public_ids, int $product_id, string $country_code, ?string $event_type = null ): self {
 		$product_id = max( 1, $product_id );
 		return new self(
 			$cutoff_utc,
 			self::normalize_exclude( $exclude_public_ids ),
 			$product_id,
 			self::PREFERRED_LIMIT,
-			self::normalize_country( $country_code )
+			self::normalize_country( $country_code ),
+			self::normalize_event_type( $event_type )
 		);
 	}
 
@@ -123,6 +133,18 @@ final class CandidateQuery {
 	private static function normalize_country( string $country_code ): ?string {
 		$code = strtoupper( trim( $country_code ) );
 		return ( 1 === preg_match( '/^[A-Z]{2}$/', $code ) ) ? $code : null;
+	}
+
+	/**
+	 * Normalize optional event type filter.
+	 *
+	 * @param string|null $event_type Raw.
+	 */
+	private static function normalize_event_type( ?string $event_type ): ?string {
+		if ( null === $event_type || '' === $event_type ) {
+			return null;
+		}
+		return EventType::is_valid( $event_type ) ? $event_type : null;
 	}
 
 	/**
@@ -160,6 +182,20 @@ final class CandidateQuery {
 	 */
 	public function has_country(): bool {
 		return null !== $this->country_code;
+	}
+
+	/**
+	 * Event type filter, or null.
+	 */
+	public function event_type(): ?string {
+		return $this->event_type;
+	}
+
+	/**
+	 * Whether this query filters by event type.
+	 */
+	public function has_event_type(): bool {
+		return null !== $this->event_type;
 	}
 
 	/**

@@ -133,7 +133,7 @@ final class CandidateReader {
 		$args    = array( EventStatus::ACTIVE, $query->cutoff_utc() );
 
 		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared -- table name is Schema::events_table(); SQL is built then prepared.
-		$sql = "SELECT public_id, product_id, variation_id, quantity, country_code, occurred_at
+		$sql = "SELECT public_id, event_type, product_id, variation_id, quantity, country_code, occurred_at
 			FROM {$table}
 			WHERE status = %s AND occurred_at >= %s";
 
@@ -141,6 +141,11 @@ final class CandidateReader {
 		if ( null !== $product_id ) {
 			$sql   .= ' AND product_id = %d';
 			$args[] = $product_id;
+		}
+
+		if ( $query->has_event_type() ) {
+			$sql   .= ' AND event_type = %s';
+			$args[] = (string) $query->event_type();
 		}
 
 		if ( $query->has_country() ) {
