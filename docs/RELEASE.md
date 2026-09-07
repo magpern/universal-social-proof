@@ -3,7 +3,24 @@
 Implements the version/tag policy in
 [`adr/0013-version-release-policy.md`](adr/0013-version-release-policy.md).
 
-## Current release state (M7 / v1.0.0 release-state)
+## Current release state (M7 CLOSED / v1.0.1)
+
+| Item | Value |
+|---|---|
+| Latest published release | **`v1.0.1`** |
+| Prior feature release | **`v1.0.0`** (immutable; ZIP omitted `uninstall.php` — do not rewrite) |
+| Release commit (`v1.0.1` peeled) | `dcdfc3d6856a503459a34b8b3eab24067f03c1e4` |
+| GitHub Release | https://github.com/magpern/universal-social-proof/releases/tag/v1.0.1 |
+| Private update publish | https://github.com/magpern/universal-social-proof/actions/runs/34109141660 |
+| Implementation merge | `9481833c1042a9476bba3ad9a019d91ad963710a` (PR #12) |
+| `V1_ACCEPTANCE_GATE` | **PASS** |
+| Schema | `20260829m1` unchanged |
+| M6 | **INTERNAL CLOSED** — no public `v0.6.0` |
+| M7 | **CLOSED** — [closure](milestones/M7-V1-HARDENING-RELEASE-CLOSURE.md) |
+| v1 program | **COMPLETE** |
+| Production WordPress deploy | Not implied by GitHub/update-server publication |
+
+## Prior release state (M7 / v1.0.0 release-state)
 
 | Item | Value |
 |---|---|
