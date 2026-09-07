@@ -12,9 +12,9 @@ Portable WooCommerce plugin for **genuine**, privacy-conscious purchase social-p
 | Slug / text domain | `universal-social-proof` |
 | Namespace | `UniversalSocialProof\` |
 | Composer | `magpern/universal-social-proof` |
-| Runtime version | `1.0.0` |
-| Latest published release | `v0.5.0` (next: `v1.0.0`) |
-| WordPress Stable tag | `1.0.0` |
+| Runtime version | `1.0.1` |
+| Latest published release | `v1.0.0` (patch `v1.0.1` pending) |
+| WordPress Stable tag | `1.0.1` |
 | First production-recommended release | **v1.0.0** (M7) |
 
 ## Requirements

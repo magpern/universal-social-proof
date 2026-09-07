@@ -131,7 +131,7 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 		wp_set_current_user( $admin_id );
 
 		$diag = DiagnosticsService::collect();
-		$this->assertSame( '1.0.0', $diag['runtime_version'] );
+		$this->assertSame( '1.0.1', $diag['runtime_version'] );
 		$this->assertSame( Schema::DB_VERSION, $diag['db_version'] );
 		$this->assertArrayHasKey( 'events', $diag );
 		$json = wp_json_encode( $diag );

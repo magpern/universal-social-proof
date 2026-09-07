@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'USP_VERSION' ) ) {
-	define( 'USP_VERSION', '1.0.0' );
+	define( 'USP_VERSION', '1.0.1' );
 }
 
 if ( ! defined( 'DAY_IN_SECONDS' ) ) {

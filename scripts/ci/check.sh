@@ -17,10 +17,11 @@ test -f docs/milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md || fail "missing M6 plan"
 test -f docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md || fail "missing M5 plan"
 test -f uninstall.php || fail "missing uninstall.php"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 1.0.0' universal-social-proof.php || fail "expected version 1.0.0"
-grep -q "define( 'USP_VERSION', '1.0.0' )" universal-social-proof.php || fail "USP_VERSION constant"
-grep -q 'Stable tag: 1.0.0' readme.txt || fail "Stable tag must be 1.0.0 for v1 release-state"
+grep -q 'Version: 1.0.1' universal-social-proof.php || fail "expected version 1.0.1"
+grep -q "define( 'USP_VERSION', '1.0.1' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Stable tag: 1.0.1' readme.txt || fail "Stable tag must be 1.0.1"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
+grep -q 'uninstall.php' scripts/build-release-package.sh || fail "build-release-package must INCLUDE uninstall.php"
 
 echo "==> Asset size budgets"
 js_size=$(wc -c < assets/js/usp-toaster.js)
@@ -94,6 +95,7 @@ for d in dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[1\.0\.1\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.1 section"
 grep -q '## \[1\.0\.0\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.0 section"
 grep -q '## \[0\.6\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.6.0 section"
 grep -q '## \[0\.5\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.5.0 section"
