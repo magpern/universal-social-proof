@@ -21,7 +21,7 @@ and this project adheres to the milestone versioning in [docs/adr/0013-version-r
 
 - Settings schema version → `2` (idempotent migrate from v1; preserves existing keys).
 - Selection fills purchases first, then cart into remaining slots (K≤10, shared product budget).
-- Runtime advanced to `1.1.0`; Stable tag remains `1.0.2` until release cut.
+- Runtime and Stable tag `1.1.0`. Schema `20260907v11a`. Settings version `2`.
 
 ## [1.0.2] - 2026-09-07
 

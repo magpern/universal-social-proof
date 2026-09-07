@@ -2,7 +2,7 @@
 Contributors: magpern
 Requires at least: 6.5
 Requires PHP: 8.1
-Stable tag: 1.0.2
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -25,7 +25,7 @@ for WooCommerce stores. No fabricated activity.
 * Optional genuine add-to-cart social proof with short freshness window.
 * Appearance controls and polished toaster design (CSS variables + custom CSS).
 * Sources toggles; purchase retention days preserved; settings version 2.
-* Runtime 1.1.0; Stable tag remains 1.0.2 until release.
+* Runtime and Stable tag 1.1.0. Cart social proof (opt-in) and appearance customization.
 
 = 1.0.2 =
 * Plugins row: Settings and Diagnostics links to WooCommerce → Social Proof.

@@ -3,7 +3,21 @@
 Implements the version/tag policy in
 [`adr/0013-version-release-policy.md`](adr/0013-version-release-policy.md).
 
-## Current release state (M7 CLOSED / v1.0.1)
+## Current release state (v1.1.0 release-state)
+
+| Item | Value |
+|---|---|
+| Target annotated release | **`v1.1.0`** |
+| Runtime / Stable on this branch | **`1.1.0` / `1.1.0`** |
+| Implementation merge | `9bf35dd0ceaff860a820e41e534b743c22270c33` (PR #16) |
+| `V11_BASELINE` | `7baa731a011e49419e3c358797ebaa8203085f7e` |
+| `V11_UPGRADE_GATE` | **PASS** ([gate](releases/V1.1-UPGRADE-GATE.md)) |
+| Schema | `20260907v11a` |
+| Settings | version `2` |
+| Prior published release | **`v1.0.2`** (immutable) |
+| Production WordPress deploy | **Not authorized** |
+
+## Prior release state (M7 CLOSED / v1.0.2)
 
 | Item | Value |
 |---|---|

@@ -38,7 +38,7 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
 		$this->assertStringContainsString( "define( 'USP_VERSION', '1.1.0' );", $contents );
 		$readme = (string) file_get_contents( dirname( __DIR__, 2 ) . '/readme.txt' );
-		$this->assertMatchesRegularExpression( '/^Stable tag:\s*1\.0\.2\s*$/m', $readme );
+		$this->assertMatchesRegularExpression( '/^Stable tag:\s*1\.1\.0\s*$/m', $readme );
 	}
 
 	public function test_composer_package_name(): void {
