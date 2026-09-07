@@ -110,12 +110,14 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 			has_action( 'admin_menu', array( AdminController::class, 'add_menu' ) ),
 			'Admin menu callback must be registered'
 		);
-		$admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $admin );
-		$this->assertTrue( current_user_can( 'manage_woocommerce' ) );
-		$sub = self::factory()->user->create( array( 'role' => 'subscriber' ) );
-		wp_set_current_user( $sub );
-		$this->assertFalse( current_user_can( 'manage_woocommerce' ) );
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$admin    = new \WP_User( $admin_id );
+		$admin->add_cap( 'manage_woocommerce' );
+		wp_set_current_user( $admin_id );
+		$this->assertTrue( user_can( $admin_id, 'manage_woocommerce' ) );
+		$sub_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $sub_id );
+		$this->assertFalse( user_can( $sub_id, 'manage_woocommerce' ) );
 		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/Admin/AdminController.php' );
 		$this->assertStringContainsString( "'manage_woocommerce'", $src );
 		$this->assertStringContainsString( "'woocommerce'", $src );
