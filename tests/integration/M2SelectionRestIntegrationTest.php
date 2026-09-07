@@ -52,6 +52,9 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		delete_option( Migrator::OPTION_VERSION );
 		delete_option( StockExclusionSettings::OPTION_KEY );
 		delete_option( RetentionSettings::OPTION_KEY );
+		delete_option( \UniversalSocialProof\Settings\SettingsRepository::OPTION_KEY );
+		delete_option( \UniversalSocialProof\Settings\SettingsRepository::VERSION_KEY );
+		\UniversalSocialProof\Settings\SettingsRepository::reset_for_tests();
 		Migrator::upgrade_now();
 		Plugin::init();
 		$this->truncate_events();
