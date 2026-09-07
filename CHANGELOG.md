@@ -5,6 +5,22 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [1.0.0] - 2026-09-07
+
+### Changed
+
+- Runtime advanced to `1.0.0` for the complete M1–M6 product (M7 hardening).
+- Template token values stripped to plain text before DTO assembly (markup not HTML-escaped into JSON).
+- Logger context allowlisted to non-PII keys.
+- Diagnostics collection gated on `manage_woocommerce`.
+- Storefront dismiss control includes an accessible name in the HTML shell.
+
+### Notes
+
+- Candidate / pre-release-state: Stable tag remains `0.5.0` until the v1 release-state PR.
+- Event schema unchanged (`20260829m1`). No public `v0.6.0`.
+- First production-recommended complete v1 release after release-state + annotated tag.
+
 ## [0.6.0] - 2026-09-07
 
 ### Added

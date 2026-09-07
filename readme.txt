@@ -21,6 +21,9 @@ for WooCommerce stores. No fabricated activity.
 
 == Changelog ==
 
+= 1.0.0 =
+* M7 candidate: hardening for production-recommended v1; runtime 1.0.0; Stable tag remains 0.5.0 until release-state.
+
 = 0.6.0 =
 * M6 (internal): WooCommerce admin settings + diagnostics; runtime 0.6.0; Stable tag remains 0.5.0 until v1.0.0.
 

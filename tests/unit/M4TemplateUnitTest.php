@@ -192,11 +192,19 @@ final class M4TemplateUnitTest extends TestCase {
 	}
 
 	public function test_html_looking_and_ampersand_product_remain_plain(): void {
-		foreach ( array( 'A&B', '"Quoted Product"', '<em>Product</em>', 'Tirzepatide™ 10mg' ) as $name ) {
-			$result = $this->renderer->render( 'Someone purchased {{product}}', $this->context( $name ) );
+		$cases = array(
+			'A&B'               => 'A&B',
+			'"Quoted Product"'  => '"Quoted Product"',
+			'<em>Product</em>'  => 'Product',
+			'Tirzepatide™ 10mg' => 'Tirzepatide™ 10mg',
+			'Bold &amp; Co'     => 'Bold & Co',
+		);
+		foreach ( $cases as $input => $expected ) {
+			$result = $this->renderer->render( 'Someone purchased {{product}}', $this->context( $input ) );
 			$this->assertNotNull( $result );
-			$this->assertSame( 'Someone purchased ' . $name, $result->message );
+			$this->assertSame( 'Someone purchased ' . $expected, $result->message );
 			$this->assertStringNotContainsString( '&amp;', $result->message );
+			$this->assertStringNotContainsString( '<em>', $result->message );
 		}
 	}
 
@@ -230,6 +238,14 @@ final class M4TemplateUnitTest extends TestCase {
 		$this->assertStringNotContainsString( 'OPTION_KEY', $scan );
 		$this->assertStringNotContainsString( 'get_option', $scan );
 		$this->assertStringNotContainsString( 'usp_notification_template_option', $scan );
+	}
+
+	public function test_product_name_markup_stripped_not_html_escaped(): void {
+		$ctx    = $this->context( '<b>Bold</b> Product' );
+		$result = $this->renderer->render( 'Someone purchased {{product}}', $ctx );
+		$this->assertNotNull( $result );
+		$this->assertSame( 'Someone purchased Bold Product', $result->message );
+		$this->assertStringNotContainsString( '<b>', $result->message );
 	}
 
 	/**

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CI policy checks for Universal Social Proof (M6).
+# CI policy checks for Universal Social Proof (M7 candidate).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -11,14 +11,15 @@ composer lint
 
 echo "==> Required docs/files"
 test -f docs/architecture/FROZEN.md || fail "missing FROZEN.md"
-test -f docs/milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md || fail "missing M6 plan"
+test -f docs/milestones/M7-V1-HARDENING-RELEASE-PLAN.md || fail "missing M7 plan"
 test -f docs/milestones/M6-M7-V1-PROGRAM.md || fail "missing M6/M7 program"
+test -f docs/milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md || fail "missing M6 plan"
 test -f docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md || fail "missing M5 plan"
 test -f uninstall.php || fail "missing uninstall.php"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 0.6.0' universal-social-proof.php || fail "expected version 0.6.0"
-grep -q "define( 'USP_VERSION', '0.6.0' )" universal-social-proof.php || fail "USP_VERSION constant"
-grep -q 'Stable tag: 0.5.0' readme.txt || fail "Stable tag must remain 0.5.0 for internal M6"
+grep -q 'Version: 1.0.0' universal-social-proof.php || fail "expected version 1.0.0"
+grep -q "define( 'USP_VERSION', '1.0.0' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Stable tag: 0.5.0' readme.txt || fail "Stable tag must remain 0.5.0 until v1 release-state"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 
 echo "==> Asset size budgets"
@@ -28,14 +29,14 @@ test "$js_size" -le 16384 || fail "usp-toaster.js exceeds 16 KiB ($js_size bytes
 test "$css_size" -le 6144 || fail "usp-toaster.css exceeds 6 KiB ($css_size bytes)"
 echo "JS=${js_size}B CSS=${css_size}B"
 
-echo "==> M6 packages present"
+echo "==> M7 packages present"
 test -d src/Template || fail "missing src/Template"
 test -d src/Targeting || fail "missing src/Targeting"
 test -d src/Geo || fail "missing src/Geo"
 test -d src/Admin || fail "missing src/Admin"
 test -d src/Settings || fail "missing src/Settings"
 
-echo "==> Forbidden symbols (fake; no client country REST authority; no M7 leakage)"
+echo "==> Forbidden symbols (fake; no client country REST authority)"
 SCAN_FILES=()
 while IFS= read -r -d '' f; do
   SCAN_FILES+=( "$f" )
@@ -93,15 +94,21 @@ for d in dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[1\.0\.0\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.0 section"
 grep -q '## \[0\.6\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.6.0 section"
 grep -q '## \[0\.5\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.5.0 section"
-grep -q '## \[0\.4\.1\]' CHANGELOG.md || fail "CHANGELOG missing 0.4.1 section"
 
-echo "==> No event schema version bump in M6"
-grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M6 must not bump usp_db_version"
-if grep -nE "ALTER TABLE|ADD COLUMN|ADD KEY|ADD INDEX" src/Admin src/Settings 2>/dev/null | grep -q .; then
-  fail "M6 must not alter event schema from Admin/Settings"
+echo "==> No event schema version bump in M7"
+grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M7 must not bump usp_db_version"
+if grep -nE "ALTER TABLE|ADD COLUMN|ADD KEY|ADD INDEX" src/Admin src/Settings src/Template src/Frontend 2>/dev/null | grep -q .; then
+  fail "M7 must not alter event schema from Admin/Settings/Template/Frontend"
 fi
+
+echo "==> M7 hardening markers"
+grep -q 'plain_text' src/Template/TemplateRenderer.php || fail "TemplateRenderer must sanitize token values as plain text"
+grep -q 'Dismiss notification' src/Frontend/ShellRenderer.php || fail "ShellRenderer must expose dismiss accessible name"
+grep -q 'manage_woocommerce' src/Admin/DiagnosticsService.php || fail "DiagnosticsService must gate on manage_woocommerce"
+grep -q 'sanitize_context' src/Logger.php || fail "Logger must sanitize context"
 
 echo "==> JS tests (when node available)"
 if command -v node >/dev/null 2>&1; then
@@ -110,4 +117,4 @@ else
   echo "node absent in this environment; JS tests run in CI / Docker"
 fi
 
-echo "==> All M6 CI checks passed"
+echo "==> All M7 CI checks passed"

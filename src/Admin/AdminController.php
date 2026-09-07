@@ -58,7 +58,7 @@ final class AdminController {
 		wp_enqueue_script( 'wc-enhanced-select' );
 
 		$base = trailingslashit( plugins_url( '', USP_PLUGIN_FILE ) );
-		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.6.0';
+		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '1.0.0';
 
 		wp_enqueue_style(
 			'usp-admin',

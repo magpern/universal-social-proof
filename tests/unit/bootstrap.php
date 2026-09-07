@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'USP_VERSION' ) ) {
-	define( 'USP_VERSION', '0.6.0' );
+	define( 'USP_VERSION', '1.0.0' );
 }
 
 if ( ! defined( 'DAY_IN_SECONDS' ) ) {
@@ -102,6 +102,36 @@ if ( ! function_exists( '__' ) ) {
 	function __( $text, $domain = 'default' ) {
 		unset( $domain );
 		return $text;
+	}
+}
+
+if ( ! function_exists( 'wp_strip_all_tags' ) ) {
+	/**
+	 * Minimal wp_strip_all_tags stub.
+	 *
+	 * @param string $text          Input.
+	 * @param bool   $remove_breaks Collapse whitespace.
+	 */
+	function wp_strip_all_tags( $text, $remove_breaks = false ) {
+		$text = preg_replace( '@<(script|style)[^>]*?>.*?</\\1>@si', '', (string) $text );
+		$text = strip_tags( (string) $text ); // phpcs:ignore WordPress.WP.AlternativeFunctions.strip_tags_strip_tags -- stub body for wp_strip_all_tags.
+		if ( $remove_breaks ) {
+			$text = preg_replace( '/[\r\n\t ]+/', ' ', $text );
+		}
+		return trim( $text );
+	}
+}
+
+if ( ! function_exists( 'wp_json_encode' ) ) {
+	/**
+	 * JSON encode stub.
+	 *
+	 * @param mixed $data Data.
+	 * @return string|false
+	 */
+	function wp_json_encode( $data ) {
+		// phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode -- stub implements wp_json_encode.
+		return json_encode( $data );
 	}
 }
 

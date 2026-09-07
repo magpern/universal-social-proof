@@ -25,18 +25,18 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertTrue( class_exists( WooCommerceGate::class ) );
 	}
 
-	public function test_version_constant_is_m6(): void {
-		$this->assertSame( '0.6.0', USP_VERSION );
+	public function test_version_constant_is_m7_candidate(): void {
+		$this->assertSame( '1.0.0', USP_VERSION );
 	}
 
 	public function test_plugin_header_version_matches_constant(): void {
 		$main     = dirname( __DIR__, 2 ) . '/universal-social-proof.php';
 		$contents = file_get_contents( $main );
 		$this->assertNotFalse( $contents );
-		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*0\.6\.0\s*$/m', $contents );
+		$this->assertMatchesRegularExpression( '/^\s*\*\s*Version:\s*1\.0\.0\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Text Domain:\s*universal-social-proof\s*$/m', $contents );
 		$this->assertMatchesRegularExpression( '/^\s*\*\s*Plugin Name:\s*Universal Social Proof\s*$/m', $contents );
-		$this->assertStringContainsString( "define( 'USP_VERSION', '0.6.0' );", $contents );
+		$this->assertStringContainsString( "define( 'USP_VERSION', '1.0.0' );", $contents );
 		$readme = (string) file_get_contents( dirname( __DIR__, 2 ) . '/readme.txt' );
 		$this->assertMatchesRegularExpression( '/^Stable tag:\s*0\.5\.0\s*$/m', $readme );
 	}
@@ -58,7 +58,7 @@ final class FoundationUnitTest extends TestCase {
 		$this->assertFalse( Plugin::is_initialized() );
 	}
 
-	public function test_m6_packages_present(): void {
+	public function test_m7_packages_present(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Template' );
 		$this->assertDirectoryExists( $src . '/Targeting' );
