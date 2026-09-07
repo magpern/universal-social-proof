@@ -1,6 +1,6 @@
 <?php
 /**
- * Out-of-stock exclusion policy (no admin UI in M2).
+ * Out-of-stock exclusion policy.
  *
  * @package UniversalSocialProof
  */
@@ -9,10 +9,12 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Selection;
 
+use UniversalSocialProof\Settings\SettingsRepository;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Option + filter; default OFF.
+ * Settings + filter; default OFF. Precedence: default → usp_settings → filter.
  */
 final class StockExclusionSettings {
 
@@ -22,8 +24,7 @@ final class StockExclusionSettings {
 	 * Whether OOS products are excluded from public selection.
 	 */
 	public static function is_enabled(): bool {
-		$raw = get_option( self::OPTION_KEY, 'no' );
-		$on  = ( true === $raw || 1 === $raw || '1' === $raw || 'yes' === $raw );
+		$on = SettingsRepository::exclude_out_of_stock();
 		/**
 		 * Filter whether USP selection excludes out-of-stock products.
 		 *

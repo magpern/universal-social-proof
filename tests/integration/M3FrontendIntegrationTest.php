@@ -113,12 +113,12 @@ final class M3FrontendIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( '20260829m1', Schema::DB_VERSION );
 	}
 
-	public function test_m5_geo_present_admin_absent(): void {
+	public function test_m6_geo_and_admin_present(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Template' );
 		$this->assertDirectoryExists( $src . '/Targeting' );
 		$this->assertDirectoryExists( $src . '/Geo' );
-		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
+		$this->assertDirectoryExists( $src . '/Admin' );
 	}
 
 	public function test_localize_has_no_fixture_events(): void {

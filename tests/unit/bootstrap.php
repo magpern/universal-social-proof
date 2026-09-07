@@ -14,7 +14,74 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( ! defined( 'USP_VERSION' ) ) {
-	define( 'USP_VERSION', '0.5.0' );
+	define( 'USP_VERSION', '0.6.0' );
+}
+
+if ( ! defined( 'DAY_IN_SECONDS' ) ) {
+	define( 'DAY_IN_SECONDS', 86400 );
+}
+
+if ( ! isset( $GLOBALS['usp_test_options'] ) ) {
+	$GLOBALS['usp_test_options'] = array();
+}
+
+if ( ! function_exists( 'get_option' ) ) {
+	/**
+	 * Option stub for unit tests.
+	 *
+	 * @param string $key           Option key.
+	 * @param mixed  $default_value Default.
+	 * @return mixed
+	 */
+	function get_option( $key, $default_value = false ) {
+		if ( array_key_exists( $key, $GLOBALS['usp_test_options'] ) ) {
+			return $GLOBALS['usp_test_options'][ $key ];
+		}
+		return $default_value;
+	}
+}
+
+if ( ! function_exists( 'update_option' ) ) {
+	/**
+	 * Option stub for unit tests.
+	 *
+	 * @param string $key        Option key.
+	 * @param mixed  $value      Value.
+	 * @param mixed  $autoload   Autoload.
+	 * @return bool
+	 */
+	function update_option( $key, $value, $autoload = null ) {
+		unset( $autoload );
+		$GLOBALS['usp_test_options'][ $key ] = $value;
+		return true;
+	}
+}
+
+if ( ! function_exists( 'delete_option' ) ) {
+	/**
+	 * Delete option stub.
+	 *
+	 * @param string $key Option key.
+	 */
+	function delete_option( $key ) {
+		unset( $GLOBALS['usp_test_options'][ $key ] );
+		return true;
+	}
+}
+
+if ( ! class_exists( 'WP_Error', false ) ) {
+	require_once __DIR__ . '/stubs/class-wp-error.php';
+}
+
+if ( ! function_exists( 'is_wp_error' ) ) {
+	/**
+	 * WP_Error detector stub.
+	 *
+	 * @param mixed $thing Value.
+	 */
+	function is_wp_error( $thing ) {
+		return $thing instanceof WP_Error;
+	}
 }
 
 if ( ! defined( 'USP_PLUGIN_FILE' ) ) {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Storefront page load policy for toaster assets (no persisted settings).
+ * Storefront page load policy for toaster assets.
  *
  * @package UniversalSocialProof
  */
@@ -8,6 +8,8 @@
 declare( strict_types=1 );
 
 namespace UniversalSocialProof\Targeting;
+
+use UniversalSocialProof\Settings\SettingsRepository;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -17,7 +19,7 @@ defined( 'ABSPATH' ) || exit;
 final class TargetingPolicy {
 
 	/**
-	 * Default page gate (M4/M3 presentation defaults + architecture checkout exclude).
+	 * Default page gate (M4/M3 presentation defaults + architecture checkout exclude + M6 toggles).
 	 */
 	public static function should_load(): bool {
 		if ( is_admin() ) {
@@ -35,16 +37,15 @@ final class TargetingPolicy {
 		if ( ! function_exists( 'is_checkout' ) ) {
 			return false;
 		}
-		// Checkout exclusion is architecture-aligned (FROZEN).
+		// Checkout exclusion is architecture-aligned (FROZEN) — never configurable.
 		if ( is_checkout() ) {
 			return false;
 		}
-		// Cart/account are presentation defaults, not immutable architecture.
 		if ( function_exists( 'is_cart' ) && is_cart() ) {
-			return false;
+			return SettingsRepository::load_on_cart();
 		}
 		if ( function_exists( 'is_account_page' ) && is_account_page() ) {
-			return false;
+			return SettingsRepository::load_on_account();
 		}
 		return true;
 	}

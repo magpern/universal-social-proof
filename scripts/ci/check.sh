@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CI policy checks for Universal Social Proof (M5).
+# CI policy checks for Universal Social Proof (M6).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -11,12 +11,14 @@ composer lint
 
 echo "==> Required docs/files"
 test -f docs/architecture/FROZEN.md || fail "missing FROZEN.md"
+test -f docs/milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md || fail "missing M6 plan"
+test -f docs/milestones/M6-M7-V1-PROGRAM.md || fail "missing M6/M7 program"
 test -f docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md || fail "missing M5 plan"
-test -f docs/milestones/M4-TEMPLATES-TARGETING-PLAN.md || fail "missing M4 plan"
-test -f docs/milestones/M3-STOREFRONT-TOASTER-PLAN.md || fail "missing M3 plan"
+test -f uninstall.php || fail "missing uninstall.php"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 0.5.0' universal-social-proof.php || fail "expected version 0.5.0"
-grep -q "define( 'USP_VERSION', '0.5.0' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Version: 0.6.0' universal-social-proof.php || fail "expected version 0.6.0"
+grep -q "define( 'USP_VERSION', '0.6.0' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Stable tag: 0.5.0' readme.txt || fail "Stable tag must remain 0.5.0 for internal M6"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 
 echo "==> Asset size budgets"
@@ -26,15 +28,14 @@ test "$js_size" -le 16384 || fail "usp-toaster.js exceeds 16 KiB ($js_size bytes
 test "$css_size" -le 6144 || fail "usp-toaster.css exceeds 6 KiB ($css_size bytes)"
 echo "JS=${js_size}B CSS=${css_size}B"
 
-echo "==> M5 packages present; M6 Admin absent"
+echo "==> M6 packages present"
 test -d src/Template || fail "missing src/Template"
 test -d src/Targeting || fail "missing src/Targeting"
 test -d src/Geo || fail "missing src/Geo"
-if [ -d src/Admin ]; then
-  fail "forbidden M6 package directory: src/Admin"
-fi
+test -d src/Admin || fail "missing src/Admin"
+test -d src/Settings || fail "missing src/Settings"
 
-echo "==> Forbidden symbols (Admin/fake; no client country REST authority)"
+echo "==> Forbidden symbols (fake; no client country REST authority; no M7 leakage)"
 SCAN_FILES=()
 while IFS= read -r -d '' f; do
   SCAN_FILES+=( "$f" )
@@ -47,11 +48,11 @@ if printf '%s\0' "${SCAN_FILES[@]}" | xargs -0 grep -nE "$forbid_re" 2>/dev/null
 fi
 
 if grep -nE "get_option\s*\(\s*['\"]usp_notification_template|get_option\s*\(\s*['\"]usp_excluded_product" src/Template src/Targeting 2>/dev/null | grep -q .; then
-  fail "persisted M4 template/exclusion options are forbidden"
+  fail "legacy single-key template/exclusion options must not be read from Template/Targeting"
 fi
 
 if grep -nE "get_option\s*\(\s*['\"]usp_geo|update_option\s*\(\s*['\"]usp_geo|add_option\s*\(\s*['\"]usp_geo" src 2>/dev/null | grep -q .; then
-  fail "persisted M5 geo options are forbidden"
+  fail "persisted usp_geo_* options are forbidden (use usp_settings)"
 fi
 
 if grep -nE "REMOTE_ADDR|HTTP_X_FORWARDED_FOR|CF-IPCountry|HTTP_CF_IPCOUNTRY|geolocation" src/Geo src/Selection src/Rest 2>/dev/null | grep -q .; then
@@ -59,21 +60,23 @@ if grep -nE "REMOTE_ADDR|HTTP_X_FORWARDED_FOR|CF-IPCountry|HTTP_CF_IPCOUNTRY|geo
 fi
 
 if grep -nE "universal_geo_get_region_code" src 2>/dev/null | grep -q .; then
-  fail "M5 must not call universal_geo_get_region_code"
+  fail "must not call universal_geo_get_region_code"
 fi
 
-# REST must not register a client country query parameter.
 if grep -nE "'country'\s*=>" src/Rest/NotificationsController.php 2>/dev/null | grep -q .; then
   fail "client country REST parameter is forbidden"
 fi
 
-# Public DTO allowlist must not include visitor_country / geo leakage fields.
 if grep -nE "'visitor_country'|'region'|'city'" src/Rest/NotificationsController.php 2>/dev/null | grep -q .; then
   fail "public DTO / REST must not expose visitor geo fields"
 fi
 
 if ! grep -q "'public_id'" src/Rest/NotificationsController.php || ! grep -q "ALLOWLIST" src/Rest/NotificationsController.php; then
   fail "notifications ALLOWLIST missing"
+fi
+
+if grep -nEi 'source_order_id|source_item_id' src/Admin/DiagnosticsService.php 2>/dev/null | grep -q .; then
+  fail "diagnostics must not reference provenance columns"
 fi
 
 echo "==> No PHP fixture injection in Frontend"
@@ -90,15 +93,14 @@ for d in dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[0\.6\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.6.0 section"
 grep -q '## \[0\.5\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.5.0 section"
 grep -q '## \[0\.4\.1\]' CHANGELOG.md || fail "CHANGELOG missing 0.4.1 section"
-grep -q '## \[0\.4\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.4.0 section"
-grep -q '## \[0\.3\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.3.0 section"
 
-echo "==> No schema version bump in M5"
-grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M5 must not bump usp_db_version"
-if grep -nE "status_product_country|CREATE TABLE|dbDelta" src/Geo src/Selection 2>/dev/null | grep -q .; then
-  fail "M5 must not introduce schema migration in Geo/Selection"
+echo "==> No event schema version bump in M6"
+grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M6 must not bump usp_db_version"
+if grep -nE "ALTER TABLE|ADD COLUMN|ADD KEY|ADD INDEX" src/Admin src/Settings 2>/dev/null | grep -q .; then
+  fail "M6 must not alter event schema from Admin/Settings"
 fi
 
 echo "==> JS tests (when node available)"
@@ -108,4 +110,4 @@ else
   echo "node absent in this environment; JS tests run in CI / Docker"
 fi
 
-echo "==> All M5 CI checks passed"
+echo "==> All M6 CI checks passed"
