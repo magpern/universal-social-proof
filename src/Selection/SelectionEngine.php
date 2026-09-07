@@ -1,6 +1,6 @@
 <?php
 /**
- * Bounded selection engine: preferred/global pools with optional geo tiers (M5).
+ * Bounded selection engine: preferred/global pools with optional geo tiers (M5/v1.1).
  *
  * @package UniversalSocialProof
  */
@@ -9,9 +9,12 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Selection;
 
+use UniversalSocialProof\Cleanup\CartRetentionSettings;
 use UniversalSocialProof\Cleanup\RetentionSettings;
 use UniversalSocialProof\Product\PublicProduct;
 use UniversalSocialProof\Product\PublicProductResolver;
+use UniversalSocialProof\Settings\SettingsRepository;
+use UniversalSocialProof\Storage\EventType;
 use UniversalSocialProof\Targeting\ProductTargetingPolicy;
 use WC_Product;
 
@@ -19,6 +22,8 @@ defined( 'ABSPATH' ) || exit;
 
 /**
  * Server-side selection. Never mutates usp_events.
+ *
+ * V1.1 fills purchases first, then cart into remaining slots (separate cutoffs).
  */
 final class SelectionEngine {
 
@@ -71,27 +76,87 @@ final class SelectionEngine {
 	}
 
 	/**
-	 * Select up to K public-eligible events.
+	 * Select up to K public-eligible events (purchases then cart).
 	 *
 	 * @param SelectionRequest $request Validated request.
 	 * @return array Selected events.
 	 */
 	public function select( SelectionRequest $request ): array {
-		if ( $request->has_geo() ) {
-			return $this->select_with_geo( $request );
+		$selected     = array();
+		$selected_ids = array();
+		$attempted    = array();
+
+		if ( SettingsRepository::purchase_enabled() ) {
+			$selected = $this->select_for_type(
+				$request,
+				EventType::PURCHASE,
+				RetentionSettings::cutoff_utc(),
+				$selected,
+				$selected_ids,
+				$attempted
+			);
 		}
-		return $this->select_m2( $request );
+
+		if ( SettingsRepository::cart_enabled() && count( $selected ) < $request->limit ) {
+			$selected = $this->select_for_type(
+				$request,
+				EventType::ADD_TO_CART,
+				CartRetentionSettings::cutoff_utc(),
+				$selected,
+				$selected_ids,
+				$attempted
+			);
+		}
+
+		return $selected;
+	}
+
+	/**
+	 * Run M2/M5 selection for one event type into remaining slots.
+	 *
+	 * @param SelectionRequest $request      Request.
+	 * @param string           $event_type   Event type.
+	 * @param string           $cutoff       Cutoff UTC.
+	 * @param array            $selected     Selected so far.
+	 * @param array            $selected_ids Selected public IDs.
+	 * @param array            $attempted    Attempted public IDs.
+	 * @return array Selected events.
+	 */
+	private function select_for_type(
+		SelectionRequest $request,
+		string $event_type,
+		string $cutoff,
+		array $selected,
+		array &$selected_ids,
+		array &$attempted
+	): array {
+		if ( $request->has_geo() ) {
+			return $this->select_with_geo( $request, $event_type, $cutoff, $selected, $selected_ids, $attempted );
+		}
+		return $this->select_m2( $request, $event_type, $cutoff, $selected, $selected_ids, $attempted );
 	}
 
 	/**
 	 * Exact M2 path (no country SQL).
 	 *
-	 * @param SelectionRequest $request Request without visitor country.
+	 * @param SelectionRequest $request      Request without visitor country.
+	 * @param string           $event_type   Event type.
+	 * @param string           $cutoff       Cutoff UTC.
+	 * @param array            $selected     Selected so far.
+	 * @param array            $selected_ids Selected public IDs.
+	 * @param array            $attempted    Attempted public IDs.
 	 * @return array Selected events.
 	 */
-	private function select_m2( SelectionRequest $request ): array {
-		$cutoff  = RetentionSettings::cutoff_utc();
+	private function select_m2(
+		SelectionRequest $request,
+		string $event_type,
+		string $cutoff,
+		array $selected,
+		array &$selected_ids,
+		array &$attempted
+	): array {
 		$exclude = $request->exclude_public_ids;
+		$limit   = $request->limit;
 
 		$preferred_parent    = null;
 		$preferred_variation = null;
@@ -100,12 +165,12 @@ final class SelectionEngine {
 		$preferred = array();
 		if ( null !== $preferred_parent ) {
 			$preferred = $this->reader->find_recent_active(
-				CandidateQuery::preferred( $cutoff, $exclude, $preferred_parent )
+				CandidateQuery::preferred( $cutoff, $exclude, $preferred_parent, $event_type )
 			);
 		}
 
 		$global = $this->reader->find_recent_active(
-			CandidateQuery::global( $cutoff, $exclude )
+			CandidateQuery::global( $cutoff, $exclude, $event_type )
 		);
 
 		$preferred = ( $this->shuffle )( $preferred );
@@ -115,12 +180,7 @@ final class SelectionEngine {
 			$preferred = $this->order_preferred_for_variation( $preferred, $preferred_variation );
 		}
 
-		$limit        = $request->limit;
-		$selected     = array();
-		$selected_ids = array();
-		$attempted    = array();
-
-		if ( null !== $preferred_parent ) {
+		if ( null !== $preferred_parent && count( $selected ) < $limit ) {
 			$this->resolver->budget()->begin_additional_cap( ProductResolutionBudget::PDP_SEARCH_CAP );
 			try {
 				$selected = $this->seek_one_preferred( $preferred, $selected, $selected_ids, $attempted );
@@ -143,11 +203,22 @@ final class SelectionEngine {
 	/**
 	 * Tiered geography preference (M5).
 	 *
-	 * @param SelectionRequest $request Request with visitor country.
+	 * @param SelectionRequest $request      Request with visitor country.
+	 * @param string           $event_type   Event type.
+	 * @param string           $cutoff       Cutoff UTC.
+	 * @param array            $selected     Selected so far.
+	 * @param array            $selected_ids Selected public IDs.
+	 * @param array            $attempted    Attempted public IDs.
 	 * @return array Selected events.
 	 */
-	private function select_with_geo( SelectionRequest $request ): array {
-		$cutoff  = RetentionSettings::cutoff_utc();
+	private function select_with_geo(
+		SelectionRequest $request,
+		string $event_type,
+		string $cutoff,
+		array $selected,
+		array &$selected_ids,
+		array &$attempted
+	): array {
 		$exclude = $request->exclude_public_ids;
 		$visitor = (string) $request->visitor_country;
 		$limit   = $request->limit;
@@ -155,10 +226,6 @@ final class SelectionEngine {
 		$preferred_parent    = null;
 		$preferred_variation = null;
 		$this->resolve_preferred_ids( $request, $preferred_parent, $preferred_variation );
-
-		$selected     = array();
-		$selected_ids = array();
-		$attempted    = array();
 
 		if ( null !== $preferred_parent ) {
 			return $this->select_pdp_geo(
@@ -168,6 +235,7 @@ final class SelectionEngine {
 				$limit,
 				$preferred_parent,
 				$preferred_variation,
+				$event_type,
 				$selected,
 				$selected_ids,
 				$attempted
@@ -176,7 +244,7 @@ final class SelectionEngine {
 
 		$country_pool = ( $this->shuffle )(
 			$this->reader->find_recent_active(
-				CandidateQuery::country( $cutoff, $exclude, $visitor )
+				CandidateQuery::country( $cutoff, $exclude, $visitor, $event_type )
 			)
 		);
 		$selected     = $this->fill_from_pool( $country_pool, $selected, $selected_ids, $attempted, $limit );
@@ -184,7 +252,7 @@ final class SelectionEngine {
 		if ( count( $selected ) < $limit ) {
 			$global   = ( $this->shuffle )(
 				$this->reader->find_recent_active(
-					CandidateQuery::global( $cutoff, $exclude )
+					CandidateQuery::global( $cutoff, $exclude, $event_type )
 				)
 			);
 			$selected = $this->fill_from_pool( $global, $selected, $selected_ids, $attempted, $limit );
@@ -202,6 +270,7 @@ final class SelectionEngine {
 	 * @param int      $limit                K.
 	 * @param int      $preferred_parent     Parent product ID.
 	 * @param int|null $preferred_variation  Variation ID when request is a variation.
+	 * @param string   $event_type           Event type.
 	 * @param array    $selected             Selected so far.
 	 * @param array    $selected_ids         Selected public IDs.
 	 * @param array    $attempted            Attempted public IDs.
@@ -214,6 +283,7 @@ final class SelectionEngine {
 		int $limit,
 		int $preferred_parent,
 		?int $preferred_variation,
+		string $event_type,
 		array $selected,
 		array &$selected_ids,
 		array &$attempted
@@ -225,19 +295,20 @@ final class SelectionEngine {
 		try {
 			$preferred_country = ( $this->shuffle )(
 				$this->reader->find_recent_active(
-					CandidateQuery::preferred_country( $cutoff, $exclude, $preferred_parent, $visitor )
+					CandidateQuery::preferred_country( $cutoff, $exclude, $preferred_parent, $visitor, $event_type )
 				)
 			);
 			if ( null !== $preferred_variation ) {
 				$preferred_country = $this->order_preferred_for_variation( $preferred_country, $preferred_variation );
 			}
 
-			$selected = $this->seek_one_preferred( $preferred_country, $selected, $selected_ids, $attempted );
+			$before_preferred = count( $selected );
+			$selected         = $this->seek_one_preferred( $preferred_country, $selected, $selected_ids, $attempted );
 
-			if ( array() === $selected ) {
+			if ( count( $selected ) === $before_preferred ) {
 				$preferred_any = ( $this->shuffle )(
 					$this->reader->find_recent_active(
-						CandidateQuery::preferred( $cutoff, $exclude, $preferred_parent )
+						CandidateQuery::preferred( $cutoff, $exclude, $preferred_parent, $event_type )
 					)
 				);
 				if ( null !== $preferred_variation ) {
@@ -252,7 +323,7 @@ final class SelectionEngine {
 		if ( count( $selected ) < $limit ) {
 			$country_global = ( $this->shuffle )(
 				$this->reader->find_recent_active(
-					CandidateQuery::country( $cutoff, $exclude, $visitor )
+					CandidateQuery::country( $cutoff, $exclude, $visitor, $event_type )
 				)
 			);
 			$selected       = $this->fill_from_pool( $country_global, $selected, $selected_ids, $attempted, $limit );
@@ -261,7 +332,7 @@ final class SelectionEngine {
 		if ( count( $selected ) < $limit ) {
 			$global   = ( $this->shuffle )(
 				$this->reader->find_recent_active(
-					CandidateQuery::global( $cutoff, $exclude )
+					CandidateQuery::global( $cutoff, $exclude, $event_type )
 				)
 			);
 			$selected = $this->fill_from_pool( $global, $selected, $selected_ids, $attempted, $limit );
@@ -319,8 +390,9 @@ final class SelectionEngine {
 	 * @return array Selected events.
 	 */
 	private function seek_one_preferred( array $preferred, array $selected, array &$selected_ids, array &$attempted ): array {
+		$before = count( $selected );
 		foreach ( $preferred as $candidate ) {
-			if ( count( $selected ) >= 1 ) {
+			if ( count( $selected ) >= $before + 1 ) {
 				break;
 			}
 			if ( isset( $selected_ids[ $candidate->public_id ] ) || isset( $attempted[ $candidate->public_id ] ) ) {

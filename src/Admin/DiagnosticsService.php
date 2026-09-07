@@ -13,6 +13,7 @@ use UniversalSocialProof\Cleanup\RetentionScheduler;
 use UniversalSocialProof\Geo\UgcGeoContextAdapter;
 use UniversalSocialProof\Settings\SettingsRepository;
 use UniversalSocialProof\Storage\EventStatus;
+use UniversalSocialProof\Storage\EventType;
 use UniversalSocialProof\Storage\Migrator;
 use UniversalSocialProof\Storage\Schema;
 use UniversalSocialProof\Template\TemplateSettings;
@@ -34,24 +35,25 @@ final class DiagnosticsService {
 			return array();
 		}
 		return array(
-			'runtime_version'    => defined( 'USP_VERSION' ) ? USP_VERSION : '',
-			'db_version'         => Schema::DB_VERSION,
-			'installed_db'       => (string) get_option( Migrator::OPTION_VERSION, '' ),
-			'settings_version'   => SettingsRepository::settings_version(),
-			'woocommerce'        => self::woocommerce_health(),
-			'hpos'               => self::hpos_health(),
-			'ugc'                => self::ugc_health(),
-			'template_valid'     => null !== TemplateSettings::validate_template( SettingsRepository::template() ),
-			'effective_settings' => SettingsRepository::get_persisted(),
-			'cleanup'            => self::cleanup_health(),
-			'events'             => self::event_aggregates(),
+			'runtime_version'     => defined( 'USP_VERSION' ) ? USP_VERSION : '',
+			'db_version'          => Schema::DB_VERSION,
+			'installed_db'        => (string) get_option( Migrator::OPTION_VERSION, '' ),
+			'settings_version'    => SettingsRepository::settings_version(),
+			'woocommerce'         => self::woocommerce_health(),
+			'hpos'                => self::hpos_health(),
+			'ugc'                 => self::ugc_health(),
+			'template_valid'      => null !== TemplateSettings::validate_template( SettingsRepository::template() ),
+			'cart_template_valid' => null !== TemplateSettings::validate_template( SettingsRepository::cart_template() ),
+			'effective_settings'  => SettingsRepository::get_persisted(),
+			'cleanup'             => self::cleanup_health(),
+			'events'              => self::event_aggregates(),
 		);
 	}
 
 	/**
 	 * Fixed event aggregates (no row materialization / WC loads).
 	 *
-	 * @return array{active_count: int|null, suppressed_count: int|null, newest_active_occurred_at: string|null, oldest_active_occurred_at: string|null}
+	 * @return array<string, mixed>
 	 */
 	public static function event_aggregates(): array {
 		global $wpdb;
@@ -85,13 +87,46 @@ final class DiagnosticsService {
 				$active
 			)
 		);
+
+		$purchase_count  = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table} WHERE status = %s AND event_type = %s",
+				$active,
+				EventType::PURCHASE
+			)
+		);
+		$cart_count      = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM {$table} WHERE status = %s AND event_type = %s",
+				$active,
+				EventType::ADD_TO_CART
+			)
+		);
+		$newest_purchase = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX(occurred_at) FROM {$table} WHERE status = %s AND event_type = %s",
+				$active,
+				EventType::PURCHASE
+			)
+		);
+		$newest_cart     = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT MAX(occurred_at) FROM {$table} WHERE status = %s AND event_type = %s",
+				$active,
+				EventType::ADD_TO_CART
+			)
+		);
 		// phpcs:enable WordPress.DB.PreparedSQL.InterpolatedNotPrepared,WordPress.DB.PreparedSQL.NotPrepared
 
 		return array(
-			'active_count'              => null !== $active_count ? (int) $active_count : null,
-			'suppressed_count'          => null !== $suppressed_count ? (int) $suppressed_count : null,
-			'newest_active_occurred_at' => is_string( $newest ) && '' !== $newest ? $newest : null,
-			'oldest_active_occurred_at' => is_string( $oldest ) && '' !== $oldest ? $oldest : null,
+			'active_count'                => null !== $active_count ? (int) $active_count : null,
+			'suppressed_count'            => null !== $suppressed_count ? (int) $suppressed_count : null,
+			'newest_active_occurred_at'   => is_string( $newest ) && '' !== $newest ? $newest : null,
+			'oldest_active_occurred_at'   => is_string( $oldest ) && '' !== $oldest ? $oldest : null,
+			'active_purchase_count'       => null !== $purchase_count ? (int) $purchase_count : null,
+			'active_cart_count'           => null !== $cart_count ? (int) $cart_count : null,
+			'newest_purchase_occurred_at' => is_string( $newest_purchase ) && '' !== $newest_purchase ? $newest_purchase : null,
+			'newest_cart_occurred_at'     => is_string( $newest_cart ) && '' !== $newest_cart ? $newest_cart : null,
 		);
 	}
 

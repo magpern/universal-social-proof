@@ -693,7 +693,7 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_schema_version_unchanged(): void {
-		$this->assertSame( '20260829m1', Schema::DB_VERSION );
+		$this->assertSame( '20260907v11a', Schema::DB_VERSION );
 		$this->assertSame( Schema::DB_VERSION, get_option( Migrator::OPTION_VERSION ) );
 	}
 

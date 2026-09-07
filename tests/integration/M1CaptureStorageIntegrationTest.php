@@ -42,7 +42,7 @@ final class M1CaptureStorageIntegrationTest extends WP_UnitTestCase {
 
 		$cols  = $wpdb->get_results( "DESCRIBE {$table}", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is Schema::events_table().
 		$names = array_column( $cols, 'Field' );
-		foreach ( array( 'id', 'source_order_id', 'source_item_id', 'status', 'suppress_reason', 'public_id', 'product_id', 'variation_id', 'quantity', 'country_code', 'occurred_at', 'captured_at', 'updated_at' ) as $col ) {
+		foreach ( array( 'id', 'event_type', 'source_order_id', 'source_item_id', 'status', 'suppress_reason', 'public_id', 'product_id', 'variation_id', 'quantity', 'country_code', 'occurred_at', 'captured_at', 'updated_at' ) as $col ) {
 			$this->assertContains( $col, $names );
 		}
 
@@ -58,9 +58,11 @@ final class M1CaptureStorageIntegrationTest extends WP_UnitTestCase {
 		$indexes     = $wpdb->get_results( "SHOW INDEX FROM {$table}", ARRAY_A ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- table name is Schema::events_table().
 		$index_names = array_unique( array_column( $indexes, 'Key_name' ) );
 		$this->assertContains( 'PRIMARY', $index_names );
-		$this->assertContains( 'source_order_item', $index_names );
+		$this->assertContains( 'event_source', $index_names );
+		$this->assertNotContains( 'source_order_item', $index_names );
 		$this->assertContains( 'public_id', $index_names );
 		$this->assertContains( 'status_occurred', $index_names );
+		$this->assertContains( 'status_type_occurred', $index_names );
 
 		$this->assertTrue( Migrator::upgrade_now() );
 		$this->assertSame( Schema::DB_VERSION, get_option( Migrator::OPTION_VERSION ) );

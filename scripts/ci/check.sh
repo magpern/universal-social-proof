@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# CI policy checks for Universal Social Proof (M7 candidate).
+# CI policy checks for Universal Social Proof (v1.1 feature branch).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
@@ -15,11 +15,14 @@ test -f docs/milestones/M7-V1-HARDENING-RELEASE-PLAN.md || fail "missing M7 plan
 test -f docs/milestones/M6-M7-V1-PROGRAM.md || fail "missing M6/M7 program"
 test -f docs/milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md || fail "missing M6 plan"
 test -f docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md || fail "missing M5 plan"
+test -f docs/releases/V1.1-FEATURE-PLAN.md || fail "missing V1.1 feature plan"
+test -f docs/adr/0018-event-types-cart-freshness.md || fail "missing ADR-0018"
+test -f docs/adr/0019-appearance-custom-css.md || fail "missing ADR-0019"
 test -f uninstall.php || fail "missing uninstall.php"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 1.0.2' universal-social-proof.php || fail "expected version 1.0.2"
-grep -q "define( 'USP_VERSION', '1.0.2' )" universal-social-proof.php || fail "USP_VERSION constant"
-grep -q 'Stable tag: 1.0.2' readme.txt || fail "Stable tag must be 1.0.2"
+grep -q 'Version: 1.1.0' universal-social-proof.php || fail "expected runtime Version 1.1.0"
+grep -q "define( 'USP_VERSION', '1.1.0' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Stable tag: 1.0.2' readme.txt || fail "Stable tag must remain 1.0.2 until release"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 grep -q 'uninstall.php' scripts/build-release-package.sh || fail "build-release-package must INCLUDE uninstall.php"
 
@@ -30,12 +33,15 @@ test "$js_size" -le 16384 || fail "usp-toaster.js exceeds 16 KiB ($js_size bytes
 test "$css_size" -le 6144 || fail "usp-toaster.css exceeds 6 KiB ($css_size bytes)"
 echo "JS=${js_size}B CSS=${css_size}B"
 
-echo "==> M7 packages present"
+echo "==> Packages present"
 test -d src/Template || fail "missing src/Template"
 test -d src/Targeting || fail "missing src/Targeting"
 test -d src/Geo || fail "missing src/Geo"
 test -d src/Admin || fail "missing src/Admin"
 test -d src/Settings || fail "missing src/Settings"
+test -f src/Storage/EventType.php || fail "missing EventType"
+test -f src/Capture/CartCaptureService.php || fail "missing CartCaptureService"
+test -f src/Cleanup/CartRetentionSettings.php || fail "missing CartRetentionSettings"
 
 echo "==> Forbidden symbols (fake; no client country REST authority)"
 SCAN_FILES=()
@@ -95,25 +101,27 @@ for d in dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[1\.1\.0\]' CHANGELOG.md || fail "CHANGELOG missing 1.1.0 section"
 grep -q '## \[1\.0\.2\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.2 section"
 grep -q '## \[1\.0\.1\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.1 section"
 grep -q '## \[1\.0\.0\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.0 section"
 grep -q '## \[0\.6\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.6.0 section"
 grep -q '## \[0\.5\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.5.0 section"
+grep -q '= 1.1.0 =' readme.txt || fail "readme.txt missing 1.1.0 section"
 
-echo "==> No event schema version bump in M7"
-grep -q "DB_VERSION = '20260829m1'" src/Storage/Schema.php || fail "M7 must not bump usp_db_version"
-if grep -nE "ALTER TABLE|ADD COLUMN|ADD KEY|ADD INDEX" src/Admin src/Settings src/Template src/Frontend 2>/dev/null | grep -q .; then
-  fail "M7 must not alter event schema from Admin/Settings/Template/Frontend"
-fi
+echo "==> Schema version for v1.1"
+grep -q "DB_VERSION = '20260907v11a'" src/Storage/Schema.php || fail "expected DB_VERSION 20260907v11a"
+grep -q "VERSION.*= 2" src/Settings/SettingsRepository.php || fail "expected settings VERSION 2"
 
-echo "==> M7 hardening markers"
+echo "==> Hardening markers"
 grep -q 'plain_text' src/Template/TemplateRenderer.php || fail "TemplateRenderer must sanitize token values as plain text"
 grep -q 'Dismiss notification' src/Frontend/ShellRenderer.php || fail "ShellRenderer must expose dismiss accessible name"
 grep -q 'manage_woocommerce' src/Admin/DiagnosticsService.php || fail "DiagnosticsService must gate on manage_woocommerce"
 grep -q 'sanitize_context' src/Logger.php || fail "Logger must sanitize context"
 grep -q 'plugin_action_links_' src/Admin/AdminController.php || fail "plugin action links must be registered"
 grep -q 'usp-diagnostics' src/Admin/SettingsPage.php || fail "diagnostics anchor missing"
+grep -q 'CartCaptureService::register' src/Capture/LifecycleHooks.php || fail "cart capture must be registered"
+grep -q 'fallback_purchase_template' src/Template/TemplateSettings.php || fail "country-absent purchase fallback missing"
 
 echo "==> JS tests (when node available)"
 if command -v node >/dev/null 2>&1; then
@@ -122,4 +130,4 @@ else
   echo "node absent in this environment; JS tests run in CI / Docker"
 fi
 
-echo "==> All M7 CI checks passed"
+echo "==> All v1.1 CI checks passed"

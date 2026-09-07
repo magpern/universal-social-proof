@@ -5,6 +5,24 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [1.1.0] - 2026-09-07
+
+### Added
+
+- Optional genuine add-to-cart social proof (`event_type`, cart capture, cart freshness minutes, cart templates).
+- Sources settings: `purchase_enabled` / `cart_enabled` (cart off by default; purchase disable skips selection only).
+- Appearance controls: position, colors, radius, shadow, image/close toggles, bounded custom CSS (ADR-0019).
+- Polished toaster card design using CSS custom properties.
+- Country-absent template fallbacks for purchase and cart messages.
+- Diagnostics aggregates for active purchase vs cart counts and newest timestamps per type.
+- Schema `20260907v11a` with nullable provenance and type-scoped unique index (ADR-0018).
+
+### Changed
+
+- Settings schema version → `2` (idempotent migrate from v1; preserves existing keys).
+- Selection fills purchases first, then cart into remaining slots (K≤10, shared product budget).
+- Runtime advanced to `1.1.0`; Stable tag remains `1.0.2` until release cut.
+
 ## [1.0.2] - 2026-09-07
 
 ### Added

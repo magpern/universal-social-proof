@@ -52,6 +52,7 @@
 			show_relative_time: showRelativeTime,
 		};
 		if (typeof raw.message === 'string') out.message = raw.message;
+		if (typeof raw.event_type === 'string' && raw.event_type) out.event_type = raw.event_type;
 		return out;
 	}
 

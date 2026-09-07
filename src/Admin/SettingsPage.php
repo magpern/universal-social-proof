@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Admin;
 
+use UniversalSocialProof\Cleanup\CartRetentionSettings;
 use UniversalSocialProof\Cleanup\RetentionSettings;
 use UniversalSocialProof\Settings\SettingsRepository;
 use UniversalSocialProof\Template\TemplateSettings;
@@ -37,7 +38,7 @@ final class SettingsPage {
 		<div class="wrap usp-admin">
 			<h1><?php echo esc_html__( 'Social Proof', 'universal-social-proof' ); ?></h1>
 			<p class="description">
-				<?php echo esc_html__( 'Configure genuine WooCommerce purchase notifications. Administrators cannot create fabricated purchases.', 'universal-social-proof' ); ?>
+				<?php echo esc_html__( 'Configure genuine WooCommerce purchase and cart notifications. Administrators cannot create fabricated activity.', 'universal-social-proof' ); ?>
 			</p>
 			<p class="usp-admin-status">
 				<strong><?php echo esc_html__( 'Universal Social Proof', 'universal-social-proof' ); ?></strong>
@@ -74,16 +75,147 @@ final class SettingsPage {
 					</tr>
 				</table>
 
-				<h2><?php echo esc_html__( 'Display', 'universal-social-proof' ); ?></h2>
-				<p class="description">
-					<?php echo esc_html__( 'Presentation timing (delays, gaps, motion) is not operator-configurable in v1.', 'universal-social-proof' ); ?>
-				</p>
+				<h2><?php echo esc_html__( 'Sources', 'universal-social-proof' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Purchases', 'universal-social-proof' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="usp_purchase_enabled" id="usp_purchase_enabled" value="1" <?php checked( ! empty( $settings['purchase_enabled'] ) ); ?> />
+								<?php echo esc_html__( 'Include purchase notifications in the stream', 'universal-social-proof' ); ?>
+							</label>
+							<p class="description">
+								<?php echo esc_html__( 'When disabled, purchase capture continues but purchases are not selected for display.', 'universal-social-proof' ); ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Add to cart', 'universal-social-proof' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="usp_cart_enabled" id="usp_cart_enabled" value="1" <?php checked( ! empty( $settings['cart_enabled'] ) ); ?> />
+								<?php echo esc_html__( 'Capture and show genuine add-to-cart notifications', 'universal-social-proof' ); ?>
+							</label>
+							<p class="description">
+								<?php echo esc_html__( 'Off by default. When disabled, cart events are not captured. Cart notifications claim only that a successful WooCommerce add-to-cart occurred.', 'universal-social-proof' ); ?>
+							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="usp_cart_retention_minutes"><?php echo esc_html__( 'Cart freshness (minutes)', 'universal-social-proof' ); ?></label>
+						</th>
+						<td>
+							<input type="number" name="usp_cart_retention_minutes" id="usp_cart_retention_minutes" min="<?php echo esc_attr( (string) CartRetentionSettings::MIN ); ?>" max="<?php echo esc_attr( (string) CartRetentionSettings::MAX ); ?>" value="<?php echo esc_attr( (string) (int) $settings['cart_retention_minutes'] ); ?>" class="small-text" />
+							<p class="description">
+								<?php
+								echo esc_html(
+									sprintf(
+										/* translators: 1: min, 2: max, 3: default */
+										__( 'Keep cart events eligible for %1$d–%2$d minutes (default %3$d).', 'universal-social-proof' ),
+										CartRetentionSettings::MIN,
+										CartRetentionSettings::MAX,
+										CartRetentionSettings::DEFAULT
+									)
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+				</table>
+
+				<h2><?php echo esc_html__( 'Appearance', 'universal-social-proof' ); ?></h2>
+				<table class="form-table" role="presentation">
+					<tr>
+						<th scope="row">
+							<label for="usp_appearance_position"><?php echo esc_html__( 'Position', 'universal-social-proof' ); ?></label>
+						</th>
+						<td>
+							<select name="usp_appearance_position" id="usp_appearance_position">
+								<option value="bottom-left" <?php selected( (string) $settings['appearance_position'], 'bottom-left' ); ?>><?php echo esc_html__( 'Bottom left', 'universal-social-proof' ); ?></option>
+								<option value="bottom-right" <?php selected( (string) $settings['appearance_position'], 'bottom-right' ); ?>><?php echo esc_html__( 'Bottom right', 'universal-social-proof' ); ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Colors', 'universal-social-proof' ); ?></th>
+						<td>
+							<label>
+								<?php echo esc_html__( 'Background', 'universal-social-proof' ); ?>
+								<input type="text" name="usp_appearance_background" value="<?php echo esc_attr( (string) $settings['appearance_background'] ); ?>" class="regular-text" pattern="#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})" />
+							</label>
+							<br />
+							<label>
+								<?php echo esc_html__( 'Text', 'universal-social-proof' ); ?>
+								<input type="text" name="usp_appearance_text" value="<?php echo esc_attr( (string) $settings['appearance_text'] ); ?>" class="regular-text" pattern="#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})" />
+							</label>
+							<br />
+							<label>
+								<?php echo esc_html__( 'Accent', 'universal-social-proof' ); ?>
+								<input type="text" name="usp_appearance_accent" value="<?php echo esc_attr( (string) $settings['appearance_accent'] ); ?>" class="regular-text" pattern="#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})" />
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="usp_appearance_radius"><?php echo esc_html__( 'Corner radius', 'universal-social-proof' ); ?></label>
+						</th>
+						<td>
+							<input type="number" name="usp_appearance_radius" id="usp_appearance_radius" min="0" max="32" value="<?php echo esc_attr( (string) (int) $settings['appearance_radius'] ); ?>" class="small-text" />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="usp_appearance_shadow"><?php echo esc_html__( 'Shadow', 'universal-social-proof' ); ?></label>
+						</th>
+						<td>
+							<select name="usp_appearance_shadow" id="usp_appearance_shadow">
+								<option value="soft" <?php selected( (string) $settings['appearance_shadow'], 'soft' ); ?>><?php echo esc_html__( 'Soft', 'universal-social-proof' ); ?></option>
+								<option value="medium" <?php selected( (string) $settings['appearance_shadow'], 'medium' ); ?>><?php echo esc_html__( 'Medium', 'universal-social-proof' ); ?></option>
+								<option value="none" <?php selected( (string) $settings['appearance_shadow'], 'none' ); ?>><?php echo esc_html__( 'None', 'universal-social-proof' ); ?></option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row"><?php echo esc_html__( 'Chrome', 'universal-social-proof' ); ?></th>
+						<td>
+							<label>
+								<input type="checkbox" name="usp_appearance_show_product_image" value="1" <?php checked( ! empty( $settings['appearance_show_product_image'] ) ); ?> />
+								<?php echo esc_html__( 'Show product image', 'universal-social-proof' ); ?>
+							</label>
+							<br />
+							<label>
+								<input type="checkbox" name="usp_appearance_show_close" value="1" <?php checked( ! empty( $settings['appearance_show_close'] ) ); ?> />
+								<?php echo esc_html__( 'Show dismiss control', 'universal-social-proof' ); ?>
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="usp_appearance_custom_css"><?php echo esc_html__( 'Custom CSS', 'universal-social-proof' ); ?></label>
+						</th>
+						<td>
+							<textarea name="usp_appearance_custom_css" id="usp_appearance_custom_css" class="large-text code" rows="6" maxlength="<?php echo esc_attr( (string) SettingsRepository::CUSTOM_CSS_MAX ); ?>"><?php echo esc_textarea( (string) $settings['appearance_custom_css'] ); ?></textarea>
+							<p class="description">
+								<?php
+								echo esc_html(
+									sprintf(
+										/* translators: %d: max characters */
+										__( 'Advanced. Trusted administrator CSS (max %d characters). Printed only when the toaster loads.', 'universal-social-proof' ),
+										SettingsRepository::CUSTOM_CSS_MAX
+									)
+								);
+								?>
+							</p>
+						</td>
+					</tr>
+				</table>
 
 				<h2><?php echo esc_html__( 'Content / Templates', 'universal-social-proof' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row">
-							<label for="usp_template"><?php echo esc_html__( 'Notification template', 'universal-social-proof' ); ?></label>
+							<label for="usp_template"><?php echo esc_html__( 'Purchase template', 'universal-social-proof' ); ?></label>
 						</th>
 						<td>
 							<textarea name="usp_template" id="usp_template" class="large-text code" rows="3" maxlength="<?php echo esc_attr( (string) TemplateSettings::MAX_LENGTH ); ?>"><?php echo esc_textarea( (string) $settings['template'] ); ?></textarea>
@@ -92,12 +224,20 @@ final class SettingsPage {
 								echo esc_html(
 									sprintf(
 										/* translators: %s: token list */
-										__( 'Allowed tokens: %s. No HTML. Default: Someone purchased {{product}}', 'universal-social-proof' ),
+										__( 'Allowed tokens: %s. No HTML. When country is missing, a grammatically valid fallback is used.', 'universal-social-proof' ),
 										'{{product}}, {{country}}, {{location}}, {{time_ago}}, {{quantity}}'
 									)
 								);
 								?>
 							</p>
+						</td>
+					</tr>
+					<tr>
+						<th scope="row">
+							<label for="usp_cart_template"><?php echo esc_html__( 'Cart template', 'universal-social-proof' ); ?></label>
+						</th>
+						<td>
+							<textarea name="usp_cart_template" id="usp_cart_template" class="large-text code" rows="3" maxlength="<?php echo esc_attr( (string) TemplateSettings::MAX_LENGTH ); ?>"><?php echo esc_textarea( (string) $settings['cart_template'] ); ?></textarea>
 						</td>
 					</tr>
 				</table>
@@ -155,7 +295,7 @@ final class SettingsPage {
 				<h2><?php echo esc_html__( 'Targeting', 'universal-social-proof' ); ?></h2>
 				<table class="form-table" role="presentation">
 					<tr>
-						<th scope="row"><?php echo esc_html__( 'Cart', 'universal-social-proof' ); ?></th>
+						<th scope="row"><?php echo esc_html__( 'Cart page', 'universal-social-proof' ); ?></th>
 						<td>
 							<label>
 								<input type="checkbox" name="usp_load_on_cart" id="usp_load_on_cart" value="1" <?php checked( ! empty( $settings['load_on_cart'] ) ); ?> />
@@ -187,10 +327,10 @@ final class SettingsPage {
 						<td>
 							<label>
 								<input type="checkbox" name="usp_geo_weighting_enabled" id="usp_geo_weighting_enabled" value="1" <?php checked( ! empty( $settings['geo_weighting_enabled'] ) ); ?> />
-								<?php echo esc_html__( 'Prefer purchases matching the visitor’s country when Universal Geo Context is available', 'universal-social-proof' ); ?>
+								<?php echo esc_html__( 'Prefer events matching the visitor’s country when Universal Geo Context is available', 'universal-social-proof' ); ?>
 							</label>
 							<p class="description">
-								<?php echo esc_html__( 'Visitor country comes from Universal Geo Context. USP does not perform IP geolocation. Visitor country is not stored. Purchase country comes from the WooCommerce order. If UGC is unavailable, selection falls back to global.', 'universal-social-proof' ); ?>
+								<?php echo esc_html__( 'Visitor country comes from Universal Geo Context. USP does not perform IP geolocation. Visitor country is not stored. Purchase country comes from the WooCommerce order; cart country from UGC at add time. If UGC is unavailable, selection falls back to global.', 'universal-social-proof' ); ?>
 							</p>
 						</td>
 					</tr>
@@ -200,7 +340,7 @@ final class SettingsPage {
 				<table class="form-table" role="presentation">
 					<tr>
 						<th scope="row">
-							<label for="usp_retention_days"><?php echo esc_html__( 'Retention days', 'universal-social-proof' ); ?></label>
+							<label for="usp_retention_days"><?php echo esc_html__( 'Purchase retention (days)', 'universal-social-proof' ); ?></label>
 						</th>
 						<td>
 							<input type="number" name="usp_retention_days" id="usp_retention_days" min="<?php echo esc_attr( (string) RetentionSettings::MIN ); ?>" max="<?php echo esc_attr( (string) RetentionSettings::MAX ); ?>" value="<?php echo esc_attr( (string) (int) $settings['retention_days'] ); ?>" class="small-text" />
@@ -278,10 +418,15 @@ final class SettingsPage {
 				<tr><th scope="row"><?php echo esc_html__( 'HPOS', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $hpos['status'] ?? 'unknown' ) ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'UGC', 'universal-social-proof' ); ?></th><td><?php echo ! empty( $ugc['available'] ) ? esc_html__( 'available', 'universal-social-proof' ) : esc_html__( 'unavailable', 'universal-social-proof' ); ?> <?php echo esc_html( trim( (string) ( $ugc['version'] ?? '' ) . ' ' . (string) ( $ugc['api'] ?? '' ) ) ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'Template valid', 'universal-social-proof' ); ?></th><td><?php echo ! empty( $d['template_valid'] ) ? esc_html__( 'yes', 'universal-social-proof' ) : esc_html__( 'no', 'universal-social-proof' ); ?></td></tr>
+				<tr><th scope="row"><?php echo esc_html__( 'Cart template valid', 'universal-social-proof' ); ?></th><td><?php echo ! empty( $d['cart_template_valid'] ) ? esc_html__( 'yes', 'universal-social-proof' ) : esc_html__( 'no', 'universal-social-proof' ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'Cleanup scheduler', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $cleanup['scheduler'] ?? '' ) ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'Active events', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['active_count'] ?? '—' ) ); ?></td></tr>
+				<tr><th scope="row"><?php echo esc_html__( 'Active purchases', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['active_purchase_count'] ?? '—' ) ); ?></td></tr>
+				<tr><th scope="row"><?php echo esc_html__( 'Active cart events', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['active_cart_count'] ?? '—' ) ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'Suppressed events', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['suppressed_count'] ?? '—' ) ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'Newest active occurred_at', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['newest_active_occurred_at'] ?? '—' ) ); ?></td></tr>
+				<tr><th scope="row"><?php echo esc_html__( 'Newest purchase occurred_at', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['newest_purchase_occurred_at'] ?? '—' ) ); ?></td></tr>
+				<tr><th scope="row"><?php echo esc_html__( 'Newest cart occurred_at', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['newest_cart_occurred_at'] ?? '—' ) ); ?></td></tr>
 				<tr><th scope="row"><?php echo esc_html__( 'Oldest active occurred_at', 'universal-social-proof' ); ?></th><td><?php echo esc_html( (string) ( $events['oldest_active_occurred_at'] ?? '—' ) ); ?></td></tr>
 				<tr>
 					<th scope="row"><?php echo esc_html__( 'Effective settings', 'universal-social-proof' ); ?></th>

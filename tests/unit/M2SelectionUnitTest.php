@@ -209,13 +209,14 @@ final class M2SelectionUnitTest extends TestCase {
 		$dto     = $event->to_public_array();
 		$this->assertIsArray( $dto );
 		$this->assertSame(
-			array( 'public_id', 'product_url', 'thumbnail_url', 'occurred_at', 'message', 'show_relative_time' ),
+			array( 'public_id', 'product_url', 'thumbnail_url', 'occurred_at', 'message', 'show_relative_time', 'event_type' ),
 			array_keys( $dto )
 		);
 		$this->assertSame( 'Someone purchased Name', $dto['message'] );
 		$this->assertTrue( $dto['show_relative_time'] );
 		$this->assertSame( '2026-08-30T18:42:11Z', $dto['occurred_at'] );
 		$this->assertNull( $dto['thumbnail_url'] );
+		$this->assertSame( 'purchase', $dto['event_type'] );
 	}
 
 	public function test_malformed_occurred_at_is_not_serialized(): void {
