@@ -7,7 +7,7 @@ Versions are **cumulative**: each milestone builds on the prior closed version. 
 
 **Latest published release:** `v0.4.1` (maintenance — optional private update-server self-update).  
 **M4 feature release:** `v0.4.0` (**CLOSED**). Do not relabel M4 as `v0.4.1`.  
-**Next milestone:** **M5** (`0.5.0`) — plan **frozen**; implementation on `feature/m5-geography-ugc` (not yet merged/tagged).
+**Next milestone:** **M5** (`0.5.0`) — plan **frozen**; implementation PR (not yet merged/tagged). WordPress `Stable tag` remains `0.4.1` until `v0.5.0` is released. Real reverse-proxy UGC acceptance is required **before** tagging `v0.5.0`, not before merging the implementation PR.
 
 | Milestone | Version after closure | Objective | Release tag |
 |-----------|----------------------|-----------|-------------|

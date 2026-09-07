@@ -3,6 +3,8 @@
 **Branch:** `feature/m5-geography-ugc`  
 **Freeze baseline:** `1d3c959372b97168b38d077e319a427308110d96` (PR #7)  
 **Runtime version:** `0.5.0`  
+**Latest published release:** `v0.4.1`  
+**WordPress Stable tag:** `0.4.1` (advances only when `v0.5.0` is released)  
 **DB_VERSION:** `20260829m1` (unchanged)
 
 ## Automated
@@ -30,7 +32,16 @@
 
 ## Proxy / real UGC path
 
-**DEFERRED** — controlled fixture/adapter acceptance covers soft dependency and normalization. Live reverse-proxy UGC resolution on DEV was not exercised in this gate (ADR-0002 real-proxy item remains for a later ops pass before merge/tag).
+**DEFERRED** for implementation-PR merge.
+
+Controlled fixture/adapter acceptance covers soft dependency and normalization. Live reverse-proxy UGC resolution on DEV was not exercised in this implementation gate.
+
+**Release gate (frozen):**
+
+- Implementation PR #8 **may merge** with proxy/real-UGC acceptance still **DEFERRED**.
+- Annotated tag / GitHub / private **`v0.5.0` MUST NOT** be created until real DEV reverse-proxy UGC acceptance has **PASSED** (ADR-0002).
+
+Intended sequence: merge → post-merge CI → real proxy UGC acceptance → release-state update (including `Stable tag: 0.5.0`) → annotated `v0.5.0` → publish → closure.
 
 ## Notes
 
