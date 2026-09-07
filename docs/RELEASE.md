@@ -3,19 +3,32 @@
 Implements the version/tag policy in
 [`adr/0013-version-release-policy.md`](adr/0013-version-release-policy.md).
 
-## Current release state (post-v0.4.1 maintenance)
+## Current release state (M5 / v0.5.0)
 
 | Item | Value |
 |---|---|
-| Latest published release | **`v0.4.1`** |
+| Latest published release | **`v0.5.0`** (annotated tag after this release-state lands on `main`) |
+| Implementation merge | `76572f3bbe02724d911a78a9751c2ac6798a62a1` (PR #8) |
+| Freeze merge | `1d3c959372b97168b38d077e319a427308110d96` (PR #7) |
+| Prior published release | `v0.4.1` |
+| M4 feature release | `v0.4.0` (**CLOSED**) |
+| Schema | `20260829m1` unchanged |
+| Real proxy UGC gate | **PASS** ([acceptance](milestones/M5-GEOGRAPHY-UGC-ACCEPTANCE.md)) |
+| M6 / M7 | Not started |
+| Production WordPress deploy | Not implied by GitHub/update-server publication |
+
+## Prior note (post-v0.4.1 maintenance)
+
+| Item | Value |
+|---|---|
+| Latest published release (at that time) | **`v0.4.1`** |
 | Release commit | `e709fb2d5bae283b07f2c50064386bcd04717a20` |
 | M4 feature release | `v0.4.0` (**CLOSED**; do not relabel as 0.4.1) |
 | Current `v0.4.0` peeled commit | `c05fe078335fc991e8ef74f330d9c4ff3dd87735` (packaging normalization; see M4 closure note) |
 | Schema | `20260829m1` unchanged |
-| M5 / M6 | Not started |
 | Production WordPress deploy | Not implied by GitHub/update-server publication |
 
-This maintenance reconciles documentation and future tag policy only. Tags `v0.4.0` and `v0.4.1` were **not** moved, rewritten, or republished. No new plugin version (no `v0.4.2`).
+The v0.4.1 maintenance reconciled documentation and future tag policy only. Tags `v0.4.0` and `v0.4.1` were **not** moved, rewritten, or republished.
 
 ## Canonical version source
 

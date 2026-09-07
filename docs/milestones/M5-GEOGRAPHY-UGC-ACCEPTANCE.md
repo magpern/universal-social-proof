@@ -1,51 +1,75 @@
 # M5 — Geography / UGC acceptance evidence
 
-**Branch:** `feature/m5-geography-ugc`  
+**Branch / release:** `release/v0.5.0` (from merge `76572f3bbe02724d911a78a9751c2ac6798a62a1`)  
 **Freeze baseline:** `1d3c959372b97168b38d077e319a427308110d96` (PR #7)  
+**Implementation PR:** #8 → merge `76572f3bbe02724d911a78a9751c2ac6798a62a1`  
 **Runtime version:** `0.5.0`  
-**Latest published release:** `v0.4.1`  
-**WordPress Stable tag:** `0.4.1` (advances only when `v0.5.0` is released)  
+**WordPress Stable tag (at release):** `0.5.0`  
 **DB_VERSION:** `20260829m1` (unchanged)
 
 ## Automated
 
 | Suite | Result |
 |-------|--------|
-| Unit (`phpunit.xml.dist`) | PASS — 73 tests (1 skipped) |
-| Integration (`phpunit-integration.xml.dist`) | PASS — 74 tests / 2092 assertions |
-| JS (`node --test`) | PASS — 22 tests |
+| Unit | PASS — 73 tests (1 skipped) |
+| Integration | PASS — 74 tests / 2092 assertions |
+| JS | PASS — 22 tests |
 | PHPCS | PASS |
-| CI scope (`scripts/ci/check.sh` subset) | PASS (Geo present, Admin absent, schema pinned) |
-| GitHub Actions (PR #8) | PASS — https://github.com/magpern/universal-social-proof/actions/runs/34066077423 |
+| CI scope | PASS |
+| PR #8 CI | PASS — https://github.com/magpern/universal-social-proof/actions/runs/34093073653 |
+| Post-merge CI (`76572f3`) | PASS — https://github.com/magpern/universal-social-proof/actions/runs/34095273906 |
 
-## DEV scenarios (fixture / adapter-driven)
+## DEV fixture / adapter scenarios (pre-merge)
 
-| ID | Scenario | Result |
-|----|----------|--------|
-| A | Same-country preference (visitor SE) | PASS — integration `test_non_pdp_country_preference_and_sparse_fallback` |
-| B | No matching country → global fallback | PASS — same test (visitor JP) |
-| C | UGC unavailable / null / malformed / Throwable | PASS — REST + Null adapter; no 5xx |
-| D | PDP Tier1–4 precedence | PASS — Tier1 accept / Tier2 / Tier3 / Tier4 tests |
-| E | `{{country}}` = purchase (DE), not visitor (SE) | PASS — `test_template_purchase_country_not_visitor` |
-| F | Public DTO unchanged (no visitor_country) | PASS — allowlist + REST assertions |
-| G | Worst-case budgets (SQL ≤4, rows ≤200, K ≤10) | PASS — `test_worst_case_pdp_geo_sql_and_row_budgets` |
+| ID | Result |
+|----|--------|
+| A–G automated matrix | PASS (see implementation PR) |
 
-## Proxy / real UGC path
+## Real reverse-proxy UGC acceptance (HARD RELEASE GATE)
 
-**DEFERRED** for implementation-PR merge.
+**PROXY_UGC_GATE=PASS** (2026-09-07, DEV only)
 
-Controlled fixture/adapter acceptance covers soft dependency and normalization. Live reverse-proxy UGC resolution on DEV was not exercised in this implementation gate.
+### Environment
 
-**Release gate (frozen):**
+| Item | Value |
+|------|-------|
+| Site | `https://dev.biopentra.eu` |
+| USP | active `0.5.0` (bind-mount `main`) |
+| UGC | active `1.9.0`, API version `1` |
+| Paths | `GET /wp-json/universal-geo-context/v1/context`, `GET /wp-json/universal-social-proof/v1/notifications` |
 
-- Implementation PR #8 **may merge** with proxy/real-UGC acceptance still **DEFERRED**.
-- Annotated tag / GitHub / private **`v0.5.0` MUST NOT** be created until real DEV reverse-proxy UGC acceptance has **PASSED** (ADR-0002).
+### Proxy path evidence
 
-Intended sequence: merge → post-merge CI → real proxy UGC acceptance → release-state update (including `Stable tag: 0.5.0`) → annotated `v0.5.0` → publish → closure.
+Responses included: `server: cloudflare`, `cf-ray`, `cf-cache-status: DYNAMIC`, `x-bp-cache: BYPASS`, `Cache-Control: no-store`. Requests were **not** made to WordPress loopback / localhost behind the proxy.
 
-## Notes
+### UGC baseline
 
-- Visitor country is request-local only; never persisted.
-- Client `?country=` is ignored (not a registered REST arg).
-- Shared `PDP_SEARCH_CAP=5` wraps Tier1+Tier2; `ProductResolutionBudget::MAX=20` is request-global.
-- No schema migration; no `src/Admin/`.
+Observed normalized visitor country through real proxy:
+
+- `country_code`: **`FR`** (`/^[A-Z]{2}$/`)
+- `region_code`: `null` (ignored by USP M5)
+
+No visitor IP was recorded in USP evidence.
+
+### USP consumption
+
+Temporary DEV-only mu-plugin probe logged only the normalized ISO code from `usp_geo_weighting_enabled` during notifications selection:
+
+- `country=FR enabled=1`
+
+Probe files were removed after the gate (`usp-m5-proxy-acceptance-probe.php`, template probe).
+
+### Scenarios
+
+| ID | Result |
+|----|--------|
+| A Same-country preference | PASS — `limit=3` returned three purchase-country **FR** events while DE fixtures existed |
+| B Sparse fallback | PASS — one FR kept + two non-FR after excluding other FR ids |
+| C PDP Tier1 | PASS — `product_id=6935&page_context=product` selected FR event for that product |
+| D Purchase `{{country}}` | PASS — visitor FR, selected purchase DE → message `Bought in Germany` (not France); template filter restored |
+| Soft UGC unavailable | PASS — deactivated UGC; notifications still `200` + `no-store`; UGC REST `404`; UGC reactivated and restored `FR` |
+| DTO / privacy | PASS — allowlist-only keys; no visitor/geo columns; probes removed |
+
+### Release gate note
+
+Implementation PR #8 was allowed to merge with proxy acceptance deferred. Annotated **`v0.5.0` requires this PASS** (satisfied).
