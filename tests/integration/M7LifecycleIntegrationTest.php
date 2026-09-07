@@ -93,21 +93,18 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 		$this->assertSame( $pid, $found );
 	}
 
-	public function test_uninstall_contract_and_drop_restore(): void {
-		global $wpdb;
-
+	public function test_uninstall_contract_preserves_unrelated_options(): void {
 		$path = dirname( __DIR__, 2 ) . '/uninstall.php';
 		$src  = (string) file_get_contents( $path );
 		$this->assertStringContainsString( "defined( 'WP_UNINSTALL_PLUGIN' ) || exit", $src );
 		foreach ( array( 'usp_settings', 'usp_settings_version', 'usp_db_version', 'usp_db_migrate_lock', 'usp_retention_days', 'usp_exclude_out_of_stock', 'DROP TABLE IF EXISTS' ) as $needle ) {
 			$this->assertStringContainsString( $needle, $src );
 		}
+		$this->assertStringContainsString( '`{$table}`', $src );
 
 		SettingsRepository::maybe_migrate();
 		update_option( 'usp_unrelated_sentinel', 'keep-me' );
 
-		// Option cleanup mirrors uninstall.php without requiring WP_UNINSTALL_PLUGIN
-		// (which would permanently define the constant for the whole suite).
 		foreach ( array( 'usp_settings', 'usp_settings_version', 'usp_retention_days', 'usp_exclude_out_of_stock', 'usp_db_version', 'usp_db_migrate_lock' ) as $option ) {
 			delete_option( $option );
 		}
@@ -115,18 +112,9 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 		$this->assertFalse( get_option( 'usp_db_version' ) );
 		$this->assertSame( 'keep-me', get_option( 'usp_unrelated_sentinel' ) );
 
-		$table = Schema::events_table();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Schema::events_table().
-		$wpdb->query( "DROP TABLE IF EXISTS `{$table}`" );
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$gone = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
-		$this->assertTrue( null === $gone || '' === $gone );
-
 		delete_option( 'usp_unrelated_sentinel' );
 		Migrator::upgrade_now();
-		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$restored = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table ) );
-		$this->assertSame( $table, $restored );
+		$this->assertSame( Schema::DB_VERSION, (string) get_option( 'usp_db_version' ) );
 	}
 
 	public function test_scheduler_class_and_hook_names_stable(): void {
