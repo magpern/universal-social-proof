@@ -1,0 +1,9 @@
+/* USP admin — minimal spacing for diagnostics/settings */
+.usp-admin .usp-diagnostics th {
+	width: 14rem;
+	vertical-align: top;
+}
+.usp-admin code {
+	white-space: pre-wrap;
+	word-break: break-word;
+}

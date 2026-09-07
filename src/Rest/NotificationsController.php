@@ -20,6 +20,7 @@ use UniversalSocialProof\Selection\CandidateReader;
 use UniversalSocialProof\Selection\ProductResolutionBudget;
 use UniversalSocialProof\Selection\SelectionEngine;
 use UniversalSocialProof\Selection\SelectionRequest;
+use UniversalSocialProof\Settings\SettingsRepository;
 use UniversalSocialProof\Storage\Migrator;
 use WP_Error;
 use WP_HTTP_Response;
@@ -125,6 +126,10 @@ final class NotificationsController {
 	 */
 	public static function get_notifications( WP_REST_Request $request ) {
 		try {
+			// Display-only master switch: route stays up; empty allowlisted list (ADR-0015).
+			if ( ! SettingsRepository::display_enabled() ) {
+				return self::ok( array() );
+			}
 			Migrator::maybe_upgrade_controlled();
 			$engine = self::make_engine();
 			$events = $engine->select( self::selection_request_from_rest( $request ) );

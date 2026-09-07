@@ -1,6 +1,6 @@
 <?php
 /**
- * Operator product exclusion for social-proof selection (filter only; no option).
+ * Operator product exclusion for social-proof selection.
  *
  * @package UniversalSocialProof
  */
@@ -10,11 +10,13 @@ declare( strict_types=1 );
 namespace UniversalSocialProof\Targeting;
 
 use UniversalSocialProof\Product\PublicProduct;
+use UniversalSocialProof\Settings\SettingsRepository;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Whether USP chooses to use an otherwise-valid public product for proof.
+ * Precedence: default → usp_settings → filter → normalize (ADR-0015).
  */
 final class ProductTargetingPolicy {
 
@@ -44,13 +46,14 @@ final class ProductTargetingPolicy {
 	 * @return array<int, true>
 	 */
 	public static function excluded_ids(): array {
+		$base = SettingsRepository::excluded_product_ids();
 		/**
 		 * Filter product IDs excluded from USP social-proof selection.
 		 *
 		 * @since 0.4.0
 		 * @param array<int> $ids Product or parent IDs.
 		 */
-		$raw = apply_filters( self::FILTER, array() );
+		$raw = apply_filters( self::FILTER, $base );
 		if ( ! is_array( $raw ) ) {
 			return array();
 		}

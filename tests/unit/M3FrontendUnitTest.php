@@ -43,7 +43,7 @@ final class M3FrontendUnitTest extends TestCase {
 		);
 	}
 
-	public function test_frontend_and_template_packages_geo_admin_absent(): void {
+	public function test_frontend_and_template_packages_geo_admin_present(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Frontend' );
 		$this->assertDirectoryExists( $src . '/Template' );
@@ -53,7 +53,7 @@ final class M3FrontendUnitTest extends TestCase {
 		$this->assertFileExists( $src . '/Frontend/BootstrapConfig.php' );
 		$this->assertFileExists( $src . '/Frontend/ShellRenderer.php' );
 		$this->assertDirectoryExists( $src . '/Geo' );
-		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
+		$this->assertDirectoryExists( $src . '/Admin' );
 	}
 
 	public function test_assets_exist_within_size_budgets(): void {
@@ -81,10 +81,10 @@ final class M3FrontendUnitTest extends TestCase {
 		$this->assertStringNotContainsString( '{{product}}', $scan );
 	}
 
-	public function test_geo_present_admin_absent(): void {
+	public function test_geo_and_admin_present(): void {
 		$src = dirname( __DIR__, 2 ) . '/src';
 		$this->assertDirectoryExists( $src . '/Geo' );
 		$this->assertFileExists( $src . '/Geo/GeoContextAdapter.php' );
-		$this->assertDirectoryDoesNotExist( $src . '/Admin' );
+		$this->assertDirectoryExists( $src . '/Admin' );
 	}
 }

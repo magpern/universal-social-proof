@@ -21,6 +21,9 @@ for WooCommerce stores. No fabricated activity.
 
 == Changelog ==
 
+= 0.6.0 =
+* M6 (internal): WooCommerce admin settings + diagnostics; runtime 0.6.0; Stable tag remains 0.5.0 until v1.0.0.
+
 = 0.5.0 =
 * M5: visitor-country weighting via soft Universal Geo Context dependency (tiered selection; shared PDP search cap; schema and public DTO unchanged).
 

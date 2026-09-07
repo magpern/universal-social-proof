@@ -9,10 +9,13 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Cleanup;
 
+use UniversalSocialProof\Settings\SettingsRepository;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Retention window: default 60, clamp 7–90.
+ * Precedence: default → usp_settings → filter → clamp (ADR-0015).
  */
 final class RetentionSettings {
 
@@ -25,7 +28,7 @@ final class RetentionSettings {
 	 * Effective retention days.
 	 */
 	public static function days(): int {
-		$raw = (int) get_option( self::OPTION_KEY, self::DEFAULT );
+		$raw = SettingsRepository::retention_days();
 		/**
 		 * Filter USP retention days (clamped to 7–90 after filter).
 		 *

@@ -52,6 +52,9 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		delete_option( Migrator::OPTION_VERSION );
 		delete_option( StockExclusionSettings::OPTION_KEY );
 		delete_option( RetentionSettings::OPTION_KEY );
+		delete_option( \UniversalSocialProof\Settings\SettingsRepository::OPTION_KEY );
+		delete_option( \UniversalSocialProof\Settings\SettingsRepository::VERSION_KEY );
+		\UniversalSocialProof\Settings\SettingsRepository::reset_for_tests();
 		Migrator::upgrade_now();
 		Plugin::init();
 		$this->truncate_events();
@@ -354,18 +357,38 @@ final class M2SelectionRestIntegrationTest extends WP_UnitTestCase {
 		$oos->set_stock_status( 'outofstock' );
 		$oos->save();
 		$this->assertNotNull( $resolver->resolve_for_event( (int) $oos->get_id(), null ) );
-		update_option( StockExclusionSettings::OPTION_KEY, 'yes' );
+		\UniversalSocialProof\Settings\SettingsRepository::save(
+			array_merge(
+				\UniversalSocialProof\Settings\SettingsRepository::defaults(),
+				array( 'exclude_out_of_stock' => true )
+			)
+		);
 		$resolver2 = new PublicProductResolver( new ProductResolutionBudget() );
 		$this->assertNull( $resolver2->resolve_for_event( (int) $oos->get_id(), null ) );
-		delete_option( StockExclusionSettings::OPTION_KEY );
+		\UniversalSocialProof\Settings\SettingsRepository::save(
+			array_merge(
+				\UniversalSocialProof\Settings\SettingsRepository::defaults(),
+				array( 'exclude_out_of_stock' => false )
+			)
+		);
 
 		$back = $this->create_simple_product();
 		$back->set_stock_status( 'onbackorder' );
 		$back->save();
-		update_option( StockExclusionSettings::OPTION_KEY, 'yes' );
+		\UniversalSocialProof\Settings\SettingsRepository::save(
+			array_merge(
+				\UniversalSocialProof\Settings\SettingsRepository::defaults(),
+				array( 'exclude_out_of_stock' => true )
+			)
+		);
 		$resolver3 = new PublicProductResolver( new ProductResolutionBudget() );
 		$this->assertNotNull( $resolver3->resolve_for_event( (int) $back->get_id(), null ) );
-		delete_option( StockExclusionSettings::OPTION_KEY );
+		\UniversalSocialProof\Settings\SettingsRepository::save(
+			array_merge(
+				\UniversalSocialProof\Settings\SettingsRepository::defaults(),
+				array( 'exclude_out_of_stock' => false )
+			)
+		);
 
 		$empty_price = $this->create_simple_product();
 		$empty_price->set_regular_price( '' );

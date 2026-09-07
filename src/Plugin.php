@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof;
 
+use UniversalSocialProof\Admin\AdminController;
 use UniversalSocialProof\Capture\LifecycleHooks;
 use UniversalSocialProof\Cleanup\RetentionScheduler;
 use UniversalSocialProof\Frontend\FrontendController;
@@ -16,13 +17,14 @@ use UniversalSocialProof\Privacy\PersonalDataEraser;
 use UniversalSocialProof\Privacy\PersonalDataExporter;
 use UniversalSocialProof\Privacy\PrivacyPolicyContent;
 use UniversalSocialProof\Rest\NotificationsController;
+use UniversalSocialProof\Settings\SettingsRepository;
 use UniversalSocialProof\Storage\Migrator;
 use UniversalSocialProof\WooCommerce\WooCommerceGate;
 
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Idempotent bootstrap for M1–M5.
+ * Idempotent bootstrap for M1–M6.
  */
 final class Plugin {
 
@@ -44,11 +46,13 @@ final class Plugin {
 		self::$initialized = true;
 
 		Migrator::maybe_upgrade_controlled();
+		SettingsRepository::maybe_migrate();
 
 		LifecycleHooks::register();
 		RetentionScheduler::register();
 		NotificationsController::register();
 		FrontendController::register();
+		AdminController::register();
 
 		add_filter( 'wp_privacy_personal_data_exporters', array( PersonalDataExporter::class, 'register' ) );
 		PersonalDataEraser::bootstrap();
@@ -67,6 +71,7 @@ final class Plugin {
 	 */
 	public static function reset_for_tests(): void {
 		self::$initialized = false;
+		SettingsRepository::reset_for_tests();
 		FrontendController::reset_for_tests();
 		PrivacyPolicyContent::reset_for_tests();
 	}

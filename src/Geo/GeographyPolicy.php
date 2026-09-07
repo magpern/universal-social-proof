@@ -1,6 +1,6 @@
 <?php
 /**
- * Whether visitor-country weighting is active for a request (M5).
+ * Whether visitor-country weighting is active for a request.
  *
  * @package UniversalSocialProof
  */
@@ -9,10 +9,12 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Geo;
 
+use UniversalSocialProof\Settings\SettingsRepository;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
- * Filter seam for M6 admin binding; no persisted option in M5.
+ * Settings + filter seam (ADR-0015).
  */
 final class GeographyPolicy {
 
@@ -31,13 +33,13 @@ final class GeographyPolicy {
 		if ( null === $code || '' === $code ) {
 			return null;
 		}
-		$enabled = true;
+		$enabled = SettingsRepository::geo_weighting_enabled();
 		/**
 		 * Filter whether USP applies visitor-country weighting.
 		 *
 		 * @since 0.5.0
 		 *
-		 * @param bool              $enabled Default true when a country is available.
+		 * @param bool              $enabled Default from settings (true when country available).
 		 * @param string            $code    Normalized visitor country.
 		 * @param GeoContextAdapter $adapter Adapter instance.
 		 */

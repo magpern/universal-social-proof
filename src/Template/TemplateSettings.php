@@ -1,6 +1,6 @@
 <?php
 /**
- * M4 template source: translated default + validated filter (no option).
+ * M4 template source: settings + validated filter.
  *
  * @package UniversalSocialProof
  */
@@ -9,10 +9,13 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Template;
 
+use UniversalSocialProof\Settings\SettingsRepository;
+
 defined( 'ABSPATH' ) || exit;
 
 /**
  * Resolves the notification template string for rendering.
+ * Precedence: default → usp_settings → filter → validate (ADR-0015).
  */
 final class TemplateSettings {
 
@@ -40,10 +43,16 @@ final class TemplateSettings {
 	}
 
 	/**
-	 * Resolve template: default → filter → validate; invalid filter falls back to default.
+	 * Resolve template: settings → filter → validate; invalid filter falls back to settings/default.
 	 */
 	public static function get(): string {
-		$default = self::default_template();
+		$base           = SettingsRepository::template();
+		$validated_base = self::validate_template( $base );
+		if ( null === $validated_base ) {
+			$base = self::default_template();
+		} else {
+			$base = $validated_base;
+		}
 		/**
 		 * Filter the USP notification message template.
 		 *
@@ -52,12 +61,12 @@ final class TemplateSettings {
 		 * @since 0.4.0
 		 * @param string $template Template string.
 		 */
-		$filtered = apply_filters( self::FILTER, $default );
+		$filtered = apply_filters( self::FILTER, $base );
 		if ( ! is_string( $filtered ) ) {
-			return $default;
+			return $base;
 		}
 		$validated = self::validate_template( $filtered );
-		return null === $validated ? $default : $validated;
+		return null === $validated ? $base : $validated;
 	}
 
 	/**
@@ -77,7 +86,6 @@ final class TemplateSettings {
 		while ( $i < $len ) {
 			$ch = $template[ $i ];
 			if ( '}' === $ch ) {
-				// Stray closing brace (not consumed as part of {{token}}).
 				return null;
 			}
 			if ( '{' !== $ch ) {
@@ -87,12 +95,10 @@ final class TemplateSettings {
 			if ( $i + 1 >= $len || '{' !== $template[ $i + 1 ] ) {
 				return null;
 			}
-			// Require exact }} terminator; reject single } or {{{...}}} forms via name rules.
 			$close = strpos( $template, '}}', $i + 2 );
 			if ( false === $close ) {
 				return null;
 			}
-			// A lone } must not appear inside the token name span.
 			$inner = substr( $template, $i + 2, $close - ( $i + 2 ) );
 			if ( false !== strpos( $inner, '{' ) || false !== strpos( $inner, '}' ) ) {
 				return null;

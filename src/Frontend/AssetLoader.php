@@ -9,6 +9,7 @@ declare( strict_types=1 );
 
 namespace UniversalSocialProof\Frontend;
 
+use UniversalSocialProof\Settings\SettingsRepository;
 use UniversalSocialProof\Targeting\TargetingPolicy;
 
 defined( 'ABSPATH' ) || exit;
@@ -37,7 +38,7 @@ final class AssetLoader {
 		}
 
 		$base = trailingslashit( plugins_url( '', USP_PLUGIN_FILE ) );
-		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.5.0';
+		$ver  = defined( 'USP_VERSION' ) ? USP_VERSION : '0.6.0';
 
 		wp_enqueue_style(
 			self::STYLE_HANDLE,
@@ -67,6 +68,9 @@ final class AssetLoader {
 	 * Whether the toaster should load on this request.
 	 */
 	public static function should_load(): bool {
+		if ( ! SettingsRepository::display_enabled() ) {
+			return false;
+		}
 		return TargetingPolicy::should_load();
 	}
 

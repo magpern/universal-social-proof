@@ -5,6 +5,20 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [0.6.0] - 2026-09-07
+
+### Added
+
+- WooCommerce admin (Social Proof): settings, diagnostics, reset-to-defaults (`src/Admin/`).
+- Structured settings option `usp_settings` + `usp_settings_version` with one-shot legacy migration (ADR-0015).
+- Display-only master switch (`display_enabled`): toaster off; REST remains `200 []` + `Cache-Control: no-store`.
+- `uninstall.php` removes all USP-owned data (ADR-0017).
+
+### Notes
+
+- Internal milestone: runtime `0.6.0`; Stable tag remains `0.5.0` until `v1.0.0`. No public `v0.6.0` tag/Release.
+- Event schema unchanged (`20260829m1`).
+
 ## [0.5.0] - 2026-09-07
 
 ### Added
