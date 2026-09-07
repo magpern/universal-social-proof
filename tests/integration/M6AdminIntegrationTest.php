@@ -131,7 +131,7 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 		wp_set_current_user( $admin_id );
 
 		$diag = DiagnosticsService::collect();
-		$this->assertSame( '1.0.1', $diag['runtime_version'] );
+		$this->assertSame( '1.0.2', $diag['runtime_version'] );
 		$this->assertSame( Schema::DB_VERSION, $diag['db_version'] );
 		$this->assertArrayHasKey( 'events', $diag );
 		$json = wp_json_encode( $diag );
@@ -187,5 +187,52 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 		add_filter( 'woocommerce_is_checkout', '__return_true' );
 		$this->assertFalse( \UniversalSocialProof\Targeting\TargetingPolicy::should_load() );
 		remove_all_filters( 'woocommerce_is_checkout' );
+	}
+
+	public function test_plugin_action_links_for_authorized_admin(): void {
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$admin    = new \WP_User( $admin_id );
+		$admin->add_cap( 'manage_woocommerce' );
+		wp_set_current_user( $admin_id );
+
+		$settings = AdminController::settings_url();
+		$diag     = AdminController::diagnostics_url();
+		$this->assertStringContainsString( 'admin.php?page=' . AdminController::MENU_SLUG, $settings );
+		$this->assertStringStartsWith( admin_url( 'admin.php' ), $settings );
+		$this->assertSame( $settings . '#usp-diagnostics', $diag );
+
+		$links = AdminController::plugin_action_links( array( 'deactivate' => '<a>Deactivate</a>' ) );
+		$this->assertArrayHasKey( 'settings', $links );
+		$this->assertArrayHasKey( 'diagnostics', $links );
+		$this->assertArrayHasKey( 'deactivate', $links );
+		$keys = array_keys( $links );
+		$this->assertSame( array( 'settings', 'diagnostics', 'deactivate' ), $keys );
+		$this->assertStringContainsString( esc_url( $settings ), $links['settings'] );
+		$this->assertStringContainsString( 'Settings', $links['settings'] );
+		$this->assertStringContainsString( esc_url( $diag ), $links['diagnostics'] );
+		$this->assertStringContainsString( 'Diagnostics', $links['diagnostics'] );
+
+		$this->assertNotFalse(
+			has_filter( 'plugin_action_links_' . plugin_basename( USP_PLUGIN_FILE ), array( AdminController::class, 'plugin_action_links' ) )
+		);
+	}
+
+	public function test_plugin_action_links_hidden_without_capability(): void {
+		$sub_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $sub_id );
+		$links = AdminController::plugin_action_links( array( 'deactivate' => '<a>Deactivate</a>' ) );
+		$this->assertArrayNotHasKey( 'settings', $links );
+		$this->assertArrayNotHasKey( 'diagnostics', $links );
+		$this->assertArrayHasKey( 'deactivate', $links );
+	}
+
+	public function test_no_duplicate_admin_menu_slug(): void {
+		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/Admin/AdminController.php' );
+		$this->assertSame( 1, substr_count( $src, 'add_submenu_page(' ) );
+		$this->assertStringContainsString( "'woocommerce'", $src );
+		$this->assertStringContainsString( AdminController::MENU_SLUG, $src );
+		$page = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/Admin/SettingsPage.php' );
+		$this->assertStringContainsString( 'id="usp-diagnostics"', $page );
+		$this->assertStringContainsString( 'usp-admin-status', $page );
 	}
 }

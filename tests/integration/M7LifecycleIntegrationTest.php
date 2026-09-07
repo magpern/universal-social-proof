@@ -32,7 +32,7 @@ final class M7LifecycleIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_runtime_is_v1_candidate_and_schema_unchanged(): void {
-		$this->assertSame( '1.0.1', USP_VERSION );
+		$this->assertSame( '1.0.2', USP_VERSION );
 		$this->assertSame( '20260829m1', Schema::DB_VERSION );
 		$this->assertSame( Schema::DB_VERSION, (string) get_option( 'usp_db_version' ) );
 	}

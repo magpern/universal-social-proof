@@ -5,6 +5,13 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [1.0.2] - 2026-09-07
+
+### Added
+
+- Plugins-row action links: Settings and Diagnostics → WooCommerce → Social Proof (with `#usp-diagnostics` anchor).
+- Compact Enabled/Disabled + runtime status line on the Social Proof admin page.
+
 ## [1.0.1] - 2026-09-07
 
 ### Fixed
