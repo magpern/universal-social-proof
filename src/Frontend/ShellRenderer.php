@@ -33,7 +33,7 @@ final class ShellRenderer {
 						<time class="usp-toaster__time" datetime=""></time>
 					</span>
 				</a>
-				<button type="button" class="usp-toaster__dismiss" hidden></button>
+				<button type="button" class="usp-toaster__dismiss" hidden aria-label="<?php echo esc_attr__( 'Dismiss notification', 'universal-social-proof' ); ?>"></button>
 			</div>
 		</div>
 		<?php

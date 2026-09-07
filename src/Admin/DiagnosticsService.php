@@ -30,6 +30,9 @@ final class DiagnosticsService {
 	 * @return array<string, mixed>
 	 */
 	public static function collect(): array {
+		if ( ! current_user_can( 'manage_woocommerce' ) ) {
+			return array();
+		}
 		return array(
 			'runtime_version'    => defined( 'USP_VERSION' ) ? USP_VERSION : '',
 			'db_version'         => Schema::DB_VERSION,

@@ -125,8 +125,13 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_diagnostics_aggregates_and_no_provenance_keys(): void {
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$admin    = new \WP_User( $admin_id );
+		$admin->add_cap( 'manage_woocommerce' );
+		wp_set_current_user( $admin_id );
+
 		$diag = DiagnosticsService::collect();
-		$this->assertSame( '0.6.0', $diag['runtime_version'] );
+		$this->assertSame( '1.0.0', $diag['runtime_version'] );
 		$this->assertSame( Schema::DB_VERSION, $diag['db_version'] );
 		$this->assertArrayHasKey( 'events', $diag );
 		$json = wp_json_encode( $diag );
@@ -135,6 +140,12 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'source_item_id', $json );
 		$this->assertArrayHasKey( 'active_count', $diag['events'] );
 		$this->assertArrayHasKey( 'suppressed_count', $diag['events'] );
+	}
+
+	public function test_diagnostics_denied_without_capability(): void {
+		$sub_id = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $sub_id );
+		$this->assertSame( array(), DiagnosticsService::collect() );
 	}
 
 	public function test_schema_unchanged(): void {

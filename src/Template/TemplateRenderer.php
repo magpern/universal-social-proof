@@ -48,7 +48,7 @@ final class TemplateRenderer {
 			if ( null === $value ) {
 				return null;
 			}
-			$out .= $value;
+			$out .= self::plain_text( $value );
 			$i    = $close + 2;
 		}
 
@@ -58,6 +58,17 @@ final class TemplateRenderer {
 		}
 
 		return new RenderResult( $message, $used_time );
+	}
+
+	/**
+	 * Strip markup so the public DTO message stays plain text (ADR-0011).
+	 * Do not HTML-escape: the toaster assigns via textContent.
+	 *
+	 * @param string $value Token value.
+	 */
+	private static function plain_text( string $value ): string {
+		$decoded = html_entity_decode( $value, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+		return wp_strip_all_tags( $decoded );
 	}
 
 	/**
