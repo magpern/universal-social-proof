@@ -5,6 +5,12 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to the milestone versioning in [docs/adr/0013-version-release-policy.md](docs/adr/0013-version-release-policy.md).
 
+## [1.0.1] - 2026-09-07
+
+### Fixed
+
+- Include `uninstall.php` in the release ZIP so WordPress uninstall removes USP-owned data (ADR-0017).
+
 ## [1.0.0] - 2026-09-07
 
 ### Changed

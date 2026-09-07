@@ -22,7 +22,7 @@ set -Eeuo pipefail
 SLUG="universal-social-proof"
 MAIN_FILE="universal-social-proof.php"
 VERSION_CONST="USP_VERSION"
-INCLUDE=("$MAIN_FILE" src assets composer.json readme.txt README.md LICENSE CHANGELOG.md)
+INCLUDE=("$MAIN_FILE" uninstall.php src assets composer.json readme.txt README.md LICENSE CHANGELOG.md)
 HAS_README_TXT="1"        # validate readme.txt Stable tag + changelog
 HAS_CHANGELOG_MD="1"    # validate CHANGELOG.md "## [<version>]" section
 REQUIRE_VENDOR_FILE="yahnis-elsts/plugin-update-checker/plugin-update-checker.php"

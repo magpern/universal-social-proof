@@ -2,7 +2,7 @@
 Contributors: magpern
 Requires at least: 6.5
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,6 +20,9 @@ for WooCommerce stores. No fabricated activity.
 2. Activate the plugin.
 
 == Changelog ==
+
+= 1.0.1 =
+* Packaging fix: include uninstall.php in the release ZIP (ADR-0017).
 
 = 1.0.0 =
 * M7: hardening for production-recommended v1; runtime 1.0.0; Stable tag 1.0.0.
