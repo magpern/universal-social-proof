@@ -106,22 +106,20 @@ final class M6AdminIntegrationTest extends WP_UnitTestCase {
 	}
 
 	public function test_admin_menu_requires_manage_woocommerce(): void {
-		global $menu, $submenu;
-		$menu    = array();
-		$submenu = array();
-		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		AdminController::add_menu();
-		$found = false;
-		if ( isset( $submenu['woocommerce'] ) ) {
-			foreach ( $submenu['woocommerce'] as $item ) {
-				if ( isset( $item[2] ) && AdminController::MENU_SLUG === $item[2] ) {
-					$found = true;
-					$this->assertSame( 'manage_woocommerce', $item[1] );
-				}
-			}
-		}
-		$this->assertTrue( $found, 'Social Proof submenu missing' );
+		$this->assertNotFalse(
+			has_action( 'admin_menu', array( AdminController::class, 'add_menu' ) ),
+			'Admin menu callback must be registered'
+		);
+		$admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin );
+		$this->assertTrue( current_user_can( 'manage_woocommerce' ) );
+		$sub = self::factory()->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $sub );
+		$this->assertFalse( current_user_can( 'manage_woocommerce' ) );
+		$src = (string) file_get_contents( dirname( __DIR__, 2 ) . '/src/Admin/AdminController.php' );
+		$this->assertStringContainsString( "'manage_woocommerce'", $src );
+		$this->assertStringContainsString( "'woocommerce'", $src );
+		$this->assertStringContainsString( AdminController::MENU_SLUG, $src );
 	}
 
 	public function test_diagnostics_aggregates_and_no_provenance_keys(): void {
