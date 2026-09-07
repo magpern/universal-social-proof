@@ -31,11 +31,25 @@ final class SettingsPage {
 		SettingsRepository::maybe_migrate();
 		$settings = SettingsRepository::get_persisted();
 		self::render_notices();
+		$enabled = ! empty( $settings['display_enabled'] );
+		$runtime = defined( 'USP_VERSION' ) ? USP_VERSION : '';
 		?>
 		<div class="wrap usp-admin">
 			<h1><?php echo esc_html__( 'Social Proof', 'universal-social-proof' ); ?></h1>
 			<p class="description">
 				<?php echo esc_html__( 'Configure genuine WooCommerce purchase notifications. Administrators cannot create fabricated purchases.', 'universal-social-proof' ); ?>
+			</p>
+			<p class="usp-admin-status">
+				<strong><?php echo esc_html__( 'Universal Social Proof', 'universal-social-proof' ); ?></strong>
+				—
+				<?php
+				echo $enabled
+					? esc_html__( 'Enabled', 'universal-social-proof' )
+					: esc_html__( 'Disabled', 'universal-social-proof' );
+				?>
+				<?php if ( '' !== $runtime ) : ?>
+					<span class="usp-admin-status__version">(<?php echo esc_html( $runtime ); ?>)</span>
+				<?php endif; ?>
 			</p>
 
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" class="usp-settings-form">
@@ -237,7 +251,7 @@ final class SettingsPage {
 
 			<hr />
 
-			<h2><?php echo esc_html__( 'Diagnostics', 'universal-social-proof' ); ?></h2>
+			<h2 id="usp-diagnostics"><?php echo esc_html__( 'Diagnostics', 'universal-social-proof' ); ?></h2>
 			<?php self::render_diagnostics(); ?>
 		</div>
 		<?php

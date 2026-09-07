@@ -17,9 +17,9 @@ test -f docs/milestones/M6-ADMIN-DIAGNOSTICS-PLAN.md || fail "missing M6 plan"
 test -f docs/milestones/M5-GEOGRAPHY-UGC-PLAN.md || fail "missing M5 plan"
 test -f uninstall.php || fail "missing uninstall.php"
 grep -q 'Plugin Name: Universal Social Proof' universal-social-proof.php || fail "plugin header name"
-grep -q 'Version: 1.0.1' universal-social-proof.php || fail "expected version 1.0.1"
-grep -q "define( 'USP_VERSION', '1.0.1' )" universal-social-proof.php || fail "USP_VERSION constant"
-grep -q 'Stable tag: 1.0.1' readme.txt || fail "Stable tag must be 1.0.1"
+grep -q 'Version: 1.0.2' universal-social-proof.php || fail "expected version 1.0.2"
+grep -q "define( 'USP_VERSION', '1.0.2' )" universal-social-proof.php || fail "USP_VERSION constant"
+grep -q 'Stable tag: 1.0.2' readme.txt || fail "Stable tag must be 1.0.2"
 grep -q 'namespace UniversalSocialProof' src/Plugin.php || fail "namespace"
 grep -q 'uninstall.php' scripts/build-release-package.sh || fail "build-release-package must INCLUDE uninstall.php"
 
@@ -95,6 +95,7 @@ for d in dist build public/js public/css; do
 done
 
 echo "==> Changelog version agreement"
+grep -q '## \[1\.0\.2\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.2 section"
 grep -q '## \[1\.0\.1\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.1 section"
 grep -q '## \[1\.0\.0\]' CHANGELOG.md || fail "CHANGELOG missing 1.0.0 section"
 grep -q '## \[0\.6\.0\]' CHANGELOG.md || fail "CHANGELOG missing 0.6.0 section"
@@ -111,6 +112,8 @@ grep -q 'plain_text' src/Template/TemplateRenderer.php || fail "TemplateRenderer
 grep -q 'Dismiss notification' src/Frontend/ShellRenderer.php || fail "ShellRenderer must expose dismiss accessible name"
 grep -q 'manage_woocommerce' src/Admin/DiagnosticsService.php || fail "DiagnosticsService must gate on manage_woocommerce"
 grep -q 'sanitize_context' src/Logger.php || fail "Logger must sanitize context"
+grep -q 'plugin_action_links_' src/Admin/AdminController.php || fail "plugin action links must be registered"
+grep -q 'usp-diagnostics' src/Admin/SettingsPage.php || fail "diagnostics anchor missing"
 
 echo "==> JS tests (when node available)"
 if command -v node >/dev/null 2>&1; then
